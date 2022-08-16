@@ -1,0 +1,43 @@
+<plugin
+  id="br.ufes.inf.nemo"
+  description="OntoUML to DB Plugin v0.1"
+  provider="Universidade Federal do Espírito Santo"
+  class="br.ufes.inf.nemo.ontoumltodb.OntoumlToDbPlugin">
+
+  <actionSets>
+	    <actionSet id="br.ufes.inf.nemo.actionset1">
+		      <toolbar
+		        id="br.ufes.inf.nemo.actionset1.toolbar1"
+		        orientation="north"
+		        index="last"/>
+		      
+		      <action
+		        id="br.ufes.inf.nemo.actions.DBMappingAction"
+		        actionType="generalAction"
+		        description="Generates the relational schema and its mappings."
+		        style="normal"
+		        tooltip="Generates the relational schema and its mappings."
+		        icon="icons/export_schema.png"
+		        label="Database mapping"
+		        menuPath="br.ufes.inf.nemo.actionset1.toolbar1/br.ufes.inf.nemo.actionset1.menu1/#">
+		        <actionController class="br.ufes.inf.nemo.ontoumltodb.vp.controllers.DbGenerationController"/>
+		      </action>
+		
+			<action
+		        id="tolls.db.toSchema"
+		        actionType="generalAction"
+		        description="Generates the relational schema and its mappings."
+		        style="normal"
+		        tooltip="Generates the relational schema and its mappings."
+		        icon="icons/export_schema.png"
+		        label="Database mapping"
+		        ribbonPath="Tools/DB/#">
+		        <!--  <actionController class="br.ufes.inf.nemo.ontoumltodb.vp.controllers.DbGenerationController"/>
+		        -->
+		    </action>
+		
+			<separator id="tools.todb.ontouml" ribbonPath="Tools/DB/#"/>
+	
+	    </actionSet>
+  </actionSets>
+</plugin>
