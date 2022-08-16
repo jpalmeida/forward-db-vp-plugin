@@ -87,63 +87,61 @@ public class TestRunningExampleSlim {
 		    	result += triggerResult.getScript() + "\n";
 		    }
 		    
-		    System.out.println(result);
-		    
 		    CheckTransformation check = new CheckTransformation( result );
-		    check.addCommand("delimiter // \n" + 
-		    		"CREATE TRIGGER tg_person_i  BEFORE INSERT ON person \n" + 
-		    		"FOR EACH ROW \n" + 
-		    		"BEGIN\n" + 
-		    		"\n" + 
-		    		"    declare msg varchar(128);\n" + 
-		    		"\n" + 
-		    		"    if( \n" + 
-		    		"         ( NEW.life_phase_enum <> 'ADULT' AND ( (NEW.is_personal_customer is not null  AND NEW.is_personal_customer = TRUE ) OR NEW.credit_rating is not null  OR NEW.credit_card is not null  )  ) \n" + 
-		    		"    ) \n" + 
-		    		"    then \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_i].'; \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg;\n" + 
-		    		"    end if; \n" + 
-		    		"\n" + 
-		    		"    if( \n" + 
-		    		"         ( NEW.is_personal_customer = TRUE AND ( NEW.credit_rating is null  OR NEW.credit_card is null  )  )  OR \n" + 
-		    		"         ( NEW.is_personal_customer <> TRUE AND ( NEW.credit_rating is not null  OR NEW.credit_card is not null  )  ) \n" + 
-		    		"    ) \n" + 
-		    		"    then \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_i].'; \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg;\n" + 
-		    		"    end if; \n" + 
-		    		"\n" + 
-		    		"\n" + 
-		    		"END; // \n" + 
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_person_i  BEFORE INSERT ON person  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        (  NEW.is_personal_customer = TRUE and ( NEW.credit_rating is null  OR NEW.credit_card is null  )  ) OR  \n" + 
+		    		"        (  NEW.is_personal_customer <> TRUE and ( NEW.credit_rating is not null  OR NEW.credit_card is not null  )  )  \n" + 
+		    		"      )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_i].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        ( new.life_phase_enum <> 'Adult' and  (  (new.is_personal_customer is not null  and  new.is_personal_customer = true)  )  )  \n" + 
+		    		"    )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_i].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
 		    		"delimiter ;");
 		    
-		    check.addCommand("delimiter // \n" + 
-		    		"CREATE TRIGGER tg_person_u  BEFORE UPDATE ON person \n" + 
-		    		"FOR EACH ROW \n" + 
-		    		"BEGIN\n" + 
-		    		"\n" + 
-		    		"    declare msg varchar(128);\n" + 
-		    		"\n" + 
-		    		"    if( \n" + 
-		    		"         ( NEW.life_phase_enum <> 'ADULT' AND ( (NEW.is_personal_customer is not null  AND NEW.is_personal_customer = TRUE ) OR NEW.credit_rating is not null  OR NEW.credit_card is not null  )  ) \n" + 
-		    		"    ) \n" + 
-		    		"    then \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_u].'; \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg;\n" + 
-		    		"    end if; \n" + 
-		    		"\n" + 
-		    		"    if( \n" + 
-		    		"         ( NEW.is_personal_customer = TRUE AND ( NEW.credit_rating is null  OR NEW.credit_card is null  )  )  OR \n" + 
-		    		"         ( NEW.is_personal_customer <> TRUE AND ( NEW.credit_rating is not null  OR NEW.credit_card is not null  )  ) \n" + 
-		    		"    ) \n" + 
-		    		"    then \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_u].'; \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg;\n" + 
-		    		"    end if; \n" + 
-		    		"\n" + 
-		    		"\n" + 
-		    		"END; // \n" + 
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_person_u  BEFORE UPDATE ON person  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        (  NEW.is_personal_customer = TRUE and ( NEW.credit_rating is null  OR NEW.credit_card is null  )  ) OR  \n" + 
+		    		"        (  NEW.is_personal_customer <> TRUE and ( NEW.credit_rating is not null  OR NEW.credit_card is not null  )  )  \n" + 
+		    		"      )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_u].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        ( new.life_phase_enum <> 'Adult' and  (  (new.is_personal_customer is not null  and  new.is_personal_customer = true)  )  )  \n" + 
+		    		"    )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_u].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
 		    		"delimiter ;");
 		    
 		    check.addCommand("delimiter // "+
@@ -154,8 +152,8 @@ public class TestRunningExampleSlim {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        (  NEW.is_corporate_customer = TRUE AND ( NEW.credit_rating is null  OR NEW.credit_limit is null  )  ) OR  \n" + 
-		    		"        (  NEW.is_corporate_customer <> TRUE AND ( NEW.credit_rating is not null  OR NEW.credit_limit is not null  )  )  \n" + 
+		    		"        (  NEW.is_corporate_customer = TRUE and ( NEW.credit_rating is null  OR NEW.credit_limit is null  )  ) OR  \n" + 
+		    		"        (  NEW.is_corporate_customer <> TRUE and ( NEW.credit_rating is not null  OR NEW.credit_limit is not null  )  )  \n" + 
 		    		"      )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_organization_i].'; \n" + 
@@ -174,8 +172,8 @@ public class TestRunningExampleSlim {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        (  NEW.is_corporate_customer = TRUE AND ( NEW.credit_rating is null  OR NEW.credit_limit is null  )  ) OR  \n" + 
-		    		"        (  NEW.is_corporate_customer <> TRUE AND ( NEW.credit_rating is not null  OR NEW.credit_limit is not null  )  )  \n" + 
+		    		"        (  NEW.is_corporate_customer = TRUE and ( NEW.credit_rating is null  OR NEW.credit_limit is null  )  ) OR  \n" + 
+		    		"        (  NEW.is_corporate_customer <> TRUE and ( NEW.credit_rating is not null  OR NEW.credit_limit is not null  )  )  \n" + 
 		    		"      )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_organization_u].'; \n" + 
@@ -194,8 +192,8 @@ public class TestRunningExampleSlim {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        SELECT  case when NEW.organization_customer_id is null then 0 else 1 end +  \n" + 
-		    		"                case when NEW.person_id is null then 0 else 1 end  \n" + 
+		    		"        select  case when NEW.person_id is null then 0 else 1 end +  \n" + 
+		    		"                case when NEW.organization_customer_id is null then 0 else 1 end  \n" + 
 		    		"      ) <> 1  \n" + 
 		    		"    then  \n" + 
 		    		"            set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_i].';  \n" + 
@@ -205,10 +203,10 @@ public class TestRunningExampleSlim {
 		    		"    if( NEW.organization_customer_id is not null )  \n" + 
 		    		"    then  \n" + 
 		    		"        if not exists (  \n" + 
-		    		"                    SELECT 1 \n" + 
-		    		"                    FROM organization  \n" + 
-		    		"                    WHERE is_corporate_customer = TRUE  \n" + 
-		    		"                    AND   organization.organization_id = NEW.organization_customer_id \n" + 
+		    		"                    select 1 \n" + 
+		    		"                    from organization  \n" + 
+		    		"                    where is_corporate_customer = TRUE  \n" + 
+		    		"                    and   organization.organization_id = NEW.organization_customer_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_i].';  \n" + 
@@ -218,10 +216,10 @@ public class TestRunningExampleSlim {
 		    		"    end if;  \n" + 
 		    		" \n" + 
 		    		"        if not exists (  \n" + 
-		    		"                    SELECT 1 \n" + 
-		    		"                    FROM organization  \n" + 
-		    		"                    WHERE is_contractor = TRUE  \n" + 
-		    		"                    AND   organization.organization_id = NEW.organization_contractor_id \n" + 
+		    		"                    select 1 \n" + 
+		    		"                    from organization  \n" + 
+		    		"                    where is_contractor = TRUE  \n" + 
+		    		"                    and   organization.organization_id = NEW.organization_contractor_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_i].';  \n" + 
@@ -231,11 +229,11 @@ public class TestRunningExampleSlim {
 		    		"    if( NEW.person_id is not null )  \n" + 
 		    		"    then  \n" + 
 		    		"        if not exists (  \n" + 
-		    		"                    SELECT 1 \n" + 
-		    		"                    FROM person  \n" + 
-		    		"                    WHERE is_personal_customer = TRUE  \n" + 
-		    		"                    AND   life_phase_enum = 'ADULT'  \n" + 
-		    		"                    AND   person.person_id = NEW.person_id \n" + 
+		    		"                    select 1 \n" + 
+		    		"                    from person  \n" + 
+		    		"                    where is_personal_customer = TRUE  \n" + 
+		    		"                    and   life_phase_enum = 'ADULT'  \n" + 
+		    		"                    and   person.person_id = NEW.person_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_i].';  \n" + 
@@ -256,8 +254,8 @@ public class TestRunningExampleSlim {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        SELECT  case when NEW.organization_customer_id is null then 0 else 1 end +  \n" + 
-		    		"                case when NEW.person_id is null then 0 else 1 end  \n" + 
+		    		"        select  case when NEW.person_id is null then 0 else 1 end +  \n" + 
+		    		"                case when NEW.organization_customer_id is null then 0 else 1 end  \n" + 
 		    		"      ) <> 1  \n" + 
 		    		"    then  \n" + 
 		    		"            set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_u].';  \n" + 
@@ -267,10 +265,10 @@ public class TestRunningExampleSlim {
 		    		"    if( NEW.organization_customer_id is not null )  \n" + 
 		    		"    then  \n" + 
 		    		"        if not exists (  \n" + 
-		    		"                    SELECT 1 \n" + 
-		    		"                    FROM organization  \n" + 
-		    		"                    WHERE is_corporate_customer = TRUE  \n" + 
-		    		"                    AND   organization.organization_id = NEW.organization_customer_id \n" + 
+		    		"                    select 1 \n" + 
+		    		"                    from organization  \n" + 
+		    		"                    where is_corporate_customer = TRUE  \n" + 
+		    		"                    and   organization.organization_id = NEW.organization_customer_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_u].';  \n" + 
@@ -280,10 +278,10 @@ public class TestRunningExampleSlim {
 		    		"    end if;  \n" + 
 		    		" \n" + 
 		    		"        if not exists (  \n" + 
-		    		"                    SELECT 1 \n" + 
-		    		"                    FROM organization  \n" + 
-		    		"                    WHERE is_contractor = TRUE  \n" + 
-		    		"                    AND   organization.organization_id = NEW.organization_contractor_id \n" + 
+		    		"                    select 1 \n" + 
+		    		"                    from organization  \n" + 
+		    		"                    where is_contractor = TRUE  \n" + 
+		    		"                    and   organization.organization_id = NEW.organization_contractor_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_u].';  \n" + 
@@ -293,11 +291,11 @@ public class TestRunningExampleSlim {
 		    		"    if( NEW.person_id is not null )  \n" + 
 		    		"    then  \n" + 
 		    		"        if not exists (  \n" + 
-		    		"                    SELECT 1 \n" + 
-		    		"                    FROM person  \n" + 
-		    		"                    WHERE is_personal_customer = TRUE  \n" + 
-		    		"                    AND   life_phase_enum = 'ADULT'  \n" + 
-		    		"                    AND   person.person_id = NEW.person_id \n" + 
+		    		"                    select 1 \n" + 
+		    		"                    from person  \n" + 
+		    		"                    where is_personal_customer = TRUE  \n" + 
+		    		"                    and   life_phase_enum = 'ADULT'  \n" + 
+		    		"                    and   person.person_id = NEW.person_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_u].';  \n" + 

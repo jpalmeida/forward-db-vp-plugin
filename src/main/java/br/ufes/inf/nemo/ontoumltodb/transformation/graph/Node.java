@@ -244,12 +244,13 @@ public class Node extends Element {
 		return this.constraintContainer.isNecessaryGenerateMC1_2Constraint();
 	}
 	
-	public void setNecessaryGenerateMC3_4Constraint(boolean flag) {
-		this.constraintContainer.setNecessaryGenerateMC3_4Constraint(flag);
-	}
+//	public void setNecessaryGenerateMC3_4Constraint(boolean flag) {
+//		this.constraintContainer.setNecessaryGenerateMC3_4Constraint(flag);
+//	}
 	
 	public boolean isNecessaryGenerateMC3_4Constraint() {
-		return this.constraintContainer.isNecessaryGenerateMC3_4Constraint();
+		//return this.constraintContainer.isNecessaryGenerateMC3_4Constraint();
+		return this.propertyContainer.isNecessaryGenerateMC3_4Constraint();
 	}
 	
 //	public void setNecessaryGenerateMC6Constraint(boolean flag) {

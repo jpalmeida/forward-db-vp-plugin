@@ -228,6 +228,15 @@ public class PropertyContainer {
 		}
 		return null;
 	}
+	
+	public boolean isNecessaryGenerateMC3_4Constraint() {
+		
+		for (NodeProperty property : this.properties) {
+			if(property.hasMandatoryProperty())
+				return true;
+		}
+		return false;
+	}
 
 	/**
 	 * Returns all properties formatted as a string.

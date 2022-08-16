@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 public class ConstraintContainer {
 	
-	private boolean necessaryGenerateMC3_4Constraint;
+//	private boolean necessaryGenerateMC3_4Constraint;
 	
 	private ArrayList<ConstraintData> mc1_2ConstraintData;
 	private ArrayList<ConstraintData> mc6ConstraintData;
 
 	
 	public ConstraintContainer() {
-		this.necessaryGenerateMC3_4Constraint = false;
+//		this.necessaryGenerateMC3_4Constraint = false;
 		mc1_2ConstraintData = new ArrayList<ConstraintData>();
 		mc6ConstraintData = new ArrayList<ConstraintData>();
 	}
@@ -22,13 +22,13 @@ public class ConstraintContainer {
 		else return true;
 	}
 	
-	public void setNecessaryGenerateMC3_4Constraint(boolean flag) {
-		this.necessaryGenerateMC3_4Constraint = flag;
-	}
-	
-	public boolean isNecessaryGenerateMC3_4Constraint() {
-		return this.necessaryGenerateMC3_4Constraint;
-	}
+//	public void setNecessaryGenerateMC3_4Constraint(boolean flag) {
+//		this.necessaryGenerateMC3_4Constraint = flag;
+//	}
+//	
+//	public boolean isNecessaryGenerateMC3_4Constraint() {
+//		return this.necessaryGenerateMC3_4Constraint;
+//	}
 	
 	public boolean isNecessaryGenerateMC6Constraint() {
 		if(this.mc6ConstraintData.isEmpty())
@@ -79,7 +79,7 @@ public class ConstraintContainer {
 		ConstraintContainer container = new ConstraintContainer();
 
 //		container.setNecessaryGenerateMC1_2Constraint(this.isNecessaryGenerateMC1_2Constraint());
-		container.setNecessaryGenerateMC3_4Constraint(this.isNecessaryGenerateMC3_4Constraint());
+//		container.setNecessaryGenerateMC3_4Constraint(this.isNecessaryGenerateMC3_4Constraint());
 //		container.setNecessaryGenerateMC6Constraint(this.isNecessaryGenerateMC6Constraint());
 		
 		for(ConstraintData constraintData : this.mc1_2ConstraintData) {

@@ -26,8 +26,6 @@ public class TestTraceability {
 		    toDb.runTransformation();
 		    String traces = toDb.getStringTrace();
 		    
-		    System.out.println(traces);
-		    
 		    CheckTransformation check = new CheckTransformation( traces );
 		    
 		    check.addCommand("TRACE SET: SubClass \n" + 

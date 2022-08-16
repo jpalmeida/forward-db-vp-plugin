@@ -54,18 +54,14 @@ public class Lifting {
 			// The new property is put in the generalization node.
 			generalization.getGeneral().addProperty(newProperty);
 	
-			liftAttributes(node, generalization.getGeneral());
+			liftAttributes(node, generalization.getGeneral(), newProperty, "true");
 			
-			// for the tracing
+			// for tracing
 			if(hasMultipleInheritance) {
 				traceTable.addTargetNode(node, generalization.getGeneral(), newProperty, true);
 			}
 			else {
 				traceTable.updateTrace(node, generalization.getGeneral(), newProperty, true);
-				
-				if(node.getName().equals("ResearchLaboratory")) {
-					System.out.println("\n\n======after\n" + traceTable.getTraceSetSring("ResearchLaboratory"));
-				}
 			}
 			
 			remakeReferences(node, generalization.getGeneral(), traceTable, graph);
@@ -92,7 +88,7 @@ public class Lifting {
 			
 			for (Node specializationNode : gs.getSpecializationNodes()) {
 				
-				liftAttributes(specializationNode, gs.getGeneral());
+				liftAttributes(specializationNode, gs.getGeneral(), newEnumerationField, specializationNode.getName());
 				
 				// for the tracing
 				traceTable.updateTrace(specializationNode, gs.getGeneral(), newEnumerationField, specializationNode.getName());
@@ -142,7 +138,7 @@ public class Lifting {
 	// *********** Resolve the node attributes
 	// **************************************************************************************
 	// must be called after creating all attributes on the specialization nodes.
-	private static void liftAttributes(Node subnode, Node superNode) {
+	private static void liftAttributes(Node subnode, Node superNode, NodeProperty mandatoryProperty, String mandatoryValue) {
 		ArrayList<NodeProperty> propertiesToLifting = subnode.getProperties();
 		ArrayList<NodeProperty> newProperties = new ArrayList<NodeProperty>();
 		NodeProperty newProperty;
@@ -158,8 +154,10 @@ public class Lifting {
 			if(newProperty.getRecivedBy() == Origin.CREATION) { // Change only one time
 				newProperty.setRecivedBy(Origin.LIFTING);
 			}
-			newProperties.add(newProperty);
 			
+			newProperty.setMandatoryProperty(mandatoryProperty, property.isNullable() ? false : true, mandatoryValue);
+			
+			newProperties.add(newProperty);
 		}
 		superNode.addProperties(newProperties);
 	}

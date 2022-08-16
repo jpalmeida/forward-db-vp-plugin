@@ -34,9 +34,9 @@ public class NodeProperty extends Element{
 	private Origin recivedBy;
 	
 	// properties intended for constraint generation
-	private NodeProperty dependentProperty;
-	private boolean dependentMandatoryProperty;
-	
+	private NodeProperty mandatoryProperty;
+	private boolean mandatoryFillingWhenMandatoryPropertyIsFilled;
+	private String mandatoryValue;
 
 	public NodeProperty(Node ownerNode, String id, String name, String dataType, boolean acceptNull, boolean multivalued) {
 		super(id, id, name, ElementType.PROPERTY);
@@ -67,8 +67,9 @@ public class NodeProperty extends Element{
 		this.identifyOtherClass = false;
 		this.generatedFromTransformationProcess = false;
 		this.recivedBy = Origin.CREATION;
-		this.dependentProperty = null;
-		this.dependentMandatoryProperty = false;
+		this.mandatoryProperty = null;
+		this.mandatoryFillingWhenMandatoryPropertyIsFilled = false;
+		this.mandatoryValue = null;
 	}
 	
 	public Node getOwnerNode() {
@@ -302,23 +303,31 @@ public class NodeProperty extends Element{
 		return false;
 	}
 	
-	public boolean hasDependentProperty() {
-		if(this.dependentProperty != null)
+	public boolean hasMandatoryProperty() {
+		if(this.mandatoryProperty != null)
 			return true;
 		else return false;
 	}
 	
-	public NodeProperty getDependentProperty() {
-		return this.dependentProperty;
+	public NodeProperty getMandatoryProperty() {
+		return this.mandatoryProperty;
 	}
 	
-	public void setDependentProperty(NodeProperty property, boolean dependentMandatoryProperty) {
-		this.dependentProperty = property;
-		this.dependentMandatoryProperty = dependentMandatoryProperty;
+	public String getMandatoryValue() {
+		return this.mandatoryValue;
 	}
 	
-	public boolean isDependentMandatoryProperty() {
-		return this.dependentMandatoryProperty;
+	public void setMandatoryProperty(NodeProperty property, boolean mandatoryFillingWhenMandatoryPropertyIsFilled, String mandatoryValue) {
+		// lose the first mandatory property in the lifting process, necessary for correct link  
+		if(this.mandatoryProperty == null) {
+			this.mandatoryProperty = property;
+			this.mandatoryValue = mandatoryValue;
+			this.mandatoryFillingWhenMandatoryPropertyIsFilled = mandatoryFillingWhenMandatoryPropertyIsFilled;
+		}
+	}
+	
+	public boolean isMandatoryFillingWhenMandatoryPropertyIsFilled() {
+		return this.mandatoryFillingWhenMandatoryPropertyIsFilled;
 	}
 
 	/**
@@ -343,18 +352,24 @@ public class NodeProperty extends Element{
 		newProperty.setIdentifyOtherClass(this.identifyOtherClass);
 		newProperty.setGeneratedFromTransformationProcess(this.generatedFromTransformationProcess);
 		newProperty.setRecivedBy(this.recivedBy);
-
+		newProperty.setMandatoryProperty(this.mandatoryProperty, this.mandatoryFillingWhenMandatoryPropertyIsFilled, this.mandatoryValue);
+				
 		return newProperty;
 	}
 
 	public String toString() {
 		String msg = "";
+		String msgMandatory = "";
 		
 		if(this.isForeignKey()) {
 			if(this.associationRelated == null) {
 				msg = "[ ********** NOT EXISTS ASSOCIATION RELATED TO FK **********]";
 			}
 			else msg = this.associationRelated.toString();
+		}
+		
+		if(mandatoryProperty != null) {
+			msgMandatory += "[MANDATORY PROPERTY: " + mandatoryProperty.getName() + "]";
 		}
 		
 		return 	"PROPERTY: "+
@@ -367,7 +382,8 @@ public class NodeProperty extends Element{
 				" " +
 				(this.isPrimaryKey() == true ? " PK ": "")+
 				(this.isForeignKey() == true ? " FK " + msg: "")+
-				(this.multivalued == true ? "\tMULTIVALUED" : ""); 
+				(this.multivalued == true ? "\tMULTIVALUED" : "")+
+				msgMandatory; 
 	}
 
 }

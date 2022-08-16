@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import br.ufes.inf.nemo.ontoumltodb.transformation.Statistic;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.ConstraintData;
-import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
+//import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.Trace;

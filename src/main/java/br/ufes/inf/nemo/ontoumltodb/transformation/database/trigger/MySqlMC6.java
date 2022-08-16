@@ -154,7 +154,7 @@ public class MySqlMC6 {
 			return "";
 		
 		if(property.isNullable()) {
-			text += tab + "if( NEW."+ property.getName() + " is not null ) \n";
+			text += tab + "if( new."+ property.getName() + " is not null ) \n";
 			text += tab + "then \n";
 		}
 		
@@ -190,7 +190,7 @@ public class MySqlMC6 {
 	}
 	
 	private String getSelect() {
-		return "SELECT 1\n";
+		return "select 1\n";
 	}
 	
 	private String getFrom(Trace trace, NodeProperty fkProperty) {
@@ -202,7 +202,7 @@ public class MySqlMC6 {
 		setUnsolvedNodes(trace);
 		fromNode = getNextTracedNodeToJoin(trace).getNodeMapped();
 		
-		text.append("FROM ");
+		text.append("from ");
 		text.append(fromNode.getName());
 		text.append(" ");
 		
@@ -232,7 +232,7 @@ public class MySqlMC6 {
 		String text = "";
 		String tab = Util.getSpaces("", Util.getTabSpaces() * 5);
 		
-		text += "WHERE ";
+		text += "where ";
 
 		for (Filter filter : trace.getMainNodeMapped().getFilters()) {
 
@@ -240,7 +240,7 @@ public class MySqlMC6 {
 				first = false;
 			} else {
 				text += tab;
-				text += "AND   ";
+				text += "and   ";
 			}
 
 			text += filter.getFilterProperty().getName();
@@ -250,7 +250,7 @@ public class MySqlMC6 {
 		}
 		
 		if( !first )
-			text += tab + "AND   ";
+			text += tab + "and   ";
 		
 		node = trace.getNodeMappedById(fKProperty.getForeignKeyNodeID());
 		
@@ -258,7 +258,7 @@ public class MySqlMC6 {
 		text += ".";
 		text += node.getPKName();
 		text += " = ";
-		text += "NEW."+ fKProperty.getName();
+		text += "new."+ fKProperty.getName();
 		text += "\n";
 		
 		return text;
@@ -307,13 +307,13 @@ public class MySqlMC6 {
 		cardinalityEnd = association.getCardinalityEndOf(fromNode);
 		
 		if(cardinalityEnd == Cardinality.C1 || cardinalityEnd == Cardinality.C1_N)
-			text += "INNER JOIN ";
-		else text += "LEFT JOIN ";
+			text += "inner join ";
+		else text += "left join ";
 		
 		text += toNode.getName();
 		text += "\n";
 		tab = Util.getSpaces("", Util.getTabSpaces() * 7);
-		text += tab + "ON  ";
+		text += tab + "on  ";
 
 		if (toNode.getFKRelatedOfNodeID(fromNode.getID()) != null) {
 			text += fromNode.getName();
@@ -364,7 +364,7 @@ public class MySqlMC6 {
 		for (Filter filter : nodeMapped.getFilters()) {
 			text += "\n";
 			text += tab;
-			text += "AND ";
+			text += "and ";
 			text += nodeMapped.getNodeMapped().getName();
 			text += ".";
 			text += filter.getFilterProperty().getName();
