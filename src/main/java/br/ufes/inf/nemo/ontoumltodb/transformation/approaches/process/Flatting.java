@@ -65,7 +65,7 @@ public class Flatting {
 				flattenAssociationWith(flattenNode, generalization.getSpecific(), association, graph, traceTable);
 				
 				// Missing Constraint 1. Inverse checking
-				if(association.getCardinalityEndOf(flattenNode) == Cardinality.C0_1 || association.getCardinalityEndOf(flattenNode) == Cardinality.C1) {
+				if(association.getCardinalityEndOf(flattenNode) == Cardinality.C1 || association.getCardinalityEndOf(flattenNode) == Cardinality.C1) {
 					generalization.getSpecific().addMissingConstraint(flattenNode, association, MissingConstraint.MC1_2_Inverse);
 				}
 			}

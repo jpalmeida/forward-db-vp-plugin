@@ -253,6 +253,10 @@ public class Node extends Element {
 		return this.constraintContainer.getMissingConstraint(missingConstraint);
 	}
 	
+	public ArrayList<ConstraintData> getAllMissingConstraint(){
+		return this.constraintContainer.getAllMissingConstraint();
+	}
+	
 	private void setConstraintContainer(ConstraintContainer container) {
 		this.constraintContainer = container;
 	}

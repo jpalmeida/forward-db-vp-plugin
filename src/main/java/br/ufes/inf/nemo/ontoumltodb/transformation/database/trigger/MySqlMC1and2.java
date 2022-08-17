@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import br.ufes.inf.nemo.ontoumltodb.transformation.Statistic;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.ConstraintData;
+import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
 //import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
@@ -54,6 +55,9 @@ public class MySqlMC1and2 {
 	private String getRestriction(ConstraintData constraint, Node currentNode) {
 		StringBuilder text = new StringBuilder();
 		ArrayList<NodeProperty> properties = getProperties(constraint, currentNode);
+		
+		if(properties.isEmpty())
+			return "";
 		
 		boolean first = true;
 		String tab1 = Util.getSpaces("", Util.getTabSpaces());
@@ -140,6 +144,9 @@ public class MySqlMC1and2 {
 		NodeProperty destinationProperty;
 		NodeProperty currentProperty = getProperty(constraint, currentNode);
 		
+		if(currentProperty == null)
+			return "";
+		
 		text.append(tab1);
 		text.append("if( new.");
 		text.append(currentProperty.getName());
@@ -196,25 +203,33 @@ public class MySqlMC1and2 {
 		Statistic.addMC12();
 		
 		return text.toString();
-		
-		/*
-    if (
-    	select 
-            case when exists (select 1 from variable where name_name_id = new.name_id) then 1 else 0 end  + 
-            case when exists (select 1 from method_member_function where name_name_id = new.name_id) then 1 else 0 end 
-    ) <> 0 
-    then 
-        set msg = 'ERROR: Violating conceptual model rules [tg_class_i].'; 
-        signal sqlstate '45000' set message_text = msg; 
-    end if; 
-		*/
 	}
 	
 	private NodeProperty getProperty(ConstraintData constraint, Node currentNode ){
-		Node sourceNodeEnd = constraint.getSourceAssociation().getNodeEndOf(constraint.getSourceNode());
-		Node targetNodeEnd = traceTable.getTraceSetOfById(sourceNodeEnd).getTraces().get(0).getMainNode();
-		NodeProperty property  = currentNode.getFKRelatedOfNodeID(targetNodeEnd.getID());
-		return property;
+		//Node sourceNodeEnd = constraint.getSourceAssociation().getNodeEndOf(constraint.getSourceNode());
+		//Node targetNodeEnd = traceTable.getTraceSetOfById(sourceNodeEnd).getTraces().get(0).getMainNode();
+		//NodeProperty property  = currentNode.getFKRelatedOfNodeID(targetNodeEnd.getID());		
+		
+		for(GraphAssociation association : currentNode.getAssociations()) {
+			if(association.getOriginalAssociation().isMyId(constraint.getSourceAssociation().getID())) {
+				for(NodeProperty fk : currentNode.getProperties()) {
+					if(fk.isForeignKey()) {
+						if(fk.getAssociationRelatedOfFK().isMyId(association.getID())) {
+							return fk;
+//							if(currentNode.getName().equals("method_member_function") ) {
+//								System.out.println("*******************");
+//								System.out.println("Current Node: " + currentNode.toString());
+//								System.out.println("Constraint sourceNode: " + constraint.getSourceNode().toString());
+//								System.out.println("constraint association: " + constraint.getSourceAssociation().toString() );
+//								System.out.println("sourceNodeEnd: " + sourceNodeEnd.toString());
+//								System.out.println("targetNodeEnd: " + targetNodeEnd.toString());
+//							}
+						}
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 	private ArrayList<Node> getTargetNodes(ConstraintData constraint, Node currentNode){
@@ -228,150 +243,4 @@ public class MySqlMC1and2 {
 		}
 		return result;
 	}
-	
-	
-	/*
-	
-	
-	private ArrayList <NodeProperty> getFksForTheSameOriginalClass(Node node) {
-		Node originalNode;
-		NodeProperty property1, property2;
-		GraphAssociation association1, association2;
-		ArrayList <NodeProperty> duplicateProperties = new ArrayList<NodeProperty>();
-		
-		originalNode = traceTable.getOriginalGraph().getNodeById(node.getID());
-		
-		//If not find, is because the node was created in the process. There is nothing to validate.
-		if(originalNode == null) {
-			return duplicateProperties;
-		}
-		
-		for(int index_1 = 0; index_1 < node.getProperties().size(); index_1++) {
-			property1 = node.getProperties().get(index_1);
-			if(property1.isForeignKey() && !property1.isSelfAssociation()) {
-				for(int index_2 = index_1; index_2 < node.getProperties().size(); index_2++) {
-					property2 = node.getProperties().get(index_2);
-					
-					if( (! property1.isMyId(property2.getID())) && 
-							property2.isForeignKey() 
-					) {
-						association1 = property1.getAssociationRelatedOfFK().getOriginalAssociation();
-						association2 = property2.getAssociationRelatedOfFK().getOriginalAssociation();
-						
-						if(association1 != null && association2 != null) {
-							if(hasTheSameClassAssociated(association1, association2, originalNode)) {
-								addIfNotExists(duplicateProperties, property1);
-								addIfNotExists(duplicateProperties, property2);
-							}
-						}	
-					}
-				}
-			}
-		}
-		return duplicateProperties;
-	}
-	
-	private ArrayList<NodeProperty> extractFirstDuplicateKey(ArrayList<NodeProperty> duplicateProperties){
-		ArrayList<NodeProperty> result = new ArrayList<NodeProperty>();
-		NodeProperty property;
-		int index = 0;
-		
-		property = duplicateProperties.remove(0);
-		
-		result.add(property);
-		
-		while( (index = getNext(property, duplicateProperties))!= -1) {
-			result.add(duplicateProperties.remove(index));			
-		}
-		
-		return result;
-	}
-	
-	private String getConstraintLostInFlattening(ArrayList<NodeProperty> properties) {
-		String text = "";
-		boolean first = true;
-		String tab = Util.getSpaces("", Util.getTabSpaces());
-		String largeTab = Util.getSpaces("", Util.getTabSpaces() * 4);
-		
-		text += tab + "if( \n";
-		text += tab + tab + "SELECT  ";
-		for(NodeProperty property : properties) {
-			if(first) {
-				first = false;
-				text += "case when ";
-				text += "NEW."+ property.getName() + " is null ";
-				text += "then 0 else 1 end ";
-			}
-			else {
-				text += "+ \n";
-				text += largeTab + "case when ";
-				text += "NEW."+ property.getName() + " is null ";
-				text += "then 0 else 1 end ";
-			} 
-		}
-		text += "\n";
-		
-		NodeProperty property1 = properties.get(0);
-		GraphAssociation association1 = property1.getAssociationRelatedOfFK().getOriginalAssociation();
-		if(association1.getCardinalityEndOf(property1.getOwnerNode()) == Cardinality.C0_1) {
-			text += tab + "  ) > 1 \n";
-		}
-		else text += tab + "  ) <> 1 \n";
-		
-		text += tab + "then \n";
-		
-		tab = Util.getSpaces("", Util.getTabSpaces() * 3);
-		
-		text += tab + "set msg = 'ERROR: Violating conceptual model rules";
-		text += "[XX_TRIGGER_NAME_XX].'; \n"; 
-		text += tab + "signal sqlstate '45000' set message_text = msg; \n";
-		
-		tab = Util.getSpaces("", Util.getTabSpaces() );
-		text += tab + "end if; \n\n";
-		
-		Statistic.addMC12();
-		
-		return text;
-	}
-	
-	private boolean hasTheSameClassAssociated(GraphAssociation association1, GraphAssociation association2, Node originalNode) {
-		Node nodeEnd1, nodeEnd2;
-		
-		if(association1.getSourceNode().isMyId(originalNode.getID()))
-			nodeEnd1 = association1.getTargetNode();
-		else nodeEnd1 = association1.getSourceNode();
-		
-		if(association2.getSourceNode().isMyId(originalNode.getID()))
-			nodeEnd2 = association2.getTargetNode();
-		else nodeEnd2 = association2.getSourceNode();
-		
-		if(nodeEnd1.isMyId(nodeEnd2.getID()))
-			return true;
-		else return false;
-		
-	}
-	
-	private void addIfNotExists(ArrayList <NodeProperty> duplicateProperties, NodeProperty property) {
-		boolean find = false;
-		
-		for(NodeProperty currentProperty : duplicateProperties) {
-			if(currentProperty.isMyId(property.getID()))
-				find = true;
-		}
-		
-		if( ! find)
-			duplicateProperties.add(property);
-	}
-	
-	private int getNext(NodeProperty property, ArrayList<NodeProperty> duplicateProperties) {
-		NodeProperty currentProperty;
-		for(int i = 0; i < duplicateProperties.size(); i++) {
-			currentProperty = duplicateProperties.get(i);
-			if(property.getAssociationRelatedOfFK().getOriginalAssociation().isMyId(currentProperty.getAssociationRelatedOfFK().getOriginalAssociation().getID())) {
-				return i;
-			}
-		}
-		return -1;
-	}
-	*/
 }

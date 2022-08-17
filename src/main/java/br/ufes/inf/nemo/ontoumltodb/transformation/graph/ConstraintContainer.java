@@ -35,6 +35,14 @@ public class ConstraintContainer {
 		return result;
 	}
 	
+	public ArrayList<ConstraintData> getAllMissingConstraint(){
+		ArrayList<ConstraintData> result = new ArrayList<ConstraintData>();
+		for(ConstraintData constraintData : this.missingConstraints ) {
+				result.add(constraintData.clone());
+		}
+		return result;
+	}
+	
 	private boolean isSameOriginalAssociation(GraphAssociation newAssociation, MissingConstraint missingConstraint) {
 		GraphAssociation association;
 		for(ConstraintData data : this.missingConstraints) {
@@ -67,8 +75,8 @@ public class ConstraintContainer {
 		
 		text += "[MC1 = ";
 		for(ConstraintData data : this.missingConstraints) {
-			if(data.getMissingConstraint() == MissingConstraint.MC1_2)
-				text += data.getSourceNode().getName();
+			if(data.getMissingConstraint() == MissingConstraint.MC1_2 || data.getMissingConstraint() == MissingConstraint.MC1_2_Inverse)
+				text += data.getSourceNode().getName() + " | ";
 		}
 		
 		text += "]";

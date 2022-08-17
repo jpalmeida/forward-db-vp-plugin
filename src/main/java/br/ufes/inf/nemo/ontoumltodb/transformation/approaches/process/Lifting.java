@@ -2,6 +2,7 @@ package br.ufes.inf.nemo.ontoumltodb.transformation.approaches.process;
 
 import java.util.ArrayList;
 
+import br.ufes.inf.nemo.ontoumltodb.transformation.graph.ConstraintData;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Graph;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphGeneralization;
@@ -53,8 +54,12 @@ public class Lifting {
 	
 			// The new property is put in the generalization node.
 			generalization.getGeneral().addProperty(newProperty);
-	
+			
+			// Lifting the attributes
 			liftAttributes(node, generalization.getGeneral(), newProperty, "true");
+			
+			// Lifting the constraints
+			liftConstraints(node, generalization.getGeneral());
 			
 			// for tracing
 			if(hasMultipleInheritance) {
@@ -88,7 +93,11 @@ public class Lifting {
 			
 			for (Node specializationNode : gs.getSpecializationNodes()) {
 				
+				// Lifting the attributes
 				liftAttributes(specializationNode, gs.getGeneral(), newEnumerationField, specializationNode.getName());
+				
+				// Lifting the constraints
+				liftConstraints(node, gs.getGeneral());
 				
 				// for the tracing
 				traceTable.updateTrace(specializationNode, gs.getGeneral(), newEnumerationField, specializationNode.getName());
@@ -232,5 +241,11 @@ public class Lifting {
 			return gs.getGeneral().getName() + "Type";
 		else
 			return gs.getName();
+	}
+	
+	private static void liftConstraints(Node sourceNode, Node targetNode) {
+		for(ConstraintData data : sourceNode.getAllMissingConstraint()) {
+			targetNode.addMissingConstraint(data.getSourceNode(), data.getSourceAssociation(), data.getMissingConstraint());
+		}
 	}
 }
