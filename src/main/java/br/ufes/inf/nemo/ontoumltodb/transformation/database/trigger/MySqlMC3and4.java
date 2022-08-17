@@ -37,15 +37,6 @@ public class MySqlMC3and4 {
 		text.append(mc3);
 		text.append(mc4);
 		
-		
-//		for(TraceSet traceSet : traceTable.getTraces()){
-//			for(Trace trace : traceSet.getTraces()) {
-//				if(trace.existsNode(node)) {
-//					text.append(getPropertyRuleOfTrace(trace, node));
-//				}
-//			}
-//		}
-		
 		return text.toString();
 	}
 	
@@ -63,48 +54,55 @@ public class MySqlMC3and4 {
 	}
 	
 	private String getPropertyRuleOfTrace(Trace trace, Node node) {
-		String text = "";
+		StringBuilder text = new StringBuilder();
 		TracedNode traceNodeTrigger;
 		
 		
 		for(int i = 0; i < trace.getTracedNodes().size(); i++) {
 			traceNodeTrigger = trace.getTracedNodes().get(i);
 			if(traceNodeTrigger.hasMandatoryProperties()) {
-				text += getRestrictionClausule(traceNodeTrigger);
+				text.append(getRestrictionClausule(traceNodeTrigger));
 			}
 		}
-		return text;
+		return text.toString();
 	}
 	
 	private String getRestrictionClausule(TracedNode traceNodeTrigger) {
 		StringBuilder text = new StringBuilder();
 		boolean firstProperty = true;
 		boolean firstFilter = true;
+		boolean firstDependenteProperty = false;
 		boolean putMandatoryColumns = false;
 		
-		String clausule1 = "";
-		String clausule2 = "";
+		StringBuilder clausule1 = new StringBuilder();
+		StringBuilder clausule2;
 		String tab = Util.getSpaces("", Util.getTabSpaces());
 		String tab2 = Util.getSpaces("", Util.getTabSpaces()*2);
 		
 		for(Filter filter : traceNodeTrigger.getFilters()) {
 			if(!filterAlreadyUsed(filter) && filter.hasMandatoryProperties() ) {
-				filtersUsed.add(filter);
-				attributesUsed.add(filter.getFilterProperty().getName());
+				
+				clausule2 = new StringBuilder();
 	    		
 				if(firstFilter) 
 					firstFilter = false;
 				else {
 					text.append(tab);
-					text.append(" AND \n");
-					clausule1 += " OR ";
-					clausule2 += " OR ";
+					text.append(" and \n");
+					clausule1.append(" or ");
 				}
 
-				clausule1 = " NEW." + filter.getFilterProperty().getName()+ " = " + Util.getStringValue(filter.getValue());
-				clausule2 = " NEW." + filter.getFilterProperty().getName() + " <> " + Util.getStringValue(filter.getValue());
-				clausule1 += " AND ( ";
-				clausule2 += " AND ( ";
+				clausule1.append("new.");
+				clausule1.append(filter.getFilterProperty().getName());
+				clausule1.append(" = ");
+				clausule1.append(Util.getStringValue(filter.getValue()));
+
+				clausule2.append("new.");
+				clausule2.append(filter.getFilterProperty().getName());
+				clausule2.append(" <> ");
+				clausule2.append(Util.getStringValue(filter.getValue()));
+				clausule2.append(" and ");
+				clausule1.append(" and ( ");
 				
 				firstProperty = true;
 				putMandatoryColumns = false;
@@ -116,35 +114,62 @@ public class MySqlMC3and4 {
 					if(traceNodeTrigger.getNodeMapped().existsPropertyName(property.getName())) {
 						putMandatoryColumns = true;
 						if(firstProperty) {
-							clausule1 += "NEW." + property.getName() + " is null ";
-							clausule2 += "NEW." + property.getName() + " is not null ";
+							clausule1.append("new.");
+							clausule1.append(property.getName());
+							clausule1.append(" is null ");
 							firstProperty = false;
 						}
 						else {
-							clausule1 += " OR ";
-							clausule2 += " OR ";
-							clausule1 += "NEW." + property.getName() + " is null ";
-							clausule2 += "NEW." + property.getName() + " is not null ";
+							clausule1.append(" or ");
+							//clausule2 += " OR ";
+							clausule1.append("new.");
+							clausule1.append(property.getName());
+							clausule1.append(" is null ");
 						}
 					}
 				}
+				clausule1.append(" ) ");
 				
-				clausule1 += " ) ";
-				clausule2 += " ) ";
+				firstDependenteProperty = true;
+				clausule2.append(" (");      
+				for(NodeProperty dependent : getDependentPropertiesOf(filter.getFilterProperty(), traceNodeTrigger.getNodeMapped(), filter.getValue().toString() )) {
+					if(firstDependenteProperty)
+						firstDependenteProperty = false;
+					else {
+						clausule2.append(" or ");
+					}
+					
+					if(dependent.getDataType().equalsIgnoreCase("boolean")) {
+						clausule2.append("ifnull(");
+						clausule2.append("new.");
+						clausule2.append( dependent.getName());
+						clausule2.append(", false)");
+						clausule2.append(" = true");
+					}
+					else {
+						clausule2.append("new.");
+						clausule2.append( dependent.getName());
+						clausule2.append(" is not null ");
+					}
+				}
+				clausule2.append(")");
 				
 				text.append(tab2);
 				text.append("( ");
 				text.append(clausule1);
-				text.append(" ) OR \n");
+				text.append(" ) or \n");
 				text.append(tab2);
 				text.append("( ");
-				text.append(clausule2);
+				text.append(clausule2.toString());
 				text.append(" ) \n");
 				text.append(tab);
-				text.append("  ) \n");
+				text.append(") \n");
 				
-				if(putMandatoryColumns)
+				if(putMandatoryColumns) {
+					filtersUsed.add(filter);
+					attributesUsed.add(filter.getFilterProperty().getName());
 					Statistic.addMC34();
+				}
 			}
 		}
 		
@@ -162,7 +187,6 @@ public class MySqlMC3and4 {
 		text.append("set msg = 'ERROR: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n"); 
 		text.append(tab2);
 		text.append("signal sqlstate '45000' set message_text = msg;\n");
-		
 		text.append(tab);
 		text.append("end if; \n\n");
 		
@@ -195,10 +219,30 @@ public class MySqlMC3and4 {
 	private ArrayList<NodeProperty> getDependentPropertiesOf(NodeProperty currentProperty, Node node){
 		ArrayList<NodeProperty> dependentProperties = new ArrayList<NodeProperty>();
 		
+//		if(currentProperty.getMandatoryValue() == null) {
+//			System.out.println("Error: " + currentProperty.getName() + " not have mandatory value [MySqlMC3and4.getDependentPropertiesOf]");
+//			return dependentProperties;
+//		}
+		
 		for(NodeProperty property : node.getProperties()) {
 			if(property.hasMandatoryProperty()) {
 				if(property.getMandatoryProperty().getName().equals(currentProperty.getName())) {
+//					if(property.getMandatoryValue().equalsIgnoreCase(currentProperty.getMandatoryValue()))
 					dependentProperties.add(property);
+				}
+			}
+		}
+		return dependentProperties;
+	}
+	
+	private ArrayList<NodeProperty> getDependentPropertiesOf(NodeProperty currentProperty, Node node, String value){
+		ArrayList<NodeProperty> dependentProperties = new ArrayList<NodeProperty>();
+		
+		for(NodeProperty property : node.getProperties()) {
+			if(property.hasMandatoryProperty()) {
+				if(property.getMandatoryProperty().getName().equals(currentProperty.getName())) {
+					if(property.getMandatoryValue().equalsIgnoreCase(value))
+						dependentProperties.add(property);
 				}
 			}
 		}
@@ -234,36 +278,34 @@ public class MySqlMC3and4 {
 			text.append("'");	
 		}
 		
-		text.append(" AND ");
+		text.append(" and ");
 		text.append(" ( ");
 		
 		for(NodeProperty property : dependentProperties) {
 			if(first)
 				first = false;
-			else text.append(" OR ");
+			else text.append(" or ");
 			
 			if(isBooleanColumn(property)) {
-				text.append(" (");
+//				text.append(" (");
+//				text.append("new.");
+//				text.append(property.getName());
+//				text.append(" is not null ");
+//				
+//				text.append(" and ");
+//				
+//				text.append(" new.");
+//				text.append(property.getName());
+//				text.append(" = true");
+//				
+//				text.append(") ");
+					
+				text.append(" ifnull(");
 				text.append("new.");
 				text.append(property.getName());
-				text.append(" is not null ");
+				text.append(", false)");
 				
-				text.append(" and ");
-				
-				text.append(" new.");
-				text.append(property.getName());
 				text.append(" = true");
-				
-				text.append(") ");
-					
-//					text.append(" ( ifnull(");
-//					text.append("new.");
-//					text.append(property.getName());
-//					text.append(", false)");
-//					
-//					text.append(" = true");
-//					
-//					text.append(") ");
 			}
 			else {
 				text.append("new.");
@@ -285,6 +327,8 @@ public class MySqlMC3and4 {
 		
 		text.append(tab);
 		text.append("end if; \n\n");
+		
+		Statistic.addMC34();
 		
 		return text.toString();
 	}

@@ -96,16 +96,16 @@ public class TestRunningExampleSlim {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        (  NEW.is_personal_customer = TRUE and ( NEW.credit_rating is null  OR NEW.credit_card is null  )  ) OR  \n" + 
-		    		"        (  NEW.is_personal_customer <> TRUE and ( NEW.credit_rating is not null  OR NEW.credit_card is not null  )  )  \n" + 
-		    		"      )  \n" + 
+		    		"        ( new.is_personal_customer = TRUE and ( new.credit_rating is null  or new.credit_card is null  )  ) or  \n" + 
+		    		"        ( new.is_personal_customer <> TRUE and  (new.credit_rating is not null  or new.credit_card is not null ) )  \n" + 
+		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_i].';  \n" + 
 		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
 		    		"    end if;  \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        ( new.life_phase_enum <> 'Adult' and  (  (new.is_personal_customer is not null  and  new.is_personal_customer = true)  )  )  \n" + 
+		    		"        ( new.life_phase_enum <> 'ADULT' and  (  ifnull(new.is_personal_customer, false) = true )  )  \n" + 
 		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_i].';  \n" + 
@@ -124,16 +124,16 @@ public class TestRunningExampleSlim {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        (  NEW.is_personal_customer = TRUE and ( NEW.credit_rating is null  OR NEW.credit_card is null  )  ) OR  \n" + 
-		    		"        (  NEW.is_personal_customer <> TRUE and ( NEW.credit_rating is not null  OR NEW.credit_card is not null  )  )  \n" + 
-		    		"      )  \n" + 
+		    		"        ( new.is_personal_customer = TRUE and ( new.credit_rating is null  or new.credit_card is null  )  ) or  \n" + 
+		    		"        ( new.is_personal_customer <> TRUE and  (new.credit_rating is not null  or new.credit_card is not null ) )  \n" + 
+		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_u].';  \n" + 
 		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
 		    		"    end if;  \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        ( new.life_phase_enum <> 'Adult' and  (  (new.is_personal_customer is not null  and  new.is_personal_customer = true)  )  )  \n" + 
+		    		"        ( new.life_phase_enum <> 'ADULT' and  (  ifnull(new.is_personal_customer, false) = true )  )  \n" + 
 		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_u].';  \n" + 

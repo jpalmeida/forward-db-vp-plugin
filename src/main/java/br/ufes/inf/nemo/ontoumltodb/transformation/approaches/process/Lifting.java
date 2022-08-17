@@ -148,11 +148,10 @@ public class Lifting {
 	// **************************************************************************************
 	// must be called after creating all attributes on the specialization nodes.
 	private static void liftAttributes(Node subnode, Node superNode, NodeProperty mandatoryProperty, String mandatoryValue) {
-		ArrayList<NodeProperty> propertiesToLifting = subnode.getProperties();
 		ArrayList<NodeProperty> newProperties = new ArrayList<NodeProperty>();
 		NodeProperty newProperty;
 
-		for (NodeProperty property : propertiesToLifting) {
+		for (NodeProperty property : subnode.getProperties()) {
 			newProperty = property.clone(superNode, Increment.getNextS());
 			newProperty.setOwnerNode(superNode);
 			if (newProperty.getDefaultValue() == null) {
@@ -164,11 +163,13 @@ public class Lifting {
 				newProperty.setRecivedBy(Origin.LIFTING);
 			}
 			
-			newProperty.setMandatoryProperty(mandatoryProperty, property.isNullable() ? false : true, mandatoryValue);
+			if(!newProperty.hasMandatoryProperty())
+				newProperty.setMandatoryProperty(mandatoryProperty, property.isNullable() ? false : true, mandatoryValue);
 			
 			newProperties.add(newProperty);
 		}
 		superNode.addProperties(newProperties);
+		superNode.atualizeMandatoryProperties();
 	}
 	
 	// **************************************************************************************

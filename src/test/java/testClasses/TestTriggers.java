@@ -40,8 +40,8 @@ public class TestTriggers {
 		    		" \n" + 
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
-		    		"    if( (new.is_sub_class = true AND ( new.age is null ) ) OR \n" +
-		    		"        (new.is_sub_class <> true AND ( new.age is not null ) ) \n" +
+		    		"    if( (new.is_sub_class = true and ( new.age is null ) ) or \n" +
+		    		"        (new.is_sub_class <> true and ( new.age is not null ) ) \n" +
 		    		"      )\n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class_i].'; \n" + 
@@ -59,8 +59,8 @@ public class TestTriggers {
 		    		" \n" + 
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
-		    		"    if( (new.is_sub_class = true AND ( new.age is null ) ) OR \n" +
-		    		"        (new.is_sub_class <> true AND ( new.age is not null ) ) \n" +
+		    		"    if( (new.is_sub_class = true and ( new.age is null ) ) or \n" +
+		    		"        (new.is_sub_class <> true and ( new.age is not null ) ) \n" +
 		    		"      )\n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class_u].'; \n" + 
@@ -82,7 +82,7 @@ public class TestTriggers {
 		    		"                        select 1   \n" + 
 		    		"                        from super_class    \n" + 
 		    		"                        where is_sub_class = true    \n" + 
-		    		"                        AND   super_class.super_class_id = new.super_class_id   \n" + 
+		    		"                        and   super_class.super_class_id = new.super_class_id   \n" + 
 		    		"                       )    \n" + 
 		    		"        then    \n" + 
 		    		"                set msg = 'ERROR: Violating conceptual model rules [tg_associated_class_i].';   \n" + 
@@ -104,7 +104,7 @@ public class TestTriggers {
 		    		"                        select 1   \n" + 
 		    		"                        from super_class    \n" + 
 		    		"                        where is_sub_class = true    \n" + 
-		    		"                        AND   super_class.super_class_id = new.super_class_id   \n" + 
+		    		"                        and   super_class.super_class_id = new.super_class_id   \n" + 
 		    		"                       )    \n" + 
 		    		"        then    \n" + 
 		    		"                set msg = 'ERROR: Violating conceptual model rules [tg_associated_class_u].';   \n" + 
@@ -155,16 +155,16 @@ public class TestTriggers {
 		    		" \n" + 
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
-		    		"    if( ( new.gs_test_enum = 'SUBCLASS1' AND ( new.age is null ) )  OR  \n" + 
-		    		"        ( new.gs_test_enum <> 'SUBCLASS1' AND ( new.age is not null ) )  \n" + 
+		    		"    if( ( new.gs_test_enum = 'SUBCLASS1' and ( new.age is null ) )  or  \n" + 
+		    		"        ( new.gs_test_enum <> 'SUBCLASS1' and ( new.age is not null ) )  \n" + 
 		    		"       )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class_i].'; \n" + 
 		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
 		    		"    end if;  \n" + 
 		    		" \n" + 
-		    		"    if( ( new.gs_test_enum = 'SUBCLASS2' AND ( new.height is null ) )  OR  \n" + 
-		    		"        ( new.gs_test_enum <> 'SUBCLASS2' AND ( new.height is not null ) )  \n" + 
+		    		"    if( ( new.gs_test_enum = 'SUBCLASS2' and ( new.height is null ) )  or  \n" + 
+		    		"        ( new.gs_test_enum <> 'SUBCLASS2' and ( new.height is not null ) )  \n" + 
 		    		"       )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class_i].'; \n" + 
@@ -182,16 +182,16 @@ public class TestTriggers {
 		    		" \n" + 
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
-		    		"    if( ( new.gs_test_enum = 'SUBCLASS1' AND ( new.age is null ) )  OR  \n" + 
-		    		"        ( new.gs_test_enum <> 'SUBCLASS1' AND ( new.age is not null ) )  \n" + 
+		    		"    if( ( new.gs_test_enum = 'SUBCLASS1' and ( new.age is null ) )  or  \n" + 
+		    		"        ( new.gs_test_enum <> 'SUBCLASS1' and ( new.age is not null ) )  \n" + 
 		    		"       )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class_u].'; \n" + 
 		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
 		    		"    end if;  \n" + 
 		    		" \n" + 
-		    		"    if( ( new.gs_test_enum = 'SUBCLASS2' AND ( new.height is null ) )  OR  \n" + 
-		    		"        ( new.gs_test_enum <> 'SUBCLASS2' AND ( new.height is not null ) )  \n" + 
+		    		"    if( ( new.gs_test_enum = 'SUBCLASS2' and ( new.height is null ) )  or  \n" + 
+		    		"        ( new.gs_test_enum <> 'SUBCLASS2' and ( new.height is not null ) )  \n" + 
 		    		"       )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class_u].'; \n" + 
@@ -213,7 +213,7 @@ public class TestTriggers {
 		    		"                    select 1 \n" + 
 		    		"                    from super_class  \n" +  
 		    		"                    where gs_test_enum = 'SUBCLASS1' \n" +
-		    		"                    AND   super_class.super_class_id = new.super_class_id   \n" + 
+		    		"                    and   super_class.super_class_id = new.super_class_id   \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_associated_class_i].'; \n" + 
@@ -236,7 +236,7 @@ public class TestTriggers {
 		    		"                    select 1 \n" + 
 		    		"                    from super_class  \n" +  
 		    		"                    where gs_test_enum = 'SUBCLASS1' \n" +
-		    		"                    AND   super_class.super_class_id = new.super_class_id   \n" + 
+		    		"                    and   super_class.super_class_id = new.super_class_id   \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_associated_class_u].'; \n" + 
@@ -292,7 +292,7 @@ public class TestTriggers {
 		    		"                    from super_class  \n" + 
 		    		"                    INNER JOIN gs_test \n" + 
 		    		"                            ON  super_class.super_class_id = gs_test.super_class_id \n" + 
-		    		"                                AND gs_test.gs_test_enum = 'SUBCLASS1'  \n" + 
+		    		"                                and gs_test.gs_test_enum = 'SUBCLASS1'  \n" + 
 		    		"                    where super_class.super_class_id = new.super_class_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
@@ -316,7 +316,7 @@ public class TestTriggers {
 		    		"                    from super_class  \n" + 
 		    		"                    INNER JOIN gs_test \n" + 
 		    		"                            ON  super_class.super_class_id = gs_test.super_class_id \n" + 
-		    		"                                AND gs_test.gs_test_enum = 'SUBCLASS1'  \n" + 
+		    		"                                and gs_test.gs_test_enum = 'SUBCLASS1'  \n" + 
 		    		"                    where super_class.super_class_id = new.super_class_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
@@ -359,62 +359,62 @@ public class TestTriggers {
 		    
 		    CheckTransformation check = new CheckTransformation( result );
 		    
-		    check.addCommand("delimiter // \n" + 
-		    		"CREATE TRIGGER tg_super_class_i BEFORE INSERT ON super_class \n" + 
-		    		"FOR EACH ROW \n" + 
-		    		"BEGIN\n" + 
-		    		"\n" + 
-		    		"    declare msg varchar(128);\n" + 
-		    		"\n" + 
-		    		"    if( \n" + 
-		    		"        (  new.is_sub_class = true AND ( new.age is null  )  ) OR \n" + 
-		    		"        (  new.is_sub_class <> true AND ( new.age is not null  )  ) \n" + 
-		    		"      ) \n" + 
-		    		"    then \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class_i].';\n" + 
-		    		"        signal sqlstate '45000' set message_text = msg;\n" + 
-		    		"    end if; \n" + 
-		    		"\n" + 
-		    		"    if( \n" + 
-		    		"        (  new.is_sub_sub_class = true AND ( new.ci is null  )  ) OR \n" + 
-		    		"        (  new.is_sub_sub_class <> true AND ( new.ci is not null  )  ) \n" + 
-		    		"      ) \n" + 
-		    		"    then \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class_i].';\n" + 
-		    		"        signal sqlstate '45000' set message_text = msg;\n" + 
-		    		"    end if; \n" + 
-		    		"\n" + 
-		    		"\n" + 
-		    		"END; // \n" + 
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_super_class_i  BEFORE INSERT ON super_class  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        ( new.is_sub_class = TRUE and ( new.age is null  )  ) or  \n" + 
+		    		"        ( new.is_sub_class <> TRUE and  (new.age is not null  or ifnull(new.is_sub_sub_class, false) = true) )  \n" + 
+		    		"    )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_i].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        ( new.is_sub_sub_class = TRUE and ( new.ci is null  )  ) or  \n" + 
+		    		"        ( new.is_sub_sub_class <> TRUE and  (new.ci is not null ) )  \n" + 
+		    		"    )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_i].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
 		    		"delimiter ;");
 		    
-		    check.addCommand("delimiter // \n" + 
-		    		"CREATE TRIGGER tg_super_class_u BEFORE UPDATE ON super_class \n" + 
-		    		"FOR EACH ROW \n" + 
-		    		"BEGIN\n" + 
-		    		"\n" + 
-		    		"    declare msg varchar(128);\n" + 
-		    		"\n" + 
-		    		"    if( \n" + 
-		    		"        (  new.is_sub_class = true AND ( new.age is null  )  ) OR \n" + 
-		    		"        (  new.is_sub_class <> true AND ( new.age is not null  )  ) \n" + 
-		    		"      ) \n" + 
-		    		"    then \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class_u].';\n" + 
-		    		"        signal sqlstate '45000' set message_text = msg;\n" + 
-		    		"    end if; \n" + 
-		    		"\n" + 
-		    		"    if( \n" + 
-		    		"        (  new.is_sub_sub_class = true AND ( new.ci is null  )  ) OR \n" + 
-		    		"        (  new.is_sub_sub_class <> true AND ( new.ci is not null  )  ) \n" + 
-		    		"      ) \n" + 
-		    		"    then \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class_u].';\n" + 
-		    		"        signal sqlstate '45000' set message_text = msg;\n" + 
-		    		"    end if; \n" + 
-		    		"\n" + 
-		    		"\n" + 
-		    		"END; // \n" + 
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_super_class_u  BEFORE UPDATE ON super_class  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        ( new.is_sub_class = TRUE and ( new.age is null  )  ) or  \n" + 
+		    		"        ( new.is_sub_class <> TRUE and  (new.age is not null  or ifnull(new.is_sub_sub_class, false) = true) )  \n" + 
+		    		"    )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_u].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        ( new.is_sub_sub_class = TRUE and ( new.ci is null  )  ) or  \n" + 
+		    		"        ( new.is_sub_sub_class <> TRUE and  (new.ci is not null ) )  \n" + 
+		    		"    )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_u].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
 		    		"delimiter ;");
 		    
 		    check.addCommand("delimiter //  \n" + 
@@ -428,8 +428,8 @@ public class TestTriggers {
 		    		"                        select 1 \n" + 
 		    		"                        from super_class  \n" + 
 		    		"                        where is_sub_sub_class = true  \n" + 
-		    		"                        AND   is_sub_class = true  \n" + 
-		    		"                        AND   super_class.super_class_id = new.super_class_id \n" + 
+		    		"                        and   is_sub_class = true  \n" + 
+		    		"                        and   super_class.super_class_id = new.super_class_id \n" + 
 		    		"                       )  \n" + 
 		    		"        then  \n" + 
 		    		"                set msg = 'ERROR: Violating conceptual model rules [tg_associated_class_i].'; \n" + 
@@ -451,8 +451,8 @@ public class TestTriggers {
 		    		"                        select 1 \n" + 
 		    		"                        from super_class  \n" + 
 		    		"                        where is_sub_sub_class = true  \n" + 
-		    		"                        AND   is_sub_class = true  \n" + 
-		    		"                        AND   super_class.super_class_id = new.super_class_id \n" + 
+		    		"                        and   is_sub_class = true  \n" + 
+		    		"                        and   super_class.super_class_id = new.super_class_id \n" + 
 		    		"                       )  \n" + 
 		    		"        then  \n" + 
 		    		"                set msg = 'ERROR: Violating conceptual model rules [tg_associated_class_u].'; \n" + 
@@ -674,7 +674,7 @@ public class TestTriggers {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        ( new.is_sub_class <> TRUE AND  ( new.age is not null )  )  \n" + 
+		    		"        ( new.is_sub_class <> TRUE and  ( new.age is not null )  )  \n" + 
 		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_i].';  \n" + 
@@ -693,7 +693,7 @@ public class TestTriggers {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        ( new.is_sub_class <> TRUE AND  ( new.age is not null )  )  \n" + 
+		    		"        ( new.is_sub_class <> TRUE and  ( new.age is not null )  )  \n" + 
 		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_u].';  \n" + 
@@ -715,7 +715,7 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from super_class \n" + 
 		    		"                    where is_sub_class = true \n" + 
-		    		"                    AND   super_class.super_class_id = new.super_class_id\n" + 
+		    		"                    and   super_class.super_class_id = new.super_class_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_associated_class_i].';\n" + 
@@ -737,7 +737,7 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from super_class \n" + 
 		    		"                    where is_sub_class = true \n" + 
-		    		"                    AND   super_class.super_class_id = new.super_class_id\n" + 
+		    		"                    and   super_class.super_class_id = new.super_class_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_associated_class_u].';\n" + 
@@ -877,8 +877,8 @@ public class TestTriggers {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        (  new.is_personal_customer = true AND ( new.credit_rating is null  OR new.credit_card is null  )  ) OR  \n" + 
-		    		"        (  new.is_personal_customer <> true AND ( new.credit_rating is not null  OR new.credit_card is not null  )  )  \n" + 
+		    		"        (  new.is_personal_customer = TRUE and ( new.credit_rating is null  or new.credit_card is null  )  ) or  \n" + 
+		    		"        (  new.is_personal_customer <> TRUE and ( new.credit_rating is not null  or new.credit_card is not null  )  )  \n" + 
 		    		"      )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_i].';  \n" + 
@@ -887,7 +887,7 @@ public class TestTriggers {
 		    		" \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        ( new.life_phase_enum <> 'ADULT' AND  (  (new.is_employee is not null  and  new.is_employee = true)  OR  (new.is_personal_customer is not null  and  new.is_personal_customer = true)  )  )  \n" + 
+		    		"        ( new.life_phase_enum <> 'ADULT' and  (  ifnull(new.is_employee, false) = true or  ifnull(new.is_personal_customer, false) = true )  )  \n" + 
 		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_i].';  \n" + 
@@ -905,8 +905,8 @@ public class TestTriggers {
 		    		"    declare msg varchar(128);\n" + 
 		    		"\n" + 
 		    		"    if( \n" + 
-		    		"        (  new.is_personal_customer = true AND ( new.credit_rating is null  OR new.credit_card is null  )  ) OR \n" + 
-		    		"        (  new.is_personal_customer <> true AND ( new.credit_rating is not null  OR new.credit_card is not null  )  ) \n" + 
+		    		"        (  new.is_personal_customer = true and ( new.credit_rating is null  or new.credit_card is null  )  ) or \n" + 
+		    		"        (  new.is_personal_customer <> true and ( new.credit_rating is not null  or new.credit_card is not null  )  ) \n" + 
 		    		"      ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_person_u].';\n" + 
@@ -914,7 +914,7 @@ public class TestTriggers {
 		    		"    end if;  \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        ( new.life_phase_enum <> 'ADULT' AND  (  (new.is_employee is not null  and  new.is_employee = true)  OR  (new.is_personal_customer is not null  and  new.is_personal_customer = true)  )  )  \n" + 
+		    		"        ( new.life_phase_enum <> 'ADULT' and  (  ifnull(new.is_employee, false) = true or  ifnull(new.is_personal_customer, false) = true )  )  \n" + 
 		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_u].';  \n" + 
@@ -933,8 +933,8 @@ public class TestTriggers {
 		    		"    declare msg varchar(128);\n" + 
 		    		"\n" + 
 		    		"    if( \n" + 
-		    		"        (  new.is_corporate_customer = true AND (new.credit_rating is null  OR new.credit_limit is null  )  ) OR \n" + 
-		    		"        (  new.is_corporate_customer <> true AND ( new.credit_rating is not null  OR new.credit_limit is not null  )  ) \n" + 
+		    		"        (  new.is_corporate_customer = true and (new.credit_rating is null  or new.credit_limit is null  )  ) or \n" + 
+		    		"        (  new.is_corporate_customer <> true and ( new.credit_rating is not null  or new.credit_limit is not null  )  ) \n" + 
 		    		"      ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_organization_i].';\n" + 
@@ -942,8 +942,8 @@ public class TestTriggers {
 		    		"    end if; \n" + 
 		    		"\n" + 
 		    		"    if( \n" + 
-		    		"        (  new.organization_type_enum = 'HOSPITAL' AND ( new.capacity is null  )  ) OR \n" + 
-		    		"        (  new.organization_type_enum <> 'HOSPITAL' AND ( new.capacity is not null  )  ) \n" + 
+		    		"        (  new.organization_type_enum = 'HOSPITAL' and ( new.capacity is null  )  ) or \n" + 
+		    		"        (  new.organization_type_enum <> 'HOSPITAL' and ( new.capacity is not null  )  ) \n" + 
 		    		"      ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_organization_i].';\n" + 
@@ -951,8 +951,8 @@ public class TestTriggers {
 		    		"    end if; \n" + 
 		    		"\n" + 
 		    		"    if( \n" + 
-		    		"        (  new.organization_type_enum = 'PRIMARYSCHOOL' AND ( new.playground_size is null  )  ) OR \n" + 
-		    		"        (  new.organization_type_enum <> 'PRIMARYSCHOOL' AND ( new.playground_size is not null  )  ) \n" + 
+		    		"        (  new.organization_type_enum = 'PRIMARYSCHOOL' and ( new.playground_size is null  )  ) or \n" + 
+		    		"        (  new.organization_type_enum <> 'PRIMARYSCHOOL' and ( new.playground_size is not null  )  ) \n" + 
 		    		"      ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_organization_i].';\n" + 
@@ -971,8 +971,8 @@ public class TestTriggers {
 		    		"    declare msg varchar(128);\n" + 
 		    		"\n" + 
 		    		"    if( \n" + 
-		    		"        (  new.is_corporate_customer = true AND ( new.credit_rating is null  OR new.credit_limit is null )  ) OR \n" + 
-		    		"        (  new.is_corporate_customer <> true AND ( new.credit_rating is not null  OR new.credit_limit is not null )  ) \n" + 
+		    		"        (  new.is_corporate_customer = true and ( new.credit_rating is null  or new.credit_limit is null )  ) or \n" + 
+		    		"        (  new.is_corporate_customer <> true and ( new.credit_rating is not null  or new.credit_limit is not null )  ) \n" + 
 		    		"      ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_organization_u].';\n" + 
@@ -980,8 +980,8 @@ public class TestTriggers {
 		    		"    end if; \n" + 
 		    		"\n" + 
 		    		"    if( \n" + 
-		    		"        (  new.organization_type_enum = 'HOSPITAL' AND ( new.capacity is null  )  ) OR \n" + 
-		    		"        (  new.organization_type_enum <> 'HOSPITAL' AND ( new.capacity is not null  )  ) \n" + 
+		    		"        (  new.organization_type_enum = 'HOSPITAL' and ( new.capacity is null  )  ) or \n" + 
+		    		"        (  new.organization_type_enum <> 'HOSPITAL' and ( new.capacity is not null  )  ) \n" + 
 		    		"      ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_organization_u].';\n" + 
@@ -989,8 +989,8 @@ public class TestTriggers {
 		    		"    end if; \n" + 
 		    		"\n" + 
 		    		"    if( \n" + 
-		    		"        (  new.organization_type_enum = 'PRIMARYSCHOOL' AND ( new.playground_size is null  )  ) OR \n" + 
-		    		"        (  new.organization_type_enum <> 'PRIMARYSCHOOL' AND ( new.playground_size is not null  )  ) \n" + 
+		    		"        (  new.organization_type_enum = 'PRIMARYSCHOOL' and ( new.playground_size is null  )  ) or \n" + 
+		    		"        (  new.organization_type_enum <> 'PRIMARYSCHOOL' and ( new.playground_size is not null  )  ) \n" + 
 		    		"      ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_organization_u].';\n" + 
@@ -1012,8 +1012,8 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from person \n" + 
 		    		"                    where is_employee = true \n" + 
-		    		"                    AND   life_phase_enum = 'ADULT' \n" + 
-		    		"                    AND   person.person_id = new.person_id \n" + 
+		    		"                    and   life_phase_enum = 'ADULT' \n" + 
+		    		"                    and   person.person_id = new.person_id \n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_employment_i].';\n" + 
@@ -1035,8 +1035,8 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from person \n" + 
 		    		"                    where is_employee = true \n" + 
-		    		"                    AND   life_phase_enum = 'ADULT' \n" + 
-		    		"                    AND   person.person_id = new.person_id \n" + 
+		    		"                    and   life_phase_enum = 'ADULT' \n" + 
+		    		"                    and   person.person_id = new.person_id \n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_employment_u].';\n" + 
@@ -1058,7 +1058,7 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from organization \n" + 
 		    		"                    where organization_type_enum = 'PRIMARYSCHOOL' \n" + 
-		    		"                    AND   organization.organization_id = new.organization_id\n" + 
+		    		"                    and   organization.organization_id = new.organization_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_enrollment_i].';\n" + 
@@ -1069,7 +1069,7 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from person \n" + 
 		    		"                    where life_phase_enum = 'CHILD' \n" + 
-		    		"                    AND   person.person_id = new.person_id\n" + 
+		    		"                    and   person.person_id = new.person_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_enrollment_i].';\n" + 
@@ -1091,7 +1091,7 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from organization \n" + 
 		    		"                    where organization_type_enum = 'PRIMARYSCHOOL' \n" + 
-		    		"                    AND   organization.organization_id = new.organization_id\n" + 
+		    		"                    and   organization.organization_id = new.organization_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_enrollment_u].';\n" + 
@@ -1102,7 +1102,7 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from person \n" + 
 		    		"                    where life_phase_enum = 'CHILD' \n" + 
-		    		"                    AND   person.person_id = new.person_id\n" + 
+		    		"                    and   person.person_id = new.person_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_enrollment_u].';\n" + 
@@ -1135,7 +1135,7 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from organization \n" + 
 		    		"                    where is_corporate_customer = true \n" + 
-		    		"                    AND   organization.organization_id = new.organization_customer_id\n" + 
+		    		"                    and   organization.organization_id = new.organization_customer_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_i].';\n" + 
@@ -1148,7 +1148,7 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from organization \n" + 
 		    		"                    where is_contractor = true \n" + 
-		    		"                    AND   organization.organization_id = new.organization_contractor_id\n" + 
+		    		"                    and   organization.organization_id = new.organization_contractor_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_i].';\n" + 
@@ -1161,8 +1161,8 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from person \n" + 
 		    		"                    where is_personal_customer = true \n" + 
-		    		"                    AND   life_phase_enum = 'ADULT' \n" + 
-		    		"                    AND   person.person_id = new.person_id\n" + 
+		    		"                    and   life_phase_enum = 'ADULT' \n" + 
+		    		"                    and   person.person_id = new.person_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_i].';\n" + 
@@ -1197,7 +1197,7 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from organization \n" + 
 		    		"                    where is_corporate_customer = true \n" + 
-		    		"                    AND   organization.organization_id = new.organization_customer_id\n" + 
+		    		"                    and   organization.organization_id = new.organization_customer_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_u].';\n" + 
@@ -1210,7 +1210,7 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from organization \n" + 
 		    		"                    where is_contractor = true \n" + 
-		    		"                    AND   organization.organization_id = new.organization_contractor_id\n" + 
+		    		"                    and   organization.organization_id = new.organization_contractor_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_u].';\n" + 
@@ -1223,8 +1223,8 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from person \n" + 
 		    		"                    where is_personal_customer = true \n" + 
-		    		"                    AND   life_phase_enum = 'ADULT' \n" + 
-		    		"                    AND   person.person_id = new.person_id\n" + 
+		    		"                    and   life_phase_enum = 'ADULT' \n" + 
+		    		"                    and   person.person_id = new.person_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_u].';\n" + 
@@ -1278,8 +1278,8 @@ public class TestTriggers {
 		    		"    declare msg varchar(128);\n" + 
 		    		"\n" + 
 		    		"    if( \n" + 
-		    		"        (  new.nationality_enum = 'BRAZILIAN' AND ( new.age is null  )  ) OR \n" + 
-		    		"        (  new.nationality_enum <> 'BRAZILIAN' AND ( new.age is not null  )  ) \n" + 
+		    		"        (  new.nationality_enum = 'BRAZILIAN' and ( new.age is null  )  ) or \n" + 
+		    		"        (  new.nationality_enum <> 'BRAZILIAN' and ( new.age is not null  )  ) \n" + 
 		    		"      ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_person_i].';\n" + 
@@ -1287,8 +1287,8 @@ public class TestTriggers {
 		    		"    end if; \n" + 
 		    		"\n" + 
 		    		"    if( \n" + 
-		    		"        (  new.nationality_enum = 'ITALIAN' AND ( new.height is null  )  ) OR \n" + 
-		    		"        (  new.nationality_enum <> 'ITALIAN' AND ( new.height is not null  )  ) \n" + 
+		    		"        (  new.nationality_enum = 'ITALIAN' and ( new.height is null  )  ) or \n" + 
+		    		"        (  new.nationality_enum <> 'ITALIAN' and ( new.height is not null  )  ) \n" + 
 		    		"      ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_person_i].';\n" + 
@@ -1307,8 +1307,8 @@ public class TestTriggers {
 		    		"    declare msg varchar(128);\n" + 
 		    		"\n" + 
 		    		"    if( \n" + 
-		    		"        (  new.nationality_enum = 'BRAZILIAN' AND ( new.age is null  )  ) OR \n" + 
-		    		"        (  new.nationality_enum <> 'BRAZILIAN' AND ( new.age is not null  )  ) \n" + 
+		    		"        (  new.nationality_enum = 'BRAZILIAN' and ( new.age is null  )  ) or \n" + 
+		    		"        (  new.nationality_enum <> 'BRAZILIAN' and ( new.age is not null  )  ) \n" + 
 		    		"      ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_person_u].';\n" + 
@@ -1316,8 +1316,8 @@ public class TestTriggers {
 		    		"    end if; \n" + 
 		    		"\n" + 
 		    		"    if( \n" + 
-		    		"        (  new.nationality_enum = 'ITALIAN' AND ( new.height is null  )  ) OR \n" + 
-		    		"        (  new.nationality_enum <> 'ITALIAN' AND ( new.height is not null  )  ) \n" + 
+		    		"        (  new.nationality_enum = 'ITALIAN' and ( new.height is null  )  ) or \n" + 
+		    		"        (  new.nationality_enum <> 'ITALIAN' and ( new.height is not null  )  ) \n" + 
 		    		"      ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_person_u].';\n" + 
@@ -1339,7 +1339,7 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from person \n" + 
 		    		"                    where nationality_enum = 'ITALIAN' \n" + 
-		    		"                    AND   person.person_id = new.person_id\n" + 
+		    		"                    and   person.person_id = new.person_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_i].';\n" + 
@@ -1361,7 +1361,7 @@ public class TestTriggers {
 		    		"                    select 1\n" + 
 		    		"                    from person \n" + 
 		    		"                    where nationality_enum = 'ITALIAN' \n" + 
-		    		"                    AND   person.person_id = new.person_id\n" + 
+		    		"                    and   person.person_id = new.person_id\n" + 
 		    		"                   ) \n" + 
 		    		"    then \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_u].';\n" + 
@@ -1415,7 +1415,15 @@ public class TestTriggers {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        ( new.is_sub_class1 <> TRUE AND  (  (new.is_bottom_class is not null  and  new.is_bottom_class = true)  OR  (new.is_sub_class3 is not null  and  new.is_sub_class3 = true)  )  )  \n" + 
+		    		"        ( new.is_sub_class1 <> TRUE and  (  ifnull(new.is_bottom_class, false) = true or  ifnull(new.is_sub_class3, false) = true )  )  \n" + 
+		    		"    )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_i].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        ( new.is_bottom_class <> TRUE and  (  ifnull(new.is_sub_class4, false) = true )  )  \n" + 
 		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_i].';  \n" + 
@@ -1434,7 +1442,15 @@ public class TestTriggers {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        ( new.is_sub_class1 <> TRUE AND  (  (new.is_bottom_class is not null  and  new.is_bottom_class = true)  OR  (new.is_sub_class3 is not null  and  new.is_sub_class3 = true)  )  )  \n" + 
+		    		"        ( new.is_sub_class1 <> TRUE and  (  ifnull(new.is_bottom_class, false) = true or  ifnull(new.is_sub_class3, false) = true )  )  \n" + 
+		    		"    )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_u].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        ( new.is_bottom_class <> TRUE and  (  ifnull(new.is_sub_class4, false) = true )  )  \n" + 
 		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_u].';  \n" + 
@@ -1456,8 +1472,8 @@ public class TestTriggers {
 		    		"                    select 1 \n" + 
 		    		"                    from super_class  \n" +  
 		    		"                    where is_bottom_class = true  \n" + 
-		    		"                    AND   is_sub_class1 = true  \n" + 
-		    		"                    AND   super_class.super_class_id = new.super_class_id \n" + 
+		    		"                    and   is_sub_class1 = true  \n" + 
+		    		"                    and   super_class.super_class_id = new.super_class_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_relator_i].';  \n" + 
@@ -1468,8 +1484,8 @@ public class TestTriggers {
 		    		"                    select 1 \n" + 
 		    		"                    from super_class  \n" +  
 		    		"                    where is_bottom_class = true  \n" + 
-		    		"                    AND   is_sub_class2 = true  \n" + 
-		    		"                    AND   super_class.super_class_id = new.super_class_id \n" + 
+		    		"                    and   is_sub_class2 = true  \n" + 
+		    		"                    and   super_class.super_class_id = new.super_class_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_relator_i].';  \n" + 
@@ -1492,8 +1508,8 @@ public class TestTriggers {
 		    		"                    select 1 \n" + 
 		    		"                    from super_class  \n" +  
 		    		"                    where is_bottom_class = true  \n" + 
-		    		"                    AND   is_sub_class1 = true  \n" + 
-		    		"                    AND   super_class.super_class_id = new.super_class_id \n" + 
+		    		"                    and   is_sub_class1 = true  \n" + 
+		    		"                    and   super_class.super_class_id = new.super_class_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_relator_u].';  \n" + 
@@ -1504,8 +1520,8 @@ public class TestTriggers {
 		    		"                    select 1 \n" + 
 		    		"                    from super_class  \n" +  
 		    		"                    where is_bottom_class = true  \n" + 
-		    		"                    AND   is_sub_class2 = true  \n" + 
-		    		"                    AND   super_class.super_class_id = new.super_class_id \n" + 
+		    		"                    and   is_sub_class2 = true  \n" + 
+		    		"                    and   super_class.super_class_id = new.super_class_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_relator_u].';  \n" + 
@@ -1527,8 +1543,8 @@ public class TestTriggers {
 		    		"                    select 1 \n" + 
 		    		"                    from super_class  \n" +  
 		    		"                    where is_sub_class3 = true  \n" + 
-		    		"                    AND   is_sub_class1 = true  \n" + 
-		    		"                    AND   super_class.super_class_id = new.super_class_has_sub_class343_id \n" + 
+		    		"                    and   is_sub_class1 = true  \n" + 
+		    		"                    and   super_class.super_class_id = new.super_class_has_sub_class343_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_sub_class3_super_class_i].';  \n" + 
@@ -1550,8 +1566,8 @@ public class TestTriggers {
 		    		"                    select 1 \n" + 
 		    		"                    from super_class  \n" +  
 		    		"                    where is_sub_class3 = true  \n" + 
-		    		"                    AND   is_sub_class1 = true  \n" + 
-		    		"                    AND   super_class.super_class_id = new.super_class_has_sub_class343_id \n" + 
+		    		"                    and   is_sub_class1 = true  \n" + 
+		    		"                    and   super_class.super_class_id = new.super_class_has_sub_class343_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_sub_class3_super_class_u].';  \n" + 
@@ -1608,7 +1624,7 @@ public class TestTriggers {
 		    		"                    from super_class  \n" + 
 		    		"                    INNER JOIN type \n" + 
 		    		"                            ON  super_class.super_class_id = type.super_class_id \n" + 
-		    		"                                AND type.typeenum = 'SUBCLASS3'  \n" + 
+		    		"                                and type.typeenum = 'SUBCLASS3'  \n" + 
 		    		"                    where super_class.super_class_id = new.super_class_has_sub_class3_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
@@ -1625,7 +1641,7 @@ public class TestTriggers {
 		    		"                    from super_class  \n" +  
 		    		"                    INNER JOIN type \n" + 
 		    		"                            ON  super_class.super_class_id = type.super_class_id \n" + 
-		    		"                                AND type.typeenum = 'SUBCLASS1'  \n" + 
+		    		"                                and type.typeenum = 'SUBCLASS1'  \n" + 
 		    		"                    where super_class.super_class_id = new.super_class_has_sub_class1_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
@@ -1653,7 +1669,7 @@ public class TestTriggers {
 		    		"                    from super_class  \n" + 
 		    		"                    INNER JOIN type \n" + 
 		    		"                            ON  super_class.super_class_id = type.super_class_id \n" + 
-		    		"                                AND type.typeenum = 'SUBCLASS3'  \n" + 
+		    		"                                and type.typeenum = 'SUBCLASS3'  \n" + 
 		    		"                    where super_class.super_class_id = new.super_class_has_sub_class3_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
@@ -1670,7 +1686,7 @@ public class TestTriggers {
 		    		"                    from super_class  \n" +  
 		    		"                    INNER JOIN type \n" + 
 		    		"                            ON  super_class.super_class_id = type.super_class_id \n" + 
-		    		"                                AND type.typeenum = 'SUBCLASS1'  \n" + 
+		    		"                                and type.typeenum = 'SUBCLASS1'  \n" + 
 		    		"                    where super_class.super_class_id = new.super_class_has_sub_class1_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
@@ -1696,7 +1712,7 @@ public class TestTriggers {
 		    		"                    from super_class  \n" +  
 		    		"                    INNER JOIN type \n" + 
 		    		"                            ON  super_class.super_class_id = type.super_class_id \n" + 
-		    		"                                AND type.typeenum = 'SUBCLASS1'  \n" + 
+		    		"                                and type.typeenum = 'SUBCLASS1'  \n" + 
 		    		"                    where super_class.super_class_id = new.super_class_has_sub_class132_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
@@ -1720,7 +1736,7 @@ public class TestTriggers {
 		    		"                    from super_class  \n" +  
 		    		"                    INNER JOIN type \n" + 
 		    		"                            ON  super_class.super_class_id = type.super_class_id \n" + 
-		    		"                                AND type.typeenum = 'SUBCLASS1'  \n" + 
+		    		"                                and type.typeenum = 'SUBCLASS1'  \n" + 
 		    		"                    where super_class.super_class_id = new.super_class_has_sub_class132_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
@@ -1776,7 +1792,7 @@ public class TestTriggers {
 		    		"                    select 1 \n" + 
 		    		"                    from veicle  \n" + 
 		    		"                    where is_car = true  \n" + 
-		    		"                    AND   veicle.veicle_id = new.veicle_id \n" + 
+		    		"                    and   veicle.veicle_id = new.veicle_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_relation_i].';  \n" + 
@@ -1798,7 +1814,7 @@ public class TestTriggers {
 		    		"                    select 1 \n" + 
 		    		"                    from veicle  \n" + 
 		    		"                    where is_car = true  \n" + 
-		    		"                    AND   veicle.veicle_id = new.veicle_id \n" + 
+		    		"                    and   veicle.veicle_id = new.veicle_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_relation_u].';  \n" + 
@@ -1820,7 +1836,7 @@ public class TestTriggers {
 		    		"                    select 1 \n" + 
 		    		"                    from veicle  \n" + 
 		    		"                    where is_car = true  \n" + 
-		    		"                    AND   veicle.veicle_id = new.veicle_id \n" + 
+		    		"                    and   veicle.veicle_id = new.veicle_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_veicle_person_i].';  \n" + 
@@ -1842,7 +1858,7 @@ public class TestTriggers {
 		    		"                    select 1 \n" + 
 		    		"                    from veicle  \n" + 
 		    		"                    where is_car = true  \n" + 
-		    		"                    AND   veicle.veicle_id = new.veicle_id \n" + 
+		    		"                    and   veicle.veicle_id = new.veicle_id \n" + 
 		    		"                   )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_veicle_person_u].';  \n" + 
@@ -2112,6 +2128,93 @@ public class TestTriggers {
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("InverseRestrictionMC1ChangedAssociation");
+		}
+	}
+	
+	@Test
+	public void testComplexHierarchy() {
+		try {
+			Increment.inicialzate();
+			OntoUmlToDb toDb = new OntoUmlToDb(HierarchyModel.getComplexHierarchy());
+		    
+			toDb.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_KIND);
+		    toDb.setDbms(DbmsSupported.MYSQL);
+		    toDb.setStandardizeNames(true);
+		    toDb.runTransformation();
+
+		    String result = "";
+		    
+		    for(TriggerResult triggerResult : toDb.getTriggersScripts()) {
+		    	result += triggerResult.getScript() + "\n";
+		    }
+		    
+		    CheckTransformation check = new CheckTransformation( result );		    
+		    
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_super_class_i  BEFORE INSERT ON super_class  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        ( new.is_sub_class1 <> TRUE and  ( new.level_a_enum is not null )  )  \n" + 
+		    		"    )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_i].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        ( new.level_a_enum <> 'SUBCLASS3' and  ( new.level_b_enum is not null )  )  \n" + 
+		    		"    )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_i].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
+		    		"delimiter ;");
+		    
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_super_class_u  BEFORE UPDATE ON super_class  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        ( new.is_sub_class1 <> TRUE and  ( new.level_a_enum is not null )  )  \n" + 
+		    		"    )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_u].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		"    if(  \n" + 
+		    		"        ( new.level_a_enum <> 'SUBCLASS3' and  ( new.level_b_enum is not null )  )  \n" + 
+		    		"    )  \n" + 
+		    		"    then  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_super_class_u].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
+		    		"delimiter ;");	
+		    
+		    
+		    result = check.run();
+		    
+		    if(result != null) {
+		    	System.out.println("Test [ComplexHierarchy] has problems: " + result);
+		    	fail("ComplexHierarchy");
+		    }
+		    
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("ComplexHierarchy");
 		}
 	}
 }

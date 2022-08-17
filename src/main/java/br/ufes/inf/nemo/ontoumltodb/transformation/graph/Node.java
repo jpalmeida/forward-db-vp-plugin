@@ -261,6 +261,10 @@ public class Node extends Element {
 		this.constraintContainer = container;
 	}
 	
+	public void atualizeMandatoryProperties() {
+		this.propertyContainer.atualizeMandatoryProperties();
+	}
+	
 	// ----------------------------------------------------
 	
 

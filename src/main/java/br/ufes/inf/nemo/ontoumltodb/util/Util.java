@@ -16,7 +16,6 @@ public class Util {
 	}
 	
 	public static String getSpaces(String name, int qtd){
-		
 		int tam = name.length();
 	    StringBuilder spaces = new StringBuilder();
 	    
@@ -29,17 +28,6 @@ public class Util {
 	      tam++;
 	    }
 	    return spaces.toString();
-		
-//	    int tam = name.length();
-//	    String spaces = " ";
-//
-//	    tam++;
-//
-//	    while (tam < qtd) {
-//	      spaces += ' ';
-//	      tam++;
-//	    }
-//	    return spaces;
 	  }
 
 	public static String getStringValue(Object value) {

@@ -94,6 +94,9 @@ public class NodePropertyEnumeration extends NodeProperty {
 		newProperty.setForeignNodeID(this.getForeignKeyNodeID(), this.getAssociationRelatedOfFK(), this.getPrimaryKeyRelated());
 		newProperty.setDefaultValue(this.getDefaultValue());
 		newProperty.setOriginGeneralizationSet(this.originGeneralizationSet);
+		if(hasMandatoryProperty())
+			newProperty.setMandatoryProperty(getMandatoryProperty(),  isMandatoryFillingWhenMandatoryPropertyIsFilled(), getMandatoryValue());
+		
 		
 		for(String nodeValue : values) {
 			newProperty.addValue(nodeValue);
@@ -106,13 +109,17 @@ public class NodePropertyEnumeration extends NodeProperty {
 	 * Returns the enumerations as string.
 	 */
 	public String toString(){
-		
 		String result = "[";
+		String msgMandatory = "";
 
 		 for (String name : this.values) {
 			 result += name + " | ";
 		 }
 		 result += "]";
+		 
+		 if(hasMandatoryProperty()) {
+				msgMandatory += "[MANDATORY PROPERTY: " + getMandatoryProperty().getName() + "]";
+			}
 		
 		return 	"PROPERTY: "+
 				getName() + 
@@ -120,7 +127,8 @@ public class NodePropertyEnumeration extends NodeProperty {
 				", " + 	(isNullable() == true ? "\tNULL" : "\tNOT NULL") + 
 				" " + 
 				(isMultivalued() == true ? "\tMULTIVALUED" : "")+
-				"\t" + result;// + "  ID: " + this.id;
+				"\t" + result +
+				msgMandatory;// + "  ID: " + this.id;
 	 }
 
 }

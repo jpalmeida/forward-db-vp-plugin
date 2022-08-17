@@ -1418,6 +1418,94 @@ public class HierarchyModel {
 		
 		return graph;
 	}
+	
+	public static Graph getComplexHierarchy() {
+		Graph graph = new Graph();
+		
+		Node superClass = new Node(Increment.getNextS(), "SuperClass", null);
+		
+		Node subClass1 = new Node(Increment.getNextS(), "SubClass1", null);
+		
+		Node subClass2 = new Node(Increment.getNextS(), "SubClass2", null);
+		
+		Node subClass3 = new Node(Increment.getNextS(), "SubClass3", null);
+		
+		Node subClass4 = new Node(Increment.getNextS(), "SubClass4", null);
+		
+		Node subClass5 = new Node(Increment.getNextS(), "SubClass5", null);
+		
+		Node subClass6 = new Node(Increment.getNextS(), "SubClass6", null);
+		
+		GraphGeneralization generalization1 = new GraphGeneralization(
+				Increment.getNextS(), 
+				superClass, 
+				subClass1);
+		
+		GraphGeneralization generalization2 = new GraphGeneralization(
+				Increment.getNextS(), 
+				subClass1, 
+				subClass2);
+		
+		GraphGeneralization generalization3 = new GraphGeneralization(
+				Increment.getNextS(), 
+				subClass1, 
+				subClass3);
+		
+		GraphGeneralization generalization4 = new GraphGeneralization(
+				Increment.getNextS(), 
+				subClass3, 
+				subClass4);
+		
+		GraphGeneralization generalization5 = new GraphGeneralization(
+				Increment.getNextS(), 
+				subClass3, 
+				subClass5);
+		
+		GraphGeneralization generalization6 = new GraphGeneralization(	
+				Increment.getNextS(), 
+				subClass3, 
+				subClass6);
+		
+		
+		GraphGeneralizationSet newGeneralizationSet1 = new GraphGeneralizationSet(
+				Increment.getNextS(), 
+				"LevelA", 
+				true, 
+				true);
+		
+		GraphGeneralizationSet newGeneralizationSet2 = new GraphGeneralizationSet(
+				Increment.getNextS(), 
+				"LevelB", 
+				true, 
+				true);
+		
+		newGeneralizationSet1.addGeneralization(generalization2);
+		newGeneralizationSet1.addGeneralization(generalization3);
+		
+		newGeneralizationSet2.addGeneralization(generalization4);
+		newGeneralizationSet2.addGeneralization(generalization5);
+		newGeneralizationSet2.addGeneralization(generalization6);
+				
+		graph.addNode(superClass);
+		graph.addNode(subClass1);
+		graph.addNode(subClass2);
+		graph.addNode(subClass3);
+		graph.addNode(subClass4);
+		graph.addNode(subClass5);
+		graph.addNode(subClass6);
+		
+		graph.addAssociation(generalization1);
+		graph.addAssociation(generalization2);
+		graph.addAssociation(generalization3);
+		graph.addAssociation(generalization4);
+		graph.addAssociation(generalization5);
+		graph.addAssociation(generalization6);
+		
+		graph.addGeneralizationSet(newGeneralizationSet1);
+		graph.addGeneralizationSet(newGeneralizationSet2);
+		
+		return graph;
+	}
 
 }
 

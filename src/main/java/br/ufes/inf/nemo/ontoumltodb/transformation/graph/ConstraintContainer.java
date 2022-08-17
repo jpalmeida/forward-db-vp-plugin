@@ -73,7 +73,7 @@ public class ConstraintContainer {
 	public String toString() {
 		String text = "\n";
 		
-		text += "[MC1 = ";
+		text += "\t[MC1 = ";
 		for(ConstraintData data : this.missingConstraints) {
 			if(data.getMissingConstraint() == MissingConstraint.MC1_2 || data.getMissingConstraint() == MissingConstraint.MC1_2_Inverse)
 				text += data.getSourceNode().getName() + " | ";

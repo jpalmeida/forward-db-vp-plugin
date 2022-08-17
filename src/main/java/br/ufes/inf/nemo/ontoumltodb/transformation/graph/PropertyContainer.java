@@ -230,12 +230,22 @@ public class PropertyContainer {
 	}
 	
 	public boolean isNecessaryGenerateMC3_4Constraint() {
-		
 		for (NodeProperty property : this.properties) {
 			if(property.hasMandatoryProperty())
 				return true;
 		}
 		return false;
+	}
+	
+	public void atualizeMandatoryProperties() {
+		NodeProperty mandatoryProperty;
+		for (NodeProperty property : this.properties) {
+			if(property.hasMandatoryProperty()) {
+				mandatoryProperty = property.getMandatoryProperty(); // old property
+				mandatoryProperty = getPropertyByName(mandatoryProperty.getName()); // get new property
+				property.setMandatoryProperty(mandatoryProperty); // atualize new property
+			}
+		}
 	}
 
 	/**

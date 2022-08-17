@@ -313,6 +313,10 @@ public class NodeProperty extends Element{
 		return this.mandatoryProperty;
 	}
 	
+	public boolean isMandatoryFillingWhenMandatoryPropertyIsFilled() {
+		return this.mandatoryFillingWhenMandatoryPropertyIsFilled;
+	}
+	
 	public String getMandatoryValue() {
 		return this.mandatoryValue;
 	}
@@ -326,8 +330,8 @@ public class NodeProperty extends Element{
 		}
 	}
 	
-	public boolean isMandatoryFillingWhenMandatoryPropertyIsFilled() {
-		return this.mandatoryFillingWhenMandatoryPropertyIsFilled;
+	public void setMandatoryProperty(NodeProperty property) {
+		this.mandatoryProperty = property;
 	}
 
 	/**
@@ -352,7 +356,8 @@ public class NodeProperty extends Element{
 		newProperty.setIdentifyOtherClass(this.identifyOtherClass);
 		newProperty.setGeneratedFromTransformationProcess(this.generatedFromTransformationProcess);
 		newProperty.setRecivedBy(this.recivedBy);
-		newProperty.setMandatoryProperty(this.mandatoryProperty, this.mandatoryFillingWhenMandatoryPropertyIsFilled, this.mandatoryValue);
+		if(this.mandatoryProperty != null)
+			newProperty.setMandatoryProperty(this.mandatoryProperty, this.mandatoryFillingWhenMandatoryPropertyIsFilled, this.mandatoryValue);
 				
 		return newProperty;
 	}
