@@ -64,7 +64,7 @@ public class TraceSetQueryBuilder {
 		TraceSet superTraceSet;
 	
 		for(Node node : traceTable.getOriginalGraph().getSuperNodes(evaluatedNode)) {
-			superTraceSet = traceTable.getTraceSetOf(node);
+			superTraceSet = traceTable.getTraceSetOfById(node);
 			for(Trace superTrace : superTraceSet.getTraces()) {
 				if(checkSuperClass(sourceNode, superTrace)) {
 					for(TracedNode superTracedNode : superTrace.getTracedNodes()) {
@@ -186,7 +186,7 @@ public class TraceSetQueryBuilder {
 			) {
 				associationCurrent = currentProperty.getAssociationRelatedOfFK().getOriginalAssociation();
 				
-				//Para não avaliar associações com classes que foram achatadas
+				//Para nï¿½o avaliar associaï¿½ï¿½es com classes que foram achatadas
 				if(! associationProperty.isMyId(associationCurrent.getID())) {
 					nicknameProperty = getCommonNicknameForFK(property, node, sourceNode);
 					nicknameCurrentProperty = getCommonNicknameForFK(currentProperty, node, sourceNode);

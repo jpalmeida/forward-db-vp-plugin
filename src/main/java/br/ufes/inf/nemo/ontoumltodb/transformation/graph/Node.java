@@ -12,6 +12,7 @@ package br.ufes.inf.nemo.ontoumltodb.transformation.graph;
 import java.util.ArrayList;
 
 import br.ufes.inf.nemo.ontoumltodb.util.ElementType;
+import br.ufes.inf.nemo.ontoumltodb.util.MissingConstraint;
 import br.ufes.inf.nemo.ontoumltodb.util.NodeOrigin;
 import br.ufes.inf.nemo.ontoumltodb.util.Stereotype;
 
@@ -236,49 +237,24 @@ public class Node extends Element {
 	// --- The methods below are intended to manipulate the node constraint
 	// ---------------------------------------------------------------------------------------
 	
-//	public void setNecessaryGenerateMC1_2Constraint(boolean flag) {
-//		this.constraintContainer.setNecessaryGenerateMC1_2Constraint(flag);
-//	}
-	
-	public boolean isNecessaryGenerateMC1_2Constraint() {
-		return this.constraintContainer.isNecessaryGenerateMC1_2Constraint();
+	public boolean existsMissingConstraint(MissingConstraint missingConstraint) {
+		if(missingConstraint == MissingConstraint.MC3_4) {
+			return this.propertyContainer.isNecessaryGenerateMC3_4Constraint();
+		}else {
+			return this.constraintContainer.existsMissingConstraint(missingConstraint);
+		}
 	}
 	
-//	public void setNecessaryGenerateMC3_4Constraint(boolean flag) {
-//		this.constraintContainer.setNecessaryGenerateMC3_4Constraint(flag);
-//	}
-	
-	public boolean isNecessaryGenerateMC3_4Constraint() {
-		//return this.constraintContainer.isNecessaryGenerateMC3_4Constraint();
-		return this.propertyContainer.isNecessaryGenerateMC3_4Constraint();
+	public void addMissingConstraint(Node sourceNode, GraphAssociation association, MissingConstraint missingConstraint) {
+		this.constraintContainer.addMissingConstraint(sourceNode, association, missingConstraint);
 	}
 	
-//	public void setNecessaryGenerateMC6Constraint(boolean flag) {
-//		this.constraintContainer.setNecessaryGenerateMC6Constraint(flag);
-//	}
-	
-	public boolean isNecessaryGenerateMC6Constraint() {
-		return this.constraintContainer.isNecessaryGenerateMC6Constraint();
+	public ArrayList<ConstraintData> getMissingConstraint(MissingConstraint missingConstraint){
+		return this.constraintContainer.getMissingConstraint(missingConstraint);
 	}
 	
 	private void setConstraintContainer(ConstraintContainer container) {
 		this.constraintContainer = container;
-	}
-	
-	public void addSourceNodeRelatedToMC1_2Constraint(Node sourceNode, GraphAssociation association) {
-		this.constraintContainer.addSourceNodeRelatedToMC1_2Constraint(sourceNode, association);
-	}
-	
-	public ArrayList<ConstraintData> getMC1_2ConstraintData() {
-		return this.constraintContainer.getMC1_2ConstraintData();
-	}
-	
-	public void addSourceNodeRelatedToMC6Constraint(Node sourceNode, GraphAssociation association) {
-		this.constraintContainer.addSourceNodeRelatedToMC6Constraint(sourceNode, association);
-	}
-	
-	public ArrayList<ConstraintData> getMC6ConstraintData() {
-		return this.constraintContainer.getMC6ConstraintData();
 	}
 	
 	// ----------------------------------------------------

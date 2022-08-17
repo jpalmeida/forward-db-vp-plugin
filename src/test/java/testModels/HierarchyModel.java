@@ -1294,6 +1294,68 @@ public class HierarchyModel {
 		
 		return graph;
 	}
+	
+	public static Graph getInverseRestrictionMC1() {
+		Graph graph = new Graph();
+		
+		Node superClass = new Node(Increment.getNextS(), "SuperClass", Stereotype.ABSTRACT);
+		
+		Node subClass1 = new Node(Increment.getNextS(), "SubClass1", null);
+		
+		Node subClass2 = new Node(Increment.getNextS(), "SubClass2", null);
+		
+		Node subClass3 = new Node(Increment.getNextS(), "SubClass3", null);
+		
+		Node relatedClass = new Node(Increment.getNextS(), "RelatedClass", null);
+		
+		GraphGeneralization generalization1 = new GraphGeneralization(
+				Increment.getNextS(), 
+				superClass, 
+				subClass1);
+		
+		GraphGeneralization generalization2 = new GraphGeneralization(
+				Increment.getNextS(), 
+				superClass, 
+				subClass2);
+		
+		GraphGeneralization generalization3 = new GraphGeneralization(
+				Increment.getNextS(), 
+				superClass, 
+				subClass3);
+		
+		GraphAssociation association1 = new GraphAssociation(
+				Increment.getNextS(), 
+				"hasSuperClass", 
+				relatedClass, 
+				Cardinality.C1, 
+				superClass, 
+				Cardinality.C1_N);
+		
+		GraphGeneralizationSet newGeneralizationSet = new GraphGeneralizationSet(
+				Increment.getNextS(), 
+				"TYPE", 
+				false, 
+				false);
+		
+		newGeneralizationSet.addGeneralization(generalization1);
+		newGeneralizationSet.addGeneralization(generalization2);
+		newGeneralizationSet.addGeneralization(generalization3);
+				
+		graph.addNode(superClass);
+		graph.addNode(subClass1);
+		graph.addNode(subClass2);
+		graph.addNode(subClass3);
+		graph.addNode(relatedClass);
+		
+		graph.addAssociation(association1);
+		graph.addAssociation(generalization1);
+		graph.addAssociation(generalization2);
+		graph.addAssociation(generalization3);
+		
+		graph.addGeneralizationSet(newGeneralizationSet);
+		
+		return graph;
+	}
 
 }
 

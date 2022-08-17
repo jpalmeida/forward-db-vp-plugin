@@ -11,6 +11,7 @@ import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
 import br.ufes.inf.nemo.ontoumltodb.util.Cardinality;
 import br.ufes.inf.nemo.ontoumltodb.util.Increment;
+import br.ufes.inf.nemo.ontoumltodb.util.MissingConstraint;
 import br.ufes.inf.nemo.ontoumltodb.util.Origin;
 import br.ufes.inf.nemo.ontoumltodb.util.Util;
 
@@ -62,12 +63,18 @@ public class Flatting {
 		for (GraphGeneralization generalization : flattenNode.getGeneralizations()) {
 			if(! Util.existsAssociationInNewNode(flattenNode, generalization.getSpecific(), association)) {
 				flattenAssociationWith(flattenNode, generalization.getSpecific(), association, graph, traceTable);
+				
+				// Missing Constraint 1. Inverse checking
+				if(association.getCardinalityEndOf(flattenNode) == Cardinality.C0_1 || association.getCardinalityEndOf(flattenNode) == Cardinality.C1) {
+					generalization.getSpecific().addMissingConstraint(flattenNode, association, MissingConstraint.MC1_2_Inverse);
+				}
 			}
 		}
 		
+		// Missing Constraint 1
 		if(association.getCardinalityBeginOf(flattenNode) == Cardinality.C0_1 || association.getCardinalityBeginOf(flattenNode) == Cardinality.C1) {
 			relatedNode = association.getNodeEndOf(flattenNode);
-			relatedNode.addSourceNodeRelatedToMC1_2Constraint(flattenNode, association);
+			relatedNode.addMissingConstraint(flattenNode, association, MissingConstraint.MC1_2);
 		}
 		
 		graph.removeAssociation(association);

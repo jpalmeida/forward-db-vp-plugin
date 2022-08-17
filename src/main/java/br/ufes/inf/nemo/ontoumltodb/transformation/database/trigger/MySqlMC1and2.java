@@ -11,6 +11,7 @@ import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.Trace;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceSet;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
 import br.ufes.inf.nemo.ontoumltodb.util.Cardinality;
+import br.ufes.inf.nemo.ontoumltodb.util.MissingConstraint;
 import br.ufes.inf.nemo.ontoumltodb.util.Util;
 
 public class MySqlMC1and2 {
@@ -21,16 +22,15 @@ public class MySqlMC1and2 {
 		this.traceTable = traceTable;
 	}
 	
-	public String getRestrictions(Node node) {
+	public String getRestrictions(Node currentNode) {
 		StringBuilder text = new StringBuilder();
 //		ArrayList <NodeProperty> duplicateProperties;
 //		ArrayList <NodeProperty> duplicatePropertiesConstraint;
 		
 		
-		if(node.isNecessaryGenerateMC1_2Constraint() ) {
-			
-			for(ConstraintData constraint : node.getMC1_2ConstraintData()) {
-				text.append(getRestriction(constraint, node));
+		if(currentNode.existsMissingConstraint(MissingConstraint.MC1_2) ) {
+			for(ConstraintData constraint : currentNode.getMissingConstraint(MissingConstraint.MC1_2)){
+				text.append(getRestriction(constraint, currentNode));
 			}
 			
 //			duplicateProperties = getFksForTheSameOriginalClass(node);
@@ -41,12 +41,19 @@ public class MySqlMC1and2 {
 //				text.append(getConstraintLostInFlattening(duplicatePropertiesConstraint));
 //			}
 		}
+		
+		if(currentNode.existsMissingConstraint(MissingConstraint.MC1_2_Inverse) ) {
+			for(ConstraintData constraint : currentNode.getMissingConstraint(MissingConstraint.MC1_2_Inverse)){
+				text.append(getInverseRestriction(constraint, currentNode));
+			}
+		}
+		
 		return text.toString();
 	}
 	
-	private String getRestriction(ConstraintData constraint, Node node) {
+	private String getRestriction(ConstraintData constraint, Node currentNode) {
 		StringBuilder text = new StringBuilder();
-		ArrayList<NodeProperty> properties = getProperties(constraint, node);
+		ArrayList<NodeProperty> properties = getProperties(constraint, currentNode);
 		
 		boolean first = true;
 		String tab1 = Util.getSpaces("", Util.getTabSpaces());
@@ -82,7 +89,7 @@ public class MySqlMC1and2 {
 		}
 		text.append("\n");
 		
-		if(constraint.getAssociation().getCardinalityBeginOf(constraint.getSourceNode())== Cardinality.C0_1) {
+		if(constraint.getSourceAssociation().getCardinalityBeginOf(constraint.getSourceNode())== Cardinality.C0_1) {
 			text.append(tab2);
 			text.append("  ) > 1 \n");
 		}
@@ -111,16 +118,115 @@ public class MySqlMC1and2 {
 		ArrayList<NodeProperty> properties = new ArrayList<NodeProperty>();
 		Node targetNode;
 		NodeProperty fkProperty;
-		
-		TraceSet traceSet = traceTable.getTraceSetOf(constraint.getSourceNode());
+		TraceSet traceSet = traceTable.getTraceSetOfById(constraint.getSourceNode());
 		
 		for(Trace trace : traceSet.getTraces()) {
 			targetNode = trace.getMainNode();
 			fkProperty = node.getFKRelatedOfNodeID(targetNode.getID());
-			properties.add(fkProperty);
+			if(fkProperty != null)
+				properties.add(fkProperty);
+		}
+		return properties;
+	}
+	
+	private String getInverseRestriction(ConstraintData constraint, Node currentNode) {
+		StringBuilder text = new StringBuilder();
+		boolean first = true;
+		String tab1 = Util.getSpaces("", Util.getTabSpaces());
+		String tab2 = Util.getSpaces("", Util.getTabSpaces() * 2);
+		String tab3 = Util.getSpaces("", Util.getTabSpaces() * 3);
+		String tab5 = Util.getSpaces("", Util.getTabSpaces() * 5);
+		
+		NodeProperty destinationProperty;
+		NodeProperty currentProperty = getProperty(constraint, currentNode);
+		
+		text.append(tab1);
+		text.append("if( new.");
+		text.append(currentProperty.getName());
+		text.append(" is not null ) \n");
+		text.append(tab1);
+		text.append("then \n");
+		
+		text.append(tab2);
+		text.append("if( \n");
+		text.append(tab3);
+		text.append("select  ");
+		
+		for(Node targetNode : getTargetNodes(constraint, currentNode)) {
+			
+			if(first) {
+				first = false;
+			}
+			else {
+				text.append(" + \n");
+				text.append(tab5);
+			}
+			
+			destinationProperty = getProperty(constraint, targetNode);
+			 
+			text.append("case when exists( select 1 from ");
+			text.append(targetNode.getName());
+			text.append(" where ");
+			text.append(destinationProperty.getName());
+			text.append(" = ");
+			text.append("new.");
+			text.append(currentProperty.getName());
+			text.append(") then 1 else 0 end ");
 		}
 		
-		return properties;
+		text.append("\n");
+		text.append(tab2);
+		text.append(") <> 0 \n");
+	
+		
+		text.append(tab2);
+		text.append("then \n");
+		
+		text.append(tab3);
+		text.append("set msg = 'ERROR: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n"); 
+		text.append(tab3);
+		text.append("signal sqlstate '45000' set message_text = msg; \n");
+		
+		text.append(tab2);
+		text.append("end if; \n\n");
+		
+		text.append(tab1);
+		text.append("end if; \n\n");
+		
+		Statistic.addMC12();
+		
+		return text.toString();
+		
+		/*
+    if (
+    	select 
+            case when exists (select 1 from variable where name_name_id = new.name_id) then 1 else 0 end  + 
+            case when exists (select 1 from method_member_function where name_name_id = new.name_id) then 1 else 0 end 
+    ) <> 0 
+    then 
+        set msg = 'ERROR: Violating conceptual model rules [tg_class_i].'; 
+        signal sqlstate '45000' set message_text = msg; 
+    end if; 
+		*/
+	}
+	
+	private NodeProperty getProperty(ConstraintData constraint, Node currentNode ){
+		Node sourceNodeEnd = constraint.getSourceAssociation().getNodeEndOf(constraint.getSourceNode());
+		Node targetNodeEnd = traceTable.getTraceSetOfById(sourceNodeEnd).getTraces().get(0).getMainNode();
+		NodeProperty property  = currentNode.getFKRelatedOfNodeID(targetNodeEnd.getID());
+		return property;
+	}
+	
+	private ArrayList<Node> getTargetNodes(ConstraintData constraint, Node currentNode){
+		ArrayList<Node> result = new ArrayList<Node>();
+		
+		TraceSet traceSet = traceTable.getTraceSetOfById(constraint.getSourceNode());
+		
+		for(Trace trace : traceSet.getTraces()) {
+			if(!trace.getMainNode().isMyId(currentNode.getID()))
+				result.add(trace.getMainNode());
+		}
+		return result;
 	}
 	
 	

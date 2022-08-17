@@ -73,10 +73,10 @@ public class OntoUmlToDb {
 		}
 		System.out.println("Number of tables: " + qtd);
 		getTriggersScripts();
-		System.out.println("Number of constraints: " + Statistic.getQtd()*2);
 		System.out.println("Number of MC1 and 2: " + Statistic.getQtdMC12() *2);
 		System.out.println("Number of MC3 and 4: " + Statistic.getQtdMC34() *2);
 		System.out.println("Number of MC6: " + Statistic.getQtdMC6() *2);
+		System.out.println("Number of constraints: " + Statistic.getQtd()*2);
 		
 		System.out.println("***************************************");
 	}

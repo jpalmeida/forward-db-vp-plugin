@@ -10,6 +10,7 @@ import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.Trace;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceSet;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TracedNode;
+import br.ufes.inf.nemo.ontoumltodb.util.MissingConstraint;
 import br.ufes.inf.nemo.ontoumltodb.util.Util;
 
 public class MySqlMC3and4 {
@@ -180,7 +181,7 @@ public class MySqlMC3and4 {
 		StringBuilder text = new StringBuilder();
 		ArrayList<NodeProperty> dependentProperties;
 		
-		if(!node.isNecessaryGenerateMC3_4Constraint()) 
+		if(!node.existsMissingConstraint(MissingConstraint.MC3_4)) 
 			return "";
 		
 		for(NodeProperty mandatoryProperty : node.getProperties()) {

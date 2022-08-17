@@ -1865,4 +1865,180 @@ public class TestTriggers {
 			fail("TriggerAssociationNNLifting");
 		}
 	}
+	
+	@Test
+	public void testInverseRestrictionMC1() {
+		try {
+			Increment.inicialzate();
+			OntoUmlToDb toDb = new OntoUmlToDb(HierarchyModel.getInverseRestrictionMC1());
+		    
+			toDb.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_KIND);
+		    toDb.setDbms(DbmsSupported.MYSQL);
+		    toDb.setStandardizeNames(true);
+		    toDb.runTransformation();
+
+		    String result = "";
+		    
+		    for(TriggerResult triggerResult : toDb.getTriggersScripts()) {
+		    	result += triggerResult.getScript() + "\n";
+		    }
+		    
+		    CheckTransformation check = new CheckTransformation( result );		    
+		    
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_sub_class1_i  BEFORE INSERT ON sub_class1  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if( new.related_class_id is not null )  \n" + 
+		    		"    then  \n" + 
+		    		"        if(  \n" + 
+		    		"            select  case when exists( select 1 from sub_class2 where related_class_id = new.related_class_id) then 1 else 0 end  +  \n" + 
+		    		"                    case when exists( select 1 from sub_class3 where related_class_id = new.related_class_id) then 1 else 0 end  \n" + 
+		    		"        ) <> 0  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules[tg_sub_class1_i].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg;  \n" + 
+		    		"        end if;  \n" + 
+		    		" \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
+		    		"delimiter ;");
+		    
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_sub_class1_u  BEFORE UPDATE ON sub_class1  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if( new.related_class_id is not null )  \n" + 
+		    		"    then  \n" + 
+		    		"        if(  \n" + 
+		    		"            select  case when exists( select 1 from sub_class2 where related_class_id = new.related_class_id) then 1 else 0 end  +  \n" + 
+		    		"                    case when exists( select 1 from sub_class3 where related_class_id = new.related_class_id) then 1 else 0 end  \n" + 
+		    		"        ) <> 0  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules[tg_sub_class1_u].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg;  \n" + 
+		    		"        end if;  \n" + 
+		    		" \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
+		    		"delimiter ;");	
+		    
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_sub_class2_i  BEFORE INSERT ON sub_class2  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if( new.related_class_id is not null )  \n" + 
+		    		"    then  \n" + 
+		    		"        if(  \n" + 
+		    		"            select  case when exists( select 1 from sub_class1 where related_class_id = new.related_class_id) then 1 else 0 end  +  \n" + 
+		    		"                    case when exists( select 1 from sub_class3 where related_class_id = new.related_class_id) then 1 else 0 end  \n" + 
+		    		"        ) <> 0  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules[tg_sub_class2_i].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg;  \n" + 
+		    		"        end if;  \n" + 
+		    		" \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
+		    		"delimiter ;");	
+		    
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_sub_class2_u  BEFORE UPDATE ON sub_class2  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if( new.related_class_id is not null )  \n" + 
+		    		"    then  \n" + 
+		    		"        if(  \n" + 
+		    		"            select  case when exists( select 1 from sub_class1 where related_class_id = new.related_class_id) then 1 else 0 end  +  \n" + 
+		    		"                    case when exists( select 1 from sub_class3 where related_class_id = new.related_class_id) then 1 else 0 end  \n" + 
+		    		"        ) <> 0  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules[tg_sub_class2_u].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg;  \n" + 
+		    		"        end if;  \n" + 
+		    		" \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
+		    		"delimiter ;");	
+		    
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_sub_class3_i  BEFORE INSERT ON sub_class3  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if( new.related_class_id is not null )  \n" + 
+		    		"    then  \n" + 
+		    		"        if(  \n" + 
+		    		"            select  case when exists( select 1 from sub_class1 where related_class_id = new.related_class_id) then 1 else 0 end  +  \n" + 
+		    		"                    case when exists( select 1 from sub_class2 where related_class_id = new.related_class_id) then 1 else 0 end  \n" + 
+		    		"        ) <> 0  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules[tg_sub_class3_i].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg;  \n" + 
+		    		"        end if;  \n" + 
+		    		" \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
+		    		"delimiter ;");
+		    
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_sub_class3_u  BEFORE UPDATE ON sub_class3  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if( new.related_class_id is not null )  \n" + 
+		    		"    then  \n" + 
+		    		"        if(  \n" + 
+		    		"            select  case when exists( select 1 from sub_class1 where related_class_id = new.related_class_id) then 1 else 0 end  +  \n" + 
+		    		"                    case when exists( select 1 from sub_class2 where related_class_id = new.related_class_id) then 1 else 0 end  \n" + 
+		    		"        ) <> 0  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules[tg_sub_class3_u].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg;  \n" + 
+		    		"        end if;  \n" + 
+		    		" \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
+		    		"delimiter ;");	
+		    
+		    result = check.run();
+		    
+		    if(result != null) {
+		    	System.out.println("Test [TriggerAssociationNNLifting] has problems: " + result);
+		    	fail("TriggerAssociationNNLifting");
+		    }
+		    
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("TriggerAssociationNNLifting");
+		}
+	}
 }

@@ -107,7 +107,7 @@ public class MySqlMC6 {
 				node = originalAssociation.getSourceNode();
 			else node = originalAssociation.getTargetNode();
 			
-			traceSet = traceTable.getTraceSetOf(node);
+			traceSet = traceTable.getTraceSetOfById(node);
 			for(Trace trace : traceSet.getTraces()) {
 				if(trace.existsNode(referencedNode)) {
 					traces.add(trace);
@@ -117,7 +117,7 @@ public class MySqlMC6 {
 		else {
 			// is a intermediate node of N:N association
 			
-			traceSet = traceTable.getTraceSetOf(originalAssociation.getSourceNode());
+			traceSet = traceTable.getTraceSetOfById(originalAssociation.getSourceNode());
 			association = property.getAssociationRelatedOfFK();
 			relatedNode = association.getNodeEndOf(property.getOwnerNode());
 			
