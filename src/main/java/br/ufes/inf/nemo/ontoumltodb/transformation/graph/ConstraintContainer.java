@@ -25,6 +25,12 @@ public class ConstraintContainer {
 			this.missingConstraints.add(new ConstraintData(sourceNode, association, missingConstraint));
 	}
 	
+	public void addMissingConstraint(Node sourceNode, GraphAssociation association, NodeProperty propertyToFilter, String filterValue, MissingConstraint missingConstraint) {
+		if(!isSameOriginalAssociation(association, missingConstraint ))
+			this.missingConstraints.add(new ConstraintData(sourceNode, association, propertyToFilter, filterValue, missingConstraint));
+	}
+	
+	
 	public ArrayList<ConstraintData> getMissingConstraint(MissingConstraint missingConstraint){
 		ArrayList<ConstraintData> result = new ArrayList<ConstraintData>();
 		for(ConstraintData constraintData : this.missingConstraints ) {
@@ -55,6 +61,15 @@ public class ConstraintContainer {
 				}
 			}
 		}
+		return false;
+	}
+	
+	public boolean existsMissingConstraintForAssociation(GraphAssociation association) {
+		for(ConstraintData constraint : this.missingConstraints) {
+			if(constraint.getSourceAssociation().isMyId(association.getOriginalAssociation().getID()))
+				return true;
+		}
+		
 		return false;
 	}
 	

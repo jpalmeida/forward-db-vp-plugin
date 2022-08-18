@@ -1336,7 +1336,7 @@ public class HierarchyModel {
 				relatedClass, 
 				Cardinality.C1, 
 				superClass, 
-				Cardinality.C1_N);
+				Cardinality.C0_1);
 		
 		GraphGeneralizationSet newGeneralizationSet = new GraphGeneralizationSet(
 				Increment.getNextS(), 
@@ -1392,7 +1392,7 @@ public class HierarchyModel {
 				Increment.getNextS(), 
 				"hasSuperClass", 
 				relatedClass, 
-				Cardinality.C0_1, 
+				Cardinality.C1_N, 
 				superClass, 
 				Cardinality.C1);
 		

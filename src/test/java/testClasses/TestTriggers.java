@@ -1899,6 +1899,9 @@ public class TestTriggers {
 		    	result += triggerResult.getScript() + "\n";
 		    }
 		    
+		    System.out.println(toDb.getRelationalSchemaScript());
+		    System.out.println(result);
+		    
 		    CheckTransformation check = new CheckTransformation( result );		    
 		    
 		    check.addCommand("delimiter //  \n" + 
@@ -2074,6 +2077,9 @@ public class TestTriggers {
 		    for(TriggerResult triggerResult : toDb.getTriggersScripts()) {
 		    	result += triggerResult.getScript() + "\n";
 		    }
+		    
+		    System.out.println(toDb.getRelationalSchemaScript());
+		    System.out.println(result);
 		    
 		    CheckTransformation check = new CheckTransformation( result );		    
 		    

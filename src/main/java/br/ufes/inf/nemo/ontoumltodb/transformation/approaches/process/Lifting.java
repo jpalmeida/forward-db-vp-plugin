@@ -14,6 +14,7 @@ import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
 import br.ufes.inf.nemo.ontoumltodb.util.Cardinality;
 import br.ufes.inf.nemo.ontoumltodb.util.Increment;
 import br.ufes.inf.nemo.ontoumltodb.util.IndexType;
+import br.ufes.inf.nemo.ontoumltodb.util.MissingConstraint;
 import br.ufes.inf.nemo.ontoumltodb.util.Origin;
 import br.ufes.inf.nemo.ontoumltodb.util.Util;
 
@@ -60,6 +61,7 @@ public class Lifting {
 			
 			// Lifting the constraints
 			liftConstraints(node, generalization.getGeneral());
+			addLostConstraintM6(node, newProperty, "true");
 			
 			// for tracing
 			if(hasMultipleInheritance) {
@@ -98,6 +100,7 @@ public class Lifting {
 				
 				// Lifting the constraints
 				liftConstraints(node, gs.getGeneral());
+				addLostConstraintM6(node, newEnumerationField, specializationNode.getName());
 				
 				// for the tracing
 				traceTable.updateTrace(specializationNode, gs.getGeneral(), newEnumerationField, specializationNode.getName());
@@ -247,6 +250,15 @@ public class Lifting {
 	private static void liftConstraints(Node sourceNode, Node targetNode) {
 		for(ConstraintData data : sourceNode.getAllMissingConstraint()) {
 			targetNode.addMissingConstraint(data.getSourceNode(), data.getSourceAssociation(), data.getMissingConstraint());
+		}
+	}
+	
+	private static void addLostConstraintM6(Node liftedNode, NodeProperty propertyToFilter, String filterValue) {
+		Node relatedNode;
+		for(GraphAssociation association : liftedNode.getAssociations()) {
+			relatedNode = association.getNodeEndOf(liftedNode);
+			if(!relatedNode.existsMissingConstraintForAssociation(association))
+				relatedNode.addMissingConstraint(liftedNode, association, propertyToFilter, filterValue, MissingConstraint.MC6);
 		}
 	}
 }

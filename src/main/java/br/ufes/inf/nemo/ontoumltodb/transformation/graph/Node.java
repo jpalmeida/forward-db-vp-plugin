@@ -249,6 +249,10 @@ public class Node extends Element {
 		this.constraintContainer.addMissingConstraint(sourceNode, association, missingConstraint);
 	}
 	
+	public void addMissingConstraint(Node sourceNode, GraphAssociation association, NodeProperty propertyToFilter, String filterValue,  MissingConstraint missingConstraint) {
+		this.constraintContainer.addMissingConstraint(sourceNode, association, propertyToFilter, filterValue, missingConstraint);
+	}
+	
 	public ArrayList<ConstraintData> getMissingConstraint(MissingConstraint missingConstraint){
 		return this.constraintContainer.getMissingConstraint(missingConstraint);
 	}
@@ -263,6 +267,10 @@ public class Node extends Element {
 	
 	public void atualizeMandatoryProperties() {
 		this.propertyContainer.atualizeMandatoryProperties();
+	}
+	
+	public boolean existsMissingConstraintForAssociation(GraphAssociation association) {
+		return this.constraintContainer.existsMissingConstraintForAssociation(association);
 	}
 	
 	// ----------------------------------------------------

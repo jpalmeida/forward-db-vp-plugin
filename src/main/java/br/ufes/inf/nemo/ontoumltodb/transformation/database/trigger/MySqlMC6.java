@@ -60,15 +60,6 @@ public class MySqlMC6 {
 				return false;
 			}
 			
-			//Checks if the table of the foreign key exists in the original model. 
-			//If it does not exist, is because it was created in the transformation process 
-			//(from an N:N association)
-//			id = property.getOwnerNode().getID();
-//			node = traceTable.getOriginalGraph().getNodeById(id);
-//			if(node == null) {
-//				return false;
-//			}
-			
 			//The absence of filters means that it comes from a flattening or there were no 
 			//changes in the original model class, so there will be nothing to validate. 
 			//Referential integrity resolves.

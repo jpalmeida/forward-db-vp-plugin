@@ -73,8 +73,8 @@ public class SolvesForeignKey {
 	 * @param associations
 	 */
 	private static void resolve01To01(ArrayList<GraphAssociation> associations) {
-		
 		GraphAssociation association;
+		GraphAssociation originalAssociation;
 		
 		int i = 0;
 		while (i < associations.size()) {
@@ -82,19 +82,19 @@ public class SolvesForeignKey {
 
 			if (is01To01(association)) {
 				associations.remove(i);
-//				originalAssociation = association.getOriginalAssociation();
-//				
-//				if(originalAssociation.getTargetCardinality() == Cardinality.C1) {
-//					propagateForeignKey(association.getTargetNode(), association.getSourceCardinality(), association.getSourceNode(), association, false);
-//				}
-//				else {
-//					if(originalAssociation.getSourceCardinality() == Cardinality.C1)
-//						propagateForeignKey(association.getSourceNode(), association.getTargetCardinality(), association.getTargetNode(), association, false);
-//					else {
+				originalAssociation = association.getOriginalAssociation();
+				
+				if(originalAssociation.getTargetCardinality() == Cardinality.C1) {
+					propagateForeignKey(association.getTargetNode(), association.getSourceCardinality(), association.getSourceNode(), association, false);
+				}
+				else {
+					if(originalAssociation.getSourceCardinality() == Cardinality.C1)
+						propagateForeignKey(association.getSourceNode(), association.getTargetCardinality(), association.getTargetNode(), association, false);
+					else {
 						propagateForeignKey(association.getSourceNode(), association.getTargetCardinality(), association.getTargetNode(), association, false);
 						propagateForeignKey(association.getTargetNode(), association.getSourceCardinality(), association.getSourceNode(), association, false);
-//					}
-//				}
+					}
+				}
 			} else {
 				i++;
 			}
