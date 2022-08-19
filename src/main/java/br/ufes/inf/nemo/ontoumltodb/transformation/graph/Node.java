@@ -36,11 +36,6 @@ public class Node extends Element {
 		inicialize(stereotype, nodeOrigin);
 	}
 	
-//	public Node(String id, String originalId, String name, Stereotype stereotype) {
-//		super(id, originalId, name, ElementType.CLASS);
-//		inicialize(stereotype, NodeOrigin.UNDEFINED);
-//	}
-	
 	public Node(String id, String originalId, String name, Stereotype stereotype, NodeOrigin nodeOrigin) {
 		super(id, originalId, name, ElementType.CLASS);
 		inicialize(stereotype, nodeOrigin);
@@ -251,10 +246,6 @@ public class Node extends Element {
 	public void addMissingConstraint(Node sourceNode, GraphAssociation association, MissingConstraint missingConstraint) {
 		this.constraintContainer.addMissingConstraint(sourceNode, association, missingConstraint);
 	}
-	
-//	public void addMissingConstraint(Node sourceNode, GraphAssociation association, NodeProperty propertyToFilter, String filterValue,  MissingConstraint missingConstraint) {
-//		this.constraintContainer.addMissingConstraint(sourceNode, association, propertyToFilter, filterValue, missingConstraint);
-//	}
 	
 	public ArrayList<MissingConstraintData> getMissingConstraint(MissingConstraint missingConstraint){
 		return this.constraintContainer.getMissingConstraint(missingConstraint);

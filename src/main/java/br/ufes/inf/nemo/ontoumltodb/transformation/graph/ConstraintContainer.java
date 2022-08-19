@@ -21,8 +21,7 @@ public class ConstraintContainer {
 	}
 	
 	public void addMissingConstraint(Node sourceNode, GraphAssociation association, MissingConstraint missingConstraint) {
-//		if(!isSameOriginalAssociation(association, missingConstraint ))
-			this.missingConstraints.add(new MissingConstraintData(sourceNode, association, missingConstraint));
+		this.missingConstraints.add(new MissingConstraintData(sourceNode, association, missingConstraint));
 	}
 	
 	
@@ -43,22 +42,6 @@ public class ConstraintContainer {
 		}
 		return result;
 	}
-	
-//	private boolean isSameOriginalAssociation(GraphAssociation newAssociation, MissingConstraint missingConstraint) {
-//		GraphAssociation association;
-//		for(MissingConstraintData data : this.missingConstraints) {
-//			if(newAssociation.getOriginalAssociation() != null) {
-//				association = data.getSourceAssociation();
-//				association = association.getOriginalAssociation();
-//				if(association.isMyId(newAssociation.getOriginalAssociation().getID())) {
-//					if(data.getMissingConstraint() == missingConstraint) {
-//						return true;
-//					}
-//				}
-//			}
-//		}
-//		return false;
-//	}
 	
 	public boolean existsMissingConstraintForAssociation(GraphAssociation association) {
 		for(MissingConstraintData constraint : this.missingConstraints) {

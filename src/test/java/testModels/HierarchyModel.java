@@ -1506,6 +1506,46 @@ public class HierarchyModel {
 		
 		return graph;
 	}
-
+	
+	public static Graph getLowCardinalityRestriction() {
+		Graph graph = new Graph();
+		
+		Node superClass = new Node(Increment.getNextS(), "SuperClass", null);
+		
+		Node subClass1 = new Node(Increment.getNextS(), "SubClass1", null);
+		
+		Node relatedClass = new Node(Increment.getNextS(), "RelatedClass", null);
+		
+		GraphGeneralization generalization1 = new GraphGeneralization(
+				Increment.getNextS(), 
+				superClass, 
+				subClass1);
+		
+		GraphAssociation association1 = new GraphAssociation(
+				Increment.getNextS(), 
+				"contain", 
+				superClass, 
+				Cardinality.C1, 
+				relatedClass, 
+				Cardinality.C0_N);
+		
+		GraphAssociation association2 = new GraphAssociation(
+				Increment.getNextS(), 
+				"has", 
+				subClass1, 
+				Cardinality.C1, 
+				relatedClass, 
+				Cardinality.C1);
+		
+		graph.addNode(superClass);
+		graph.addNode(subClass1);
+		graph.addNode(relatedClass);
+		
+		graph.addAssociation(association1);
+		graph.addAssociation(association2);
+		graph.addAssociation(generalization1);
+		
+		return graph;
+	}
+	
 }
-

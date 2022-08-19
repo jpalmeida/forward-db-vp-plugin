@@ -219,15 +219,9 @@ public class MySqlMC3and4 {
 	private ArrayList<NodeProperty> getDependentPropertiesOf(NodeProperty currentProperty, Node node){
 		ArrayList<NodeProperty> dependentProperties = new ArrayList<NodeProperty>();
 		
-//		if(currentProperty.getMandatoryValue() == null) {
-//			System.out.println("Error: " + currentProperty.getName() + " not have mandatory value [MySqlMC3and4.getDependentPropertiesOf]");
-//			return dependentProperties;
-//		}
-		
 		for(NodeProperty property : node.getProperties()) {
 			if(property.hasMandatoryProperty()) {
 				if(property.getMandatoryProperty().getName().equals(currentProperty.getName())) {
-//					if(property.getMandatoryValue().equalsIgnoreCase(currentProperty.getMandatoryValue()))
 					dependentProperties.add(property);
 				}
 			}
@@ -255,7 +249,6 @@ public class MySqlMC3and4 {
 		String value = dependentProperties.get(0).getMandatoryValue(); // all dependent properties must have the same mandatory value.
 		String tab = Util.getSpaces("", Util.getTabSize());
 		String tab2 = Util.getSpaces("", Util.getTabSize()*2);
-		
 		
 		if(isAttributeUsed(mandatoryProperty.getName())) 
 			return "";
@@ -287,19 +280,6 @@ public class MySqlMC3and4 {
 			else text.append(" or ");
 			
 			if(isBooleanColumn(property)) {
-//				text.append(" (");
-//				text.append("new.");
-//				text.append(property.getName());
-//				text.append(" is not null ");
-//				
-//				text.append(" and ");
-//				
-//				text.append(" new.");
-//				text.append(property.getName());
-//				text.append(" = true");
-//				
-//				text.append(") ");
-					
 				text.append(" ifnull(");
 				text.append("new.");
 				text.append(property.getName());

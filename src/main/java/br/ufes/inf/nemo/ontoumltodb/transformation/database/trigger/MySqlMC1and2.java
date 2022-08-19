@@ -25,22 +25,11 @@ public class MySqlMC1and2 {
 	
 	public String getRestrictions(Node currentNode) {
 		StringBuilder text = new StringBuilder();
-//		ArrayList <NodeProperty> duplicateProperties;
-//		ArrayList <NodeProperty> duplicatePropertiesConstraint;
-		
 		
 		if(currentNode.existsMissingConstraint(MissingConstraint.MC1_2) ) {
 			for(MissingConstraintData constraint : currentNode.getMissingConstraint(MissingConstraint.MC1_2)){
 				text.append(getRestriction(constraint, currentNode));
 			}
-			
-//			duplicateProperties = getFksForTheSameOriginalClass(node);
-//			
-//			while( ! duplicateProperties.isEmpty()) {
-//				//The node can have more the one association with flattened nodes.
-//				duplicatePropertiesConstraint = extractFirstDuplicateKey(duplicateProperties);
-//				text.append(getConstraintLostInFlattening(duplicatePropertiesConstraint));
-//			}
 		}
 		
 		if(currentNode.existsMissingConstraint(MissingConstraint.MC1_2_Inverse) ) {
@@ -104,12 +93,10 @@ public class MySqlMC1and2 {
 		
 		text.append(tab1);
 		text.append("then \n");
-		
 		text.append(tab2);
 		text.append("set msg = 'ERROR: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n"); 
 		text.append(tab2);
 		text.append("signal sqlstate '45000' set message_text = msg; \n");
-		
 		text.append(tab1);
 		text.append("end if; \n\n");
 		
@@ -135,6 +122,7 @@ public class MySqlMC1and2 {
 	
 	private String getInverseRestriction(MissingConstraintData constraint, Node currentNode) {
 		StringBuilder text = new StringBuilder();
+		ArrayList<Node> targetNodes;
 		boolean first = true;
 		String tab1 = Util.getSpaces("", Util.getTabSize());
 		String tab2 = Util.getSpaces("", Util.getTabSize() * 2);
@@ -153,13 +141,16 @@ public class MySqlMC1and2 {
 		text.append(" is not null ) \n");
 		text.append(tab1);
 		text.append("then \n");
-		
 		text.append(tab2);
 		text.append("if( \n");
 		text.append(tab3);
 		text.append("select  ");
 		
-		for(Node targetNode : getTargetNodes(constraint, currentNode)) {
+		targetNodes = getTargetNodes(constraint, currentNode);
+		if(targetNodes.isEmpty())
+			return "";
+		
+		for(Node targetNode : targetNodes) {
 			
 			if(first) {
 				first = false;
@@ -184,19 +175,14 @@ public class MySqlMC1and2 {
 		text.append("\n");
 		text.append(tab2);
 		text.append(") <> 0 \n");
-	
-		
 		text.append(tab2);
 		text.append("then \n");
-		
 		text.append(tab3);
 		text.append("set msg = 'ERROR: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n"); 
 		text.append(tab3);
 		text.append("signal sqlstate '45000' set message_text = msg; \n");
-		
 		text.append(tab2);
 		text.append("end if; \n\n");
-		
 		text.append(tab1);
 		text.append("end if; \n\n");
 		
@@ -206,24 +192,12 @@ public class MySqlMC1and2 {
 	}
 	
 	private NodeProperty getProperty(MissingConstraintData constraint, Node currentNode ){
-		//Node sourceNodeEnd = constraint.getSourceAssociation().getNodeEndOf(constraint.getSourceNode());
-		//Node targetNodeEnd = traceTable.getTraceSetOfById(sourceNodeEnd).getTraces().get(0).getMainNode();
-		//NodeProperty property  = currentNode.getFKRelatedOfNodeID(targetNodeEnd.getID());		
-		
 		for(GraphAssociation association : currentNode.getAssociations()) {
 			if(association.getOriginalAssociation().isMyId(constraint.getSourceAssociation().getID())) {
 				for(NodeProperty fk : currentNode.getProperties()) {
 					if(fk.isForeignKey()) {
 						if(fk.getAssociationRelatedOfFK().isMyId(association.getID())) {
 							return fk;
-//							if(currentNode.getName().equals("method_member_function") ) {
-//								System.out.println("*******************");
-//								System.out.println("Current Node: " + currentNode.toString());
-//								System.out.println("Constraint sourceNode: " + constraint.getSourceNode().toString());
-//								System.out.println("constraint association: " + constraint.getSourceAssociation().toString() );
-//								System.out.println("sourceNodeEnd: " + sourceNodeEnd.toString());
-//								System.out.println("targetNodeEnd: " + targetNodeEnd.toString());
-//							}
 						}
 					}
 				}

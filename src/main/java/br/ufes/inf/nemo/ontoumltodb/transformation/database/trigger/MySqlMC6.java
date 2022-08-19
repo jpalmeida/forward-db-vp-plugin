@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import br.ufes.inf.nemo.ontoumltodb.transformation.Statistic;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Graph;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
-import br.ufes.inf.nemo.ontoumltodb.transformation.graph.MissingConstraintData;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.Filter;
@@ -14,14 +13,12 @@ import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceSet;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TracedNode;
 import br.ufes.inf.nemo.ontoumltodb.util.Cardinality;
-import br.ufes.inf.nemo.ontoumltodb.util.MissingConstraint;
 import br.ufes.inf.nemo.ontoumltodb.util.Origin;
 import br.ufes.inf.nemo.ontoumltodb.util.Util;
 
 public class MySqlMC6 {
 
 	private TraceTable traceTable;
-	private ArrayList <Trace> tracesUsed;
 
 	public MySqlMC6(TraceTable traceTable) {
 		this.traceTable = traceTable;
@@ -29,11 +26,10 @@ public class MySqlMC6 {
 	
 	public String getRestrictions(Node node) {
 		StringBuilder text = new StringBuilder();
-		tracesUsed = new ArrayList<Trace>();
 		
 		text.append(getMC6(node));
-		
-		text.append(getMC6Inverse(node));
+		// DO NOT REMOVE THIS CODE (GETMC6INVERSE) !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//		text.append(getMC6Inverse(node));
 		
 		return text.toString();
 	}	
@@ -46,9 +42,7 @@ public class MySqlMC6 {
 			if(isForeignKeyToValidade(property)) {
 				traces = getTargetNodesBelongToForeignKey(property);
 				for(Trace trace : traces) {
-					//if(!isTraceUsed(tracesUsed, trace))
-						text.append(getConstraintToFk(property, trace));
-					//putTracesUsed(tracesUsed, trace);
+					text.append(getConstraintToFk(property, trace));
 				}
 				
 			}
@@ -57,33 +51,20 @@ public class MySqlMC6 {
 		return text.toString();
 	}
 	
-	private String getMC6Inverse(Node node) {
-		StringBuilder text = new StringBuilder();
-		Trace trace;
-		
-		for(MissingConstraintData mc : node.getMissingConstraint(MissingConstraint.MC6_Inverse)) {
-			trace = traceTable.getTracesById(mc.getSourceNode()).get(0);
-			for(NodeProperty fk : node.getForeignKeys()) {
-				if(fk.getAssociationRelatedOfFK().getOriginalAssociation().isMyId(mc.getSourceAssociation().getOriginalAssociation().getID()))
-					text.append(getInverseConstraintToFk(fk, trace, node));
-			}
-		}
-		return text.toString();
+	// DO NOT REMOVE THIS CODE (GETMC6INVERSE) !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//	private String getMC6Inverse(Node node) {
 //		StringBuilder text = new StringBuilder();
-//		ArrayList <Trace> traces = new ArrayList<Trace>();
-//
-//		for (NodeProperty property : node.getForeignKeys()) {
-//			if(isForeignKeyToValidade(property)) {
-//				traces = getInverseTraces(property);
-//				for(Trace trace : traces) {
-//					if(!isTraceUsed(tracesUsed, trace))
-//						text.append( getInverseConstraintToFk(property, trace, node));
-//					putTracesUsed(tracesUsed, trace);
-//				}
+//		Trace trace;
+//		
+//		for(MissingConstraintData mc : node.getMissingConstraint(MissingConstraint.MC6_Inverse)) {
+//			trace = traceTable.getTracesById(mc.getSourceNode()).get(0);
+//			for(NodeProperty fk : node.getForeignKeys()) {
+//				if(fk.getAssociationRelatedOfFK().getOriginalAssociation().isMyId(mc.getSourceAssociation().getOriginalAssociation().getID()))
+//					text.append(getInverseConstraintToFk(fk, trace, node));
 //			}
 //		}
 //		return text.toString();
-	}
+//	}
 	
 	
 	private boolean isForeignKeyToValidade(NodeProperty property) {
@@ -139,11 +120,12 @@ public class MySqlMC6 {
 		}
 
 		if(property.getOwnerNode().getOrigin() != Origin.N2NASSOCIATION) {
-			if( Util.isLowCartinality(association.getSourceCardinality()) &&  Util.isHightCartinality(association.getTargetCardinality()))
+			
+			if( isSourceNodeToEvaluate(association))
 				node = originalAssociation.getSourceNode();
 			else node = originalAssociation.getTargetNode();
-					
-//			if(originalAssociation.getTargetNode().isMyId(property.getOwnerNode().getID())) 
+			
+//			if( Util.isLowCartinality(association.getSourceCardinality()) &&  Util.isHightCartinality(association.getTargetCardinality()))
 //				node = originalAssociation.getSourceNode();
 //			else node = originalAssociation.getTargetNode();
 			
@@ -165,59 +147,20 @@ public class MySqlMC6 {
 				}
 			}
 		}
-		
 		//Retrieve the traces that map to the foreign key source table.
 		return traces;
 	}
-	/*
-	private ArrayList<Trace> getInverseTraces(NodeProperty property){
-		ArrayList<Trace> traces = new ArrayList<Trace>();
-		
-		Graph originalGraph = traceTable.getOriginalGraph();
-		Node referencedNode = originalGraph.getNodeById(property.getForeignKeyNodeID());
-		TraceSet traceSet;
-		Node node;
-		GraphAssociation relatedAssociation;
-		Node relatedNode;
-		
-		GraphAssociation originalAssociation = property.getAssociationRelatedOfFK().getOriginalAssociation();
-		if(originalAssociation == null) {
-			//This happens when the association is not destroyed in the transformation
-			originalAssociation = originalGraph.getAssociationByID(property.getAssociationRelatedOfFK().getID());
-		}
-
-		relatedAssociation = property.getAssociationRelatedOfFK();
-		relatedNode = relatedAssociation.getNodeEndOf(property.getOwnerNode());
-		
-		if(traceTable.isSourceNodeMapped(relatedNode)) {
-			
-			if(originalAssociation.getTargetNode().isMyId(property.getOwnerNode().getID())) 
-				node = originalAssociation.getSourceNode();
-			else node = originalAssociation.getTargetNode();
-			
-			traceSet = traceTable.getTraceSetById(node);
-			for(Trace trace : traceSet.getTraces()) {
-				if(trace.existsNode(referencedNode)) {
-					traces.add(trace);
-				}
-			}
-		}
-		
-		//Retrieve the traces that map to the foreign key source table.
-		return traces;
-	}*/
 	
-	private void putTracesUsed(ArrayList <Trace> tracesUsed, Trace newTrace) {
-		tracesUsed.add(newTrace);
-	}
-	
-	private boolean isTraceUsed(ArrayList <Trace> tracesUsed, Trace traceToUse) {
-		for(Trace trace:  tracesUsed) {
-			if(trace == traceToUse)
-				return true;
-		}
+	private boolean isSourceNodeToEvaluate(GraphAssociation association) {
 		
-		return false;
+		if(		(association.getSourceCardinality() == Cardinality.C0_1 && association.getTargetCardinality() == Cardinality.C0_N) ||
+				(association.getSourceCardinality() == Cardinality.C0_1 && association.getTargetCardinality() == Cardinality.C1_N) ||
+				(association.getSourceCardinality() == Cardinality.C1   && association.getTargetCardinality() == Cardinality.C0_N) ||
+				(association.getSourceCardinality() == Cardinality.C1   && association.getTargetCardinality() == Cardinality.C1_N) ||
+				(association.getSourceCardinality() == Cardinality.C1   && association.getTargetCardinality() == Cardinality.C0_1)   
+		)
+			return true;
+		else return false;
 	}
 	
 	private String getConstraintToFk(NodeProperty property, Trace trace) {
@@ -270,63 +213,64 @@ public class MySqlMC6 {
 	}
 	
 	
-	private String getInverseConstraintToFk(NodeProperty property, Trace trace, Node node) {
-		StringBuilder text = new StringBuilder();
-		String tab = Util.getSpaces("", Util.getTabSize());
-		String tab2 = Util.getSpaces("", Util.getTabSize()*2);
-		boolean first = true;
-		boolean existsFilter = false;
-		
-		if(trace.getMainNodeMapped().getFilters().isEmpty())
-			return "";
-		
-		text.append(tab);
-		text.append("if( NEW.");
-		text.append(property.getName());
-		text.append(" is not null AND (");
-		
-		for (Filter filter : trace.getMainNodeMapped().getFilters()) {
-			
-			if(		node.existsPropertyName(property.getName())&&
-					node.existsPropertyName(filter.getFilterProperty().getName()) 
-			) {
-				existsFilter = true; 
-				if (first) {
-					first = false;
-				} else {
-					text.append(tab);
-					text.append(" OR ");
-				}
-	
-				text.append("NEW.");
-				text.append(filter.getFilterProperty().getName());
-				text.append(" <> ");
-				text.append(Util.getStringValue(filter.getValue()));
-			}
-		}
-		
-		if(!existsFilter)
-			return "";
-		
-		text.append(")");
-		text.append(" \n");
-		text.append(tab);
-		text.append(") \n");
-		text.append(tab);
-		text.append("then \n");
-				
-		text.append(tab2);
-		text.append("set msg = 'ERROR: Violating conceptual model rules [XX_TRIGGER_NAME_XX].'; \n");
-		text.append(tab2);
-		text.append("signal sqlstate '45000' set message_text = msg;\n");
-		
-		text.append(tab);
-		text.append("end if; \n\n");
-		
-		Statistic.addMC6();
-		
-		return text.toString();
-	}
+	// DO NOT REMOVE THIS CODE (GETMC6INVERSE) !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//	private String getInverseConstraintToFk(NodeProperty property, Trace trace, Node node) {
+//		StringBuilder text = new StringBuilder();
+//		String tab = Util.getSpaces("", Util.getTabSize());
+//		String tab2 = Util.getSpaces("", Util.getTabSize()*2);
+//		boolean first = true;
+//		boolean existsFilter = false;
+//		
+//		if(trace.getMainNodeMapped().getFilters().isEmpty())
+//			return "";
+//		
+//		text.append(tab);
+//		text.append("if( NEW.");
+//		text.append(property.getName());
+//		text.append(" is not null AND (");
+//		
+//		for (Filter filter : trace.getMainNodeMapped().getFilters()) {
+//			
+//			if(		node.existsPropertyName(property.getName())&&
+//					node.existsPropertyName(filter.getFilterProperty().getName()) 
+//			) {
+//				existsFilter = true; 
+//				if (first) {
+//					first = false;
+//				} else {
+//					text.append(tab);
+//					text.append(" OR ");
+//				}
+//	
+//				text.append("NEW.");
+//				text.append(filter.getFilterProperty().getName());
+//				text.append(" <> ");
+//				text.append(Util.getStringValue(filter.getValue()));
+//			}
+//		}
+//		
+//		if(!existsFilter)
+//			return "";
+//		
+//		text.append(")");
+//		text.append(" \n");
+//		text.append(tab);
+//		text.append(") \n");
+//		text.append(tab);
+//		text.append("then \n");
+//				
+//		text.append(tab2);
+//		text.append("set msg = 'ERROR: Violating conceptual model rules [XX_TRIGGER_NAME_XX].'; \n");
+//		text.append(tab2);
+//		text.append("signal sqlstate '45000' set message_text = msg;\n");
+//		
+//		text.append(tab);
+//		text.append("end if; \n\n");
+//		
+//		Statistic.addMC6();
+//		
+//		return text.toString();
+//	}
 	
 	private String getSelect() {
 		return "select 1\n";

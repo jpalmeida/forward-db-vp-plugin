@@ -2208,13 +2208,14 @@ public class TestTriggers {
 		    		"        end if;  \n" + 
 		    		" \n" + 
 		    		"    end if;   \n" + 
-		    		"    if( NEW.related_class_id is not null AND (NEW.is_sub_class3 <> TRUE)  \n" + 
-		    		"    )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class2_i].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"    end if; \n" + 
-		    		" \n" + 
+// INVERSE RESTRICTION FOR MC6 IS COMMENTED !!!!!!!!!!!!!
+//		    		"    if( NEW.related_class_id is not null AND (NEW.is_sub_class3 <> TRUE)  \n" + 
+//		    		"    )  \n" + 
+//		    		"    then  \n" + 
+//		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class2_i].';  \n" + 
+//		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+//		    		"    end if; \n" + 
+//		    		" \n" + 
 		    		" \n" + 
 		    		"END; //  \n" + 
 		    		"delimiter ;");
@@ -2238,12 +2239,13 @@ public class TestTriggers {
 		    		"        end if;  \n" + 
 		    		" \n" + 
 		    		"    end if;   \n" + 
-		    		"    if( NEW.related_class_id is not null AND (NEW.is_sub_class3 <> TRUE)  \n" + 
-		    		"    )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class2_u].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"    end if; \n" + 
+// INVERSE RESTRICTION FOR MC6 IS COMMENTED !!!!!!!!!!!!!
+//		    		"    if( NEW.related_class_id is not null AND (NEW.is_sub_class3 <> TRUE)  \n" + 
+//		    		"    )  \n" + 
+//		    		"    then  \n" + 
+//		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_super_class2_u].';  \n" + 
+//		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+//		    		"    end if; \n" + 
 		    		" \n" + 
 		    		" \n" + 
 		    		"END; //  \n" + 
@@ -2421,4 +2423,90 @@ public class TestTriggers {
 			fail("ComplexHierarchy");
 		}
 	}
+
+	@Test
+	public void testLowCardinalityRestriction() {
+		try {
+			Increment.inicialzate();
+			OntoUmlToDb toDb = new OntoUmlToDb(HierarchyModel.getLowCardinalityRestriction());
+		    
+			toDb.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_KIND);
+		    toDb.setDbms(DbmsSupported.MYSQL);
+		    toDb.setStandardizeNames(true);
+		    toDb.runTransformation();
+
+		    String result = "";
+		    
+		    for(TriggerResult triggerResult : toDb.getTriggersScripts()) {
+		    	result += triggerResult.getScript() + "\n";
+		    }
+		    
+		    CheckTransformation check = new CheckTransformation( result );		    
+		    
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_related_class_i  BEFORE INSERT ON related_class  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if( new.super_class_sub_class1_id is not null )  \n" + 
+		    		"    then  \n" + 
+		    		"        if not exists (  \n" + 
+		    		"                    select 1 \n" + 
+		    		"                    from super_class  \n" + 
+		    		"                    where is_sub_class1 = TRUE  \n" + 
+		    		"                    and   super_class.super_class_id = new.super_class_sub_class1_id \n" + 
+		    		"        )  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_related_class_i].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"        end if;  \n" + 
+		    		" \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
+		    		"delimiter ;");
+		    
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_related_class_u  BEFORE UPDATE ON related_class  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if( new.super_class_sub_class1_id is not null )  \n" + 
+		    		"    then  \n" + 
+		    		"        if not exists (  \n" + 
+		    		"                    select 1 \n" + 
+		    		"                    from super_class  \n" + 
+		    		"                    where is_sub_class1 = TRUE  \n" + 
+		    		"                    and   super_class.super_class_id = new.super_class_sub_class1_id \n" + 
+		    		"        )  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_related_class_u].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"        end if;  \n" + 
+		    		" \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
+		    		"delimiter ;");	
+		    
+		    
+		    result = check.run();
+		    
+		    if(result != null) {
+		    	System.out.println("Test [testLowCardinalityRestriction] has problems: " + result);
+		    	fail("testLowCardinalityRestriction");
+		    }
+		    
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("testLowCardinalityRestriction");
+		}
+	}
+	
 }
