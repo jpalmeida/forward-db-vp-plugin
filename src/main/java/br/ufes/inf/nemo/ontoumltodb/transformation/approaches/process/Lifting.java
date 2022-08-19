@@ -2,7 +2,7 @@ package br.ufes.inf.nemo.ontoumltodb.transformation.approaches.process;
 
 import java.util.ArrayList;
 
-import br.ufes.inf.nemo.ontoumltodb.transformation.graph.ConstraintData;
+import br.ufes.inf.nemo.ontoumltodb.transformation.graph.MissingConstraintData;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Graph;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphGeneralization;
@@ -60,8 +60,8 @@ public class Lifting {
 			liftAttributes(node, generalization.getGeneral(), newProperty, "true");
 			
 			// Lifting the constraints
+			addLostConstraintM6(node, traceTable);
 			liftConstraints(node, generalization.getGeneral());
-			addLostConstraintM6(node, newProperty, "true");
 			
 			// for tracing
 			if(hasMultipleInheritance) {
@@ -99,8 +99,8 @@ public class Lifting {
 				liftAttributes(specializationNode, gs.getGeneral(), newEnumerationField, specializationNode.getName());
 				
 				// Lifting the constraints
-				liftConstraints(node, gs.getGeneral());
-				addLostConstraintM6(node, newEnumerationField, specializationNode.getName());
+				addLostConstraintM6(specializationNode, traceTable);
+				liftConstraints(specializationNode, gs.getGeneral());
 				
 				// for the tracing
 				traceTable.updateTrace(specializationNode, gs.getGeneral(), newEnumerationField, specializationNode.getName());
@@ -248,17 +248,58 @@ public class Lifting {
 	}
 	
 	private static void liftConstraints(Node sourceNode, Node targetNode) {
-		for(ConstraintData data : sourceNode.getAllMissingConstraint()) {
+		for(MissingConstraintData data : sourceNode.getAllMissingConstraint()) {
 			targetNode.addMissingConstraint(data.getSourceNode(), data.getSourceAssociation(), data.getMissingConstraint());
 		}
 	}
 	
-	private static void addLostConstraintM6(Node liftedNode, NodeProperty propertyToFilter, String filterValue) {
+	private static void addLostConstraintM6(Node liftedNode, TraceTable traceTable) {
 		Node relatedNode;
+//		GraphAssociation originalAssociation;
+		Cardinality cardinalityBegin;
+		Cardinality cardinalityEnd;
+		
 		for(GraphAssociation association : liftedNode.getAssociations()) {
-			relatedNode = association.getNodeEndOf(liftedNode);
-			if(!relatedNode.existsMissingConstraintForAssociation(association))
-				relatedNode.addMissingConstraint(liftedNode, association, propertyToFilter, filterValue, MissingConstraint.MC6);
+//			originalAssociation = association.getOriginalAssociation();
+			cardinalityBegin = association.getCardinalityBeginOf(liftedNode);
+			cardinalityEnd = association.getCardinalityEndOf(liftedNode);
+//			cardinalityBegin = originalAssociation.getCardinalityBeginOf(liftedNode);
+//			cardinalityEnd = originalAssociation.getCardinalityEndOf(liftedNode);
+			
+			if(		(cardinalityBegin == Cardinality.C0_1 && cardinalityEnd == Cardinality.C0_N) ||
+					(cardinalityBegin == Cardinality.C0_1 && cardinalityEnd == Cardinality.C1_N) ||
+					(cardinalityBegin == Cardinality.C1   && cardinalityEnd == Cardinality.C0_N) ||
+					(cardinalityBegin == Cardinality.C1   && cardinalityEnd == Cardinality.C1_N) ||
+					(cardinalityBegin == Cardinality.C1   && cardinalityEnd == Cardinality.C0_1)
+			) {
+				relatedNode = association.getNodeEndOf(liftedNode);
+//				relatedNode = originalAssociation.getNodeEndOf(liftedNode);
+//				relatedNode = traceTable.getTracesById(relatedNode).get(0).getMainNode();				
+				relatedNode.addMissingConstraint(liftedNode, association, MissingConstraint.MC6);
+			}
+			else {
+				if(		(cardinalityBegin == Cardinality.C0_N && cardinalityEnd == Cardinality.C0_1) ||
+						(cardinalityBegin == Cardinality.C1_N && cardinalityEnd == Cardinality.C0_1) ||
+						(cardinalityBegin == Cardinality.C0_N && cardinalityEnd == Cardinality.C1)   ||
+						(cardinalityBegin == Cardinality.C1_N && cardinalityEnd == Cardinality.C1)   ||
+						(cardinalityBegin == Cardinality.C0_1 && cardinalityEnd == Cardinality.C1)
+				) {
+					//relatedNode = association.getNodeEndOf(liftedNode);
+					//relatedNode.addMissingConstraint(liftedNode, association, MissingConstraint.MC6);
+					liftedNode.addMissingConstraint(liftedNode, association, MissingConstraint.MC6_Inverse);
+				}
+				else {
+					if(		(cardinalityBegin == Cardinality.C0_1 && cardinalityEnd == Cardinality.C0_1) 
+					) {
+						relatedNode = association.getNodeEndOf(liftedNode);
+//						relatedNode = originalAssociation.getNodeEndOf(liftedNode);
+//						relatedNode = traceTable.getTracesById(relatedNode).get(0).getMainNode();
+						relatedNode.addMissingConstraint(liftedNode, association, MissingConstraint.MC6);
+						liftedNode.addMissingConstraint(liftedNode, association, MissingConstraint.MC6);
+					}
+				}
+			}
+			//  N:N associations is produced by the trace table only
 		}
 	}
 }

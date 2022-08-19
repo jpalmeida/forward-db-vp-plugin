@@ -117,6 +117,15 @@ public class PropertyContainer {
 		}
 		return null;
 	}
+	
+	public ArrayList<NodeProperty> getForeignKeys(){
+		ArrayList<NodeProperty> result = new ArrayList<NodeProperty>();
+		for (NodeProperty nodeProperty : properties) {
+			if(nodeProperty.isForeignKey())
+				result.add(nodeProperty);
+		}
+		return result;
+	}
 
 	/**
 	 * Finds the property marked as primary key and returns its name.

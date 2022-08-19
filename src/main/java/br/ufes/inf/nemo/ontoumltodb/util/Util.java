@@ -5,14 +5,14 @@ import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 
 public class Util {
 	private static int maxSize = 50;
-	private static int tabSpaces = 4;
+	private static int tabSize = 4;
 	
 	public static int getMaxSizeNames() {
 		return maxSize;
 	}
 	
-	public static int getTabSpaces() {
-		return tabSpaces;
+	public static int getTabSize() {
+		return tabSize;
 	}
 	
 	public static String getSpaces(String name, int qtd){
@@ -122,5 +122,17 @@ public class Util {
 		newName = name.substring(0, maxSize - reduce) + id + "_id";
 		
 		return newName;
+	}
+	
+	public static boolean isLowCartinality(Cardinality c) {
+		if(c == Cardinality.C0_1 || c == Cardinality.C1)
+			return true;
+		else return false;
+	}
+	
+	public static boolean isHightCartinality(Cardinality c) {
+		if(c == Cardinality.C0_N || c == Cardinality.C1_N)
+			return true;
+		else return false;
 	}
 }

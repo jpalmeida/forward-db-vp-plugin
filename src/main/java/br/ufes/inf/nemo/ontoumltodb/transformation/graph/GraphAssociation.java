@@ -311,7 +311,7 @@ public class GraphAssociation extends Element {
 	public String toString() {
 		String text = "";
 		
-		text = getElementType().toString().toUpperCase()+": " +this.sourceNode.getName() + " (" + this.sourceCardinality + " - " + this.targetCardinality + ") " +	this.targetNode.getName();
+		text = getElementType().toString().toUpperCase()+": " +this.sourceNode.getName() + " (" + this.sourceCardinality + " - " + this.targetCardinality + ") " +	this.targetNode.getName() + " [" + getName()+ "]";
 		
 //		if(originalAssociation != null) {
 //			text += "\n\t\tORIGINAL: " + originalAssociation.getElementType().toString().toUpperCase()+": " + originalAssociation.sourceNode.getName() + " (" + originalAssociation.sourceCardinality + " - " + originalAssociation.targetCardinality + ") " +	originalAssociation.targetNode.getName();

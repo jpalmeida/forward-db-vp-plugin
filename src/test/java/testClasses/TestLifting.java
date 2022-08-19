@@ -247,33 +247,33 @@ public class TestLifting {
 		    String script = toDb.getRelationalSchemaScript();
 		    
 		    CheckTransformation check = new CheckTransformation( script );
-		    check.addCommand("CREATE TABLE super_class ( \r\n" + 
-		    		"        super_class_id         INTEGER       NOT NULL PRIMARY KEY\r\n" + 
-		    		",       super_class_has_sub_class3_id INTEGER       NULL\r\n" + 
-		    		",       super_class_has_sub_class1_id INTEGER       NULL\r\n" + 
+		    check.addCommand("CREATE TABLE super_class (  \n" + 
+		    		"        super_class_id         INTEGER       NOT NULL PRIMARY KEY \n" + 
+		    		",       super_class_class2_go_to_class3_id INTEGER       NULL \n" + 
+		    		",       super_class_class2_go_to_class1_id INTEGER       NULL \n" + 
 		    		"); ");
 		    
-		    check.addCommand("CREATE TABLE type ( \r\n" + 
-		    		"        type_id                INTEGER       NOT NULL PRIMARY KEY\r\n" + 
-		    		",       super_class_id         INTEGER       NOT NULL\r\n" + 
-		    		",       typeenum               ENUM('SUBCLASS1','SUBCLASS2','SUBCLASS3')  NOT NULL\r\n" + 
+		    check.addCommand("CREATE TABLE type (  \n" + 
+		    		"        type_id                INTEGER       NOT NULL PRIMARY KEY \n" + 
+		    		",       super_class_id         INTEGER       NOT NULL \n" + 
+		    		",       typeenum               ENUM('SUBCLASS1','SUBCLASS2','SUBCLASS3')  NOT NULL \n" + 
 		    		"); ");
 		    
-		    check.addCommand("CREATE TABLE sub_class1_sub_class1 ( \r\n" + 
-		    		"        sub_class1_sub_class1_id INTEGER       NOT NULL PRIMARY KEY\r\n" + 
-		    		",       super_class_has_sub_class132_id INTEGER       NOT NULL\r\n" + 
-		    		",       super_class_has_sub_class133_id INTEGER       NOT NULL\r\n" + 
-		    		"); ");
+		    check.addCommand("CREATE TABLE sub_class1_sub_class1 (  \n" + 
+		    		"        sub_class1_sub_class1_id INTEGER       NOT NULL PRIMARY KEY \n" + 
+		    		",       super_class_sub_class1_sub_class132_id INTEGER       NOT NULL \n" + 
+		    		",       super_class_sub_class1_sub_class133_id INTEGER       NOT NULL \n" + 
+		    		");");
 		    
-		    check.addCommand("ALTER TABLE super_class ADD FOREIGN KEY ( super_class_has_sub_class3_id ) REFERENCES super_class ( super_class_id );");
+		    check.addCommand("ALTER TABLE super_class ADD FOREIGN KEY ( super_class_class2_go_to_class3_id ) REFERENCES super_class ( super_class_id );");
 		    
-		    check.addCommand("ALTER TABLE super_class ADD FOREIGN KEY ( super_class_has_sub_class1_id ) REFERENCES super_class ( super_class_id );");
+		    check.addCommand("ALTER TABLE super_class ADD FOREIGN KEY ( super_class_class2_go_to_class1_id ) REFERENCES super_class ( super_class_id );");
 		    
 		    check.addCommand("ALTER TABLE type ADD FOREIGN KEY ( super_class_id ) REFERENCES super_class ( super_class_id );");
 		    
-		    check.addCommand("ALTER TABLE sub_class1_sub_class1 ADD FOREIGN KEY ( super_class_has_sub_class132_id ) REFERENCES super_class ( super_class_id );");
+		    check.addCommand("ALTER TABLE sub_class1_sub_class1 ADD FOREIGN KEY ( super_class_sub_class1_sub_class132_id ) REFERENCES super_class ( super_class_id );");
 		    
-		    check.addCommand("ALTER TABLE sub_class1_sub_class1 ADD FOREIGN KEY ( super_class_has_sub_class133_id ) REFERENCES super_class ( super_class_id );");
+		    check.addCommand("ALTER TABLE sub_class1_sub_class1 ADD FOREIGN KEY ( super_class_sub_class1_sub_class133_id ) REFERENCES super_class ( super_class_id );");
 		    
 		    String result = check.run();
 		    

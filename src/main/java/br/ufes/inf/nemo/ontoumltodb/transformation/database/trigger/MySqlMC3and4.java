@@ -76,8 +76,8 @@ public class MySqlMC3and4 {
 		
 		StringBuilder clausule1 = new StringBuilder();
 		StringBuilder clausule2;
-		String tab = Util.getSpaces("", Util.getTabSpaces());
-		String tab2 = Util.getSpaces("", Util.getTabSpaces()*2);
+		String tab = Util.getSpaces("", Util.getTabSize());
+		String tab2 = Util.getSpaces("", Util.getTabSize()*2);
 		
 		for(Filter filter : traceNodeTrigger.getFilters()) {
 			if(!filterAlreadyUsed(filter) && filter.hasMandatoryProperties() ) {
@@ -253,8 +253,8 @@ public class MySqlMC3and4 {
 		StringBuilder text = new StringBuilder();
 		boolean first = true;
 		String value = dependentProperties.get(0).getMandatoryValue(); // all dependent properties must have the same mandatory value.
-		String tab = Util.getSpaces("", Util.getTabSpaces());
-		String tab2 = Util.getSpaces("", Util.getTabSpaces()*2);
+		String tab = Util.getSpaces("", Util.getTabSize());
+		String tab2 = Util.getSpaces("", Util.getTabSize()*2);
 		
 		
 		if(isAttributeUsed(mandatoryProperty.getName())) 

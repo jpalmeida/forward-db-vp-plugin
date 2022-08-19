@@ -38,10 +38,18 @@ public class TraceTable {
 		return result;
 	}
 	
-	public TraceSet getTraceSetOfById(Node node) {
+	public TraceSet getTraceSetById(Node node) {
 		for(TraceSet traceSet : this.traceSets) {
 			if(traceSet.getSourceNode().isMyId(node.getID()))
 				return traceSet;
+		}
+		return null;
+	}
+	
+	public ArrayList<Trace> getTracesById(Node node) {
+		for(TraceSet traceSet : this.traceSets) {
+			if(traceSet.getSourceNode().isMyId(node.getID()))
+				return traceSet.getTraces();
 		}
 		return null;
 	}
@@ -65,7 +73,7 @@ public class TraceTable {
 	}
 	
 	public void addTargetNode(Node sourceNode, Node targetNode) {
-		TraceSet traceSet = getTraceSetOfById(sourceNode);
+		TraceSet traceSet = getTraceSetById(sourceNode);
 		if(traceSet != null)
 			traceSet.addTrace(targetNode);		
 	}
@@ -106,7 +114,7 @@ public class TraceTable {
 	}
 	
 	public void addNodeGeneratedFromMultivaluedProperty(Node sourceNode, Node targetNode, Node newNode, NodeProperty propertyAffected) {
-		TraceSet traceSet = getTraceSetOfById(sourceNode);
+		TraceSet traceSet = getTraceSetById(sourceNode);
 		if(traceSet != null)
 			traceSet.addNodeGeneratedFromMultivaluedProperty(targetNode, newNode, propertyAffected);
 	}

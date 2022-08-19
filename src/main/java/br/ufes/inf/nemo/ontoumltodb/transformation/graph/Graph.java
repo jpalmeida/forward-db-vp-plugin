@@ -339,6 +339,18 @@ public class Graph {
 		return false;
 	}
 	
+	public boolean isSuperNodeOf(Node currentNode, Node superNode) {
+		if(currentNode.getName().equals(superNode.getName())) {
+			return true;
+		}
+		else {
+			for(Node node : getSuperNodes(currentNode)) {
+				return isSuperNodeOf(node, superNode);
+			}
+			return false;
+		}
+	}
+	
 	/**
 	 * Returns the Root Nodes of the current node ID;
 	 * @param currentNode

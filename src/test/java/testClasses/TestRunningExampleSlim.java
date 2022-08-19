@@ -192,52 +192,56 @@ public class TestRunningExampleSlim {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        select  case when NEW.person_id is null then 0 else 1 end +  \n" + 
-		    		"                case when NEW.organization_customer_id is null then 0 else 1 end  \n" + 
+		    		"        select  case when new.person_id is null then 0 else 1 end +  \n" + 
+		    		"                case when new.organization_customer_id is null then 0 else 1 end  \n" + 
 		    		"      ) <> 1  \n" + 
 		    		"    then  \n" + 
-		    		"            set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_i].';  \n" + 
-		    		"            signal sqlstate '45000' set message_text = msg;  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_i].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg;  \n" + 
 		    		"    end if;  \n" + 
 		    		" \n" + 
-		    		"    if( NEW.organization_customer_id is not null )  \n" + 
+		    		"    if( new.organization_customer_id is not null )  \n" + 
 		    		"    then  \n" + 
 		    		"        if not exists (  \n" + 
 		    		"                    select 1 \n" + 
 		    		"                    from organization  \n" + 
 		    		"                    where is_corporate_customer = TRUE  \n" + 
-		    		"                    and   organization.organization_id = NEW.organization_customer_id \n" + 
-		    		"                   )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_i].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"                    and   organization.organization_id = new.organization_customer_id \n" + 
+		    		"        )  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_i].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
 		    		"        end if;  \n" + 
 		    		" \n" + 
 		    		"    end if;  \n" + 
 		    		" \n" + 
+		    		"    if( new.organization_contractor_id is not null )  \n" + 
+		    		"    then  \n" + 
 		    		"        if not exists (  \n" + 
 		    		"                    select 1 \n" + 
 		    		"                    from organization  \n" + 
 		    		"                    where is_contractor = TRUE  \n" + 
-		    		"                    and   organization.organization_id = NEW.organization_contractor_id \n" + 
-		    		"                   )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_i].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"                    and   organization.organization_id = new.organization_contractor_id \n" + 
+		    		"        )  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_i].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
 		    		"        end if;  \n" + 
 		    		" \n" + 
-		    		"    if( NEW.person_id is not null )  \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		"    if( new.person_id is not null )  \n" + 
 		    		"    then  \n" + 
 		    		"        if not exists (  \n" + 
 		    		"                    select 1 \n" + 
 		    		"                    from person  \n" + 
 		    		"                    where is_personal_customer = TRUE  \n" + 
 		    		"                    and   life_phase_enum = 'ADULT'  \n" + 
-		    		"                    and   person.person_id = NEW.person_id \n" + 
-		    		"                   )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_i].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"                    and   person.person_id = new.person_id \n" + 
+		    		"        )  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_i].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
 		    		"        end if;  \n" + 
 		    		" \n" + 
 		    		"    end if;  \n" + 
@@ -254,52 +258,56 @@ public class TestRunningExampleSlim {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        select  case when NEW.person_id is null then 0 else 1 end +  \n" + 
-		    		"                case when NEW.organization_customer_id is null then 0 else 1 end  \n" + 
+		    		"        select  case when new.person_id is null then 0 else 1 end +  \n" + 
+		    		"                case when new.organization_customer_id is null then 0 else 1 end  \n" + 
 		    		"      ) <> 1  \n" + 
 		    		"    then  \n" + 
-		    		"            set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_u].';  \n" + 
-		    		"            signal sqlstate '45000' set message_text = msg;  \n" + 
+		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_u].';  \n" + 
+		    		"        signal sqlstate '45000' set message_text = msg;  \n" + 
 		    		"    end if;  \n" + 
 		    		" \n" + 
-		    		"    if( NEW.organization_customer_id is not null )  \n" + 
+		    		"    if( new.organization_customer_id is not null )  \n" + 
 		    		"    then  \n" + 
 		    		"        if not exists (  \n" + 
 		    		"                    select 1 \n" + 
 		    		"                    from organization  \n" + 
 		    		"                    where is_corporate_customer = TRUE  \n" + 
-		    		"                    and   organization.organization_id = NEW.organization_customer_id \n" + 
-		    		"                   )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_u].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"                    and   organization.organization_id = new.organization_customer_id \n" + 
+		    		"        )  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_u].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
 		    		"        end if;  \n" + 
 		    		" \n" + 
 		    		"    end if;  \n" + 
 		    		" \n" + 
+		    		"    if( new.organization_contractor_id is not null )  \n" + 
+		    		"    then  \n" + 
 		    		"        if not exists (  \n" + 
 		    		"                    select 1 \n" + 
 		    		"                    from organization  \n" + 
 		    		"                    where is_contractor = TRUE  \n" + 
-		    		"                    and   organization.organization_id = NEW.organization_contractor_id \n" + 
-		    		"                   )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_u].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"                    and   organization.organization_id = new.organization_contractor_id \n" + 
+		    		"        )  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_u].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
 		    		"        end if;  \n" + 
 		    		" \n" + 
-		    		"    if( NEW.person_id is not null )  \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		"    if( new.person_id is not null )  \n" + 
 		    		"    then  \n" + 
 		    		"        if not exists (  \n" + 
 		    		"                    select 1 \n" + 
 		    		"                    from person  \n" + 
 		    		"                    where is_personal_customer = TRUE  \n" + 
 		    		"                    and   life_phase_enum = 'ADULT'  \n" + 
-		    		"                    and   person.person_id = NEW.person_id \n" + 
-		    		"                   )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_u].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"                    and   person.person_id = new.person_id \n" + 
+		    		"        )  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_u].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
 		    		"        end if;  \n" + 
 		    		" \n" + 
 		    		"    end if;  \n" + 

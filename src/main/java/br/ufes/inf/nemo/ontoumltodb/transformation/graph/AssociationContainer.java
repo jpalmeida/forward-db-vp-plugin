@@ -140,7 +140,7 @@ public class AssociationContainer {
 			}
 		}
 		return false;
-	}
+	}	
 	
 	/**
 	 * Returns all generalizations of the node.

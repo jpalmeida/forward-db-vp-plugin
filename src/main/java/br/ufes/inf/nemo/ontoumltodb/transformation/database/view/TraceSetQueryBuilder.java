@@ -64,7 +64,7 @@ public class TraceSetQueryBuilder {
 		TraceSet superTraceSet;
 	
 		for(Node node : traceTable.getOriginalGraph().getSuperNodes(evaluatedNode)) {
-			superTraceSet = traceTable.getTraceSetOfById(node);
+			superTraceSet = traceTable.getTraceSetById(node);
 			for(Trace superTrace : superTraceSet.getTraces()) {
 				if(checkSuperClass(sourceNode, superTrace)) {
 					for(TracedNode superTracedNode : superTrace.getTracedNodes()) {

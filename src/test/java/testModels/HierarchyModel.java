@@ -1246,7 +1246,7 @@ public class HierarchyModel {
 		
 		GraphAssociation association1 = new GraphAssociation(
 				Increment.getNextS(), 
-				"hasSubClass1", 
+				"Class2GoToClass1", 
 				subClass2, 
 				Cardinality.C1, 
 				subClass1, 
@@ -1254,7 +1254,7 @@ public class HierarchyModel {
 		
 		GraphAssociation association2 = new GraphAssociation(
 				Increment.getNextS(), 
-				"hasSubClass3", 
+				"Class2GoToClass3", 
 				subClass2, 
 				Cardinality.C1, 
 				subClass3, 
@@ -1262,7 +1262,7 @@ public class HierarchyModel {
 		
 		GraphAssociation association3 = new GraphAssociation(
 				Increment.getNextS(), 
-				"hasSubClass1", 
+				"subClass1SubClass1", 
 				subClass1, 
 				Cardinality.C1_N, 
 				subClass1, 

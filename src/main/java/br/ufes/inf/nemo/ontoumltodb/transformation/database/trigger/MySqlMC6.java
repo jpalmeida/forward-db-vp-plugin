@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import br.ufes.inf.nemo.ontoumltodb.transformation.Statistic;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Graph;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
+import br.ufes.inf.nemo.ontoumltodb.transformation.graph.MissingConstraintData;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.Filter;
@@ -13,12 +14,14 @@ import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceSet;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TracedNode;
 import br.ufes.inf.nemo.ontoumltodb.util.Cardinality;
+import br.ufes.inf.nemo.ontoumltodb.util.MissingConstraint;
 import br.ufes.inf.nemo.ontoumltodb.util.Origin;
 import br.ufes.inf.nemo.ontoumltodb.util.Util;
 
 public class MySqlMC6 {
 
 	private TraceTable traceTable;
+	private ArrayList <Trace> tracesUsed;
 
 	public MySqlMC6(TraceTable traceTable) {
 		this.traceTable = traceTable;
@@ -26,23 +29,62 @@ public class MySqlMC6 {
 	
 	public String getRestrictions(Node node) {
 		StringBuilder text = new StringBuilder();
+		tracesUsed = new ArrayList<Trace>();
 		
+		text.append(getMC6(node));
+		
+		text.append(getMC6Inverse(node));
+		
+		return text.toString();
+	}	
+	
+	private String getMC6(Node node) {
+		StringBuilder text = new StringBuilder();
 		ArrayList <Trace> traces = new ArrayList<Trace>();
-		ArrayList <Trace> tracesUsed = new ArrayList<Trace>();
 		
 		for (NodeProperty property : node.getProperties()) {
 			if(isForeignKeyToValidade(property)) {
 				traces = getTargetNodesBelongToForeignKey(property);
 				for(Trace trace : traces) {
-					if(!isTraceUsed(tracesUsed, trace))
+					//if(!isTraceUsed(tracesUsed, trace))
 						text.append(getConstraintToFk(property, trace));
-					putTracesUsed(tracesUsed, trace);
+					//putTracesUsed(tracesUsed, trace);
 				}
 				
 			}
 		}
+		
 		return text.toString();
 	}
+	
+	private String getMC6Inverse(Node node) {
+		StringBuilder text = new StringBuilder();
+		Trace trace;
+		
+		for(MissingConstraintData mc : node.getMissingConstraint(MissingConstraint.MC6_Inverse)) {
+			trace = traceTable.getTracesById(mc.getSourceNode()).get(0);
+			for(NodeProperty fk : node.getForeignKeys()) {
+				if(fk.getAssociationRelatedOfFK().getOriginalAssociation().isMyId(mc.getSourceAssociation().getOriginalAssociation().getID()))
+					text.append(getInverseConstraintToFk(fk, trace, node));
+			}
+		}
+		return text.toString();
+//		StringBuilder text = new StringBuilder();
+//		ArrayList <Trace> traces = new ArrayList<Trace>();
+//
+//		for (NodeProperty property : node.getForeignKeys()) {
+//			if(isForeignKeyToValidade(property)) {
+//				traces = getInverseTraces(property);
+//				for(Trace trace : traces) {
+//					if(!isTraceUsed(tracesUsed, trace))
+//						text.append( getInverseConstraintToFk(property, trace, node));
+//					putTracesUsed(tracesUsed, trace);
+//				}
+//			}
+//		}
+//		return text.toString();
+	}
+	
 	
 	private boolean isForeignKeyToValidade(NodeProperty property) {
 		String id;
@@ -84,21 +126,28 @@ public class MySqlMC6 {
 		Node referencedNode = originalGraph.getNodeById(property.getForeignKeyNodeID());
 		TraceSet traceSet;
 		GraphAssociation association;
+		GraphAssociation originalAssociation;
 		Node relatedNode;
 		Node node;
 		
-		GraphAssociation originalAssociation = property.getAssociationRelatedOfFK().getOriginalAssociation();
+		association = property.getAssociationRelatedOfFK();
+		originalAssociation = property.getAssociationRelatedOfFK().getOriginalAssociation();
+		
 		if(originalAssociation == null) {
 			//This happens when the association is not destroyed in the transformation
 			originalAssociation = originalGraph.getAssociationByID(property.getAssociationRelatedOfFK().getID());
 		}
 
-		if(traceTable.isSourceNodeMapped(property.getOwnerNode())) {
-			if(originalAssociation.getTargetNode().isMyId(property.getOwnerNode().getID())) 
+		if(property.getOwnerNode().getOrigin() != Origin.N2NASSOCIATION) {
+			if( Util.isLowCartinality(association.getSourceCardinality()) &&  Util.isHightCartinality(association.getTargetCardinality()))
 				node = originalAssociation.getSourceNode();
 			else node = originalAssociation.getTargetNode();
+					
+//			if(originalAssociation.getTargetNode().isMyId(property.getOwnerNode().getID())) 
+//				node = originalAssociation.getSourceNode();
+//			else node = originalAssociation.getTargetNode();
 			
-			traceSet = traceTable.getTraceSetOfById(node);
+			traceSet = traceTable.getTraceSetById(node);
 			for(Trace trace : traceSet.getTraces()) {
 				if(trace.existsNode(referencedNode)) {
 					traces.add(trace);
@@ -106,9 +155,7 @@ public class MySqlMC6 {
 			}
 		}
 		else {
-			// is a intermediate node of N:N association
-			
-			traceSet = traceTable.getTraceSetOfById(originalAssociation.getSourceNode());
+			traceSet = traceTable.getTraceSetById(originalAssociation.getSourceNode());
 			association = property.getAssociationRelatedOfFK();
 			relatedNode = association.getNodeEndOf(property.getOwnerNode());
 			
@@ -122,6 +169,43 @@ public class MySqlMC6 {
 		//Retrieve the traces that map to the foreign key source table.
 		return traces;
 	}
+	/*
+	private ArrayList<Trace> getInverseTraces(NodeProperty property){
+		ArrayList<Trace> traces = new ArrayList<Trace>();
+		
+		Graph originalGraph = traceTable.getOriginalGraph();
+		Node referencedNode = originalGraph.getNodeById(property.getForeignKeyNodeID());
+		TraceSet traceSet;
+		Node node;
+		GraphAssociation relatedAssociation;
+		Node relatedNode;
+		
+		GraphAssociation originalAssociation = property.getAssociationRelatedOfFK().getOriginalAssociation();
+		if(originalAssociation == null) {
+			//This happens when the association is not destroyed in the transformation
+			originalAssociation = originalGraph.getAssociationByID(property.getAssociationRelatedOfFK().getID());
+		}
+
+		relatedAssociation = property.getAssociationRelatedOfFK();
+		relatedNode = relatedAssociation.getNodeEndOf(property.getOwnerNode());
+		
+		if(traceTable.isSourceNodeMapped(relatedNode)) {
+			
+			if(originalAssociation.getTargetNode().isMyId(property.getOwnerNode().getID())) 
+				node = originalAssociation.getSourceNode();
+			else node = originalAssociation.getTargetNode();
+			
+			traceSet = traceTable.getTraceSetById(node);
+			for(Trace trace : traceSet.getTraces()) {
+				if(trace.existsNode(referencedNode)) {
+					traces.add(trace);
+				}
+			}
+		}
+		
+		//Retrieve the traces that map to the foreign key source table.
+		return traces;
+	}*/
 	
 	private void putTracesUsed(ArrayList <Trace> tracesUsed, Trace newTrace) {
 		tracesUsed.add(newTrace);
@@ -137,54 +221,118 @@ public class MySqlMC6 {
 	}
 	
 	private String getConstraintToFk(NodeProperty property, Trace trace) {
-		String text = "";
-		String tab = Util.getSpaces("", Util.getTabSpaces());
-		GraphAssociation association = property.getAssociationRelatedOfFK().getOriginalAssociation();
+		StringBuilder text = new StringBuilder();
+		String tab1 = Util.getSpaces("", Util.getTabSize());
+		String tab2 = Util.getSpaces("", Util.getTabSize() * 2);
+		String tab3 = Util.getSpaces("", Util.getTabSize() * 3);
+		String tab5 = Util.getSpaces("", Util.getTabSize() * 5);
 		
-		if(association == null)
-			return "";
+		text.append(tab1);
+		text.append("if( new.");
+		text.append(property.getName());
+		text.append(" is not null ) \n");
+		text.append(tab1);
+		text.append("then \n");
+	
 		
-		if(property.isNullable()) {
-			text += tab + "if( new."+ property.getName() + " is not null ) \n";
-			text += tab + "then \n";
-		}
+		text.append(tab2);
+		text.append("if not exists ( \n");
 		
-		tab = Util.getSpaces("", Util.getTabSpaces() * 2);
-		text += tab + "if not exists ( \n";
+		text.append(tab5);
+		text.append(getSelect());
+		text.append(tab5);
+		text.append(getFrom(trace,property, tab5));
+		text.append(tab5);
+		text.append(getWhere(trace, property));
 		
-		tab = Util.getSpaces("", Util.getTabSpaces() * 5);
+		text.append(tab2);
+		text.append(") \n");
 		
-		text += tab + getSelect();
-		text += tab + getFrom(trace,property);
-		text += tab + getWhere(trace, property);
+		text.append(tab2);
+		text.append("then \n");
 		
-		text += Util.getSpaces("", 19) + ") \n";
-		tab = Util.getSpaces("", Util.getTabSpaces());
+		text.append(tab3);
+		text.append("set msg = 'ERROR: Violating conceptual model rules [XX_TRIGGER_NAME_XX].'; \n");
+		text.append(tab3);
+		text.append("signal sqlstate '45000' set message_text = msg;\n");
 		
-		text += tab + "then \n";
-				
-		text += tab + tab + "set msg = 'ERROR: Violating conceptual model rules";
-		text += "[XX_TRIGGER_NAME_XX].'; \n";
-		text += tab + tab + "signal sqlstate '45000' set message_text = msg;\n";
 		
-		tab = Util.getSpaces("", Util.getTabSpaces() * 2);
-		text += tab + "end if; \n\n";
+		text.append(tab2);
+		text.append("end if; \n\n");
 		
-		if(property.isNullable()) {
-			tab = Util.getSpaces("", Util.getTabSpaces());
-			text += tab + "end if; \n\n";
-		}
+		
+		text.append(tab1);
+		text.append("end if; \n\n");
 		
 		Statistic.addMC6();
 		
-		return text;
+		return text.toString();
+	}
+	
+	
+	private String getInverseConstraintToFk(NodeProperty property, Trace trace, Node node) {
+		StringBuilder text = new StringBuilder();
+		String tab = Util.getSpaces("", Util.getTabSize());
+		String tab2 = Util.getSpaces("", Util.getTabSize()*2);
+		boolean first = true;
+		boolean existsFilter = false;
+		
+		if(trace.getMainNodeMapped().getFilters().isEmpty())
+			return "";
+		
+		text.append(tab);
+		text.append("if( NEW.");
+		text.append(property.getName());
+		text.append(" is not null AND (");
+		
+		for (Filter filter : trace.getMainNodeMapped().getFilters()) {
+			
+			if(		node.existsPropertyName(property.getName())&&
+					node.existsPropertyName(filter.getFilterProperty().getName()) 
+			) {
+				existsFilter = true; 
+				if (first) {
+					first = false;
+				} else {
+					text.append(tab);
+					text.append(" OR ");
+				}
+	
+				text.append("NEW.");
+				text.append(filter.getFilterProperty().getName());
+				text.append(" <> ");
+				text.append(Util.getStringValue(filter.getValue()));
+			}
+		}
+		
+		if(!existsFilter)
+			return "";
+		
+		text.append(")");
+		text.append(" \n");
+		text.append(tab);
+		text.append(") \n");
+		text.append(tab);
+		text.append("then \n");
+				
+		text.append(tab2);
+		text.append("set msg = 'ERROR: Violating conceptual model rules [XX_TRIGGER_NAME_XX].'; \n");
+		text.append(tab2);
+		text.append("signal sqlstate '45000' set message_text = msg;\n");
+		
+		text.append(tab);
+		text.append("end if; \n\n");
+		
+		Statistic.addMC6();
+		
+		return text.toString();
 	}
 	
 	private String getSelect() {
 		return "select 1\n";
 	}
 	
-	private String getFrom(Trace trace, NodeProperty fkProperty) {
+	private String getFrom(Trace trace, NodeProperty fkProperty, String currentTab) {
 		StringBuilder text = new StringBuilder();
 		String joinText;
 		Node fromNode, toNode = null;
@@ -201,13 +349,11 @@ public class MySqlMC6 {
 			toTracedNode = getNextTracedNodeToJoin(trace);
 			toNode = toTracedNode.getNodeMapped();
 			
-			joinText = getJoin(fromNode, toNode, trace);
+			joinText = getJoin(fromNode, toNode, trace, toTracedNode, currentTab);
 			
 			if(joinText != null) {
 				text.append(joinText);
 			}
-			
-			text.append( getFilter(toTracedNode) );
 			
 			fromNode = toNode;
 		}
@@ -221,7 +367,7 @@ public class MySqlMC6 {
 		Node node;
 		boolean first = true;
 		String text = "";
-		String tab = Util.getSpaces("", Util.getTabSpaces() * 5);
+		String tab = Util.getSpaces("", Util.getTabSize() * 5);
 		
 		text += "where ";
 
@@ -285,56 +431,57 @@ public class MySqlMC6 {
 		return null;
 	}
 	
-	private String getJoin(Node fromNode, Node toNode, Trace trace) {
-		String text = "";
-		String tab = Util.getSpaces("", Util.getTabSpaces() * 5);
+	private String getJoin(Node fromNode, Node toNode, Trace trace, TracedNode toTracedNode, String currentTab) {
+		StringBuilder text = new StringBuilder();;
+		String tab2 = currentTab + Util.getSpaces("", Util.getTabSize() * 2);
 		GraphAssociation association;
 		Cardinality cardinalityEnd;
 		
-		text += "\n";
-		text += tab;
+		text.append("\n");
+		text.append(currentTab);
 
 		association = getAssociationBetweenNodes(fromNode, toNode, trace);
 		cardinalityEnd = association.getCardinalityEndOf(fromNode);
 		
 		if(cardinalityEnd == Cardinality.C1 || cardinalityEnd == Cardinality.C1_N)
-			text += "inner join ";
-		else text += "left join ";
+			text.append("inner join ");
+		else text.append("left join ");
 		
-		text += toNode.getName();
-		text += "\n";
-		tab = Util.getSpaces("", Util.getTabSpaces() * 7);
-		text += tab + "on  ";
+		text.append(toNode.getName());
+		text.append("\n");
+		
+		text.append(tab2);
+		text.append("on  ");
 
 		if (toNode.getFKRelatedOfNodeID(fromNode.getID()) != null) {
-			text += fromNode.getName();
-			text += ".";
-			text += fromNode.getPKName();
-			text += " = ";
-			text += toNode.getName();
-			text += ".";
-			text += toNode.getFKRelatedOfNodeID(fromNode.getID()).getName();
+			text.append(fromNode.getName());
+			text.append(".");
+			text.append(fromNode.getPKName());
+			text.append(" = ");
+			text.append(toNode.getName());
+			text.append(".");
+			text.append(toNode.getFKRelatedOfNodeID(fromNode.getID()).getName());
 		} else {
 			if (fromNode.getFKRelatedOfNodeID(toNode.getID()) != null) {
-				text += fromNode.getName();
-				text += ".";
-				text += fromNode.getFKRelatedOfNodeID(toNode.getID()).getName();
-				text += " = ";
-				text += toNode.getName();
-				text += ".";
-				text += toNode.getPKName();
+				text.append(fromNode.getName());
+				text.append(".");
+				text.append(fromNode.getFKRelatedOfNodeID(toNode.getID()).getName());
+				text.append(" = ");
+				text.append(toNode.getName());
+				text.append(".");
+				text.append(toNode.getPKName());
 			} else {
 				// try establish the joins with another node of the trace
 				fromNode = getNextTracedNodeToJoin(trace).getNodeMapped();
 				if(fromNode != null) {
 					if (toNode.getFKRelatedOfNodeID(fromNode.getID()) != null) {
-						text += fromNode.getName();
-						text += ".";
-						text += fromNode.getPKName();
-						text += " = ";
-						text += toNode.getName();
-						text += ".";
-						text += toNode.getFKRelatedOfNodeID(fromNode.getID()).getName();
+						text.append(fromNode.getName());
+						text.append(".");
+						text.append(fromNode.getPKName());
+						text.append(" = ");
+						text.append(toNode.getName());
+						text.append(".");
+						text.append(toNode.getFKRelatedOfNodeID(fromNode.getID()).getName());
 					} else {
 						return null;
 					}
@@ -345,16 +492,18 @@ public class MySqlMC6 {
 			}
 		}
 		
-		return text;
+		text.append( getFilter(toTracedNode, tab2) );
+		
+		return text.toString();
 	}
 	
-	private String getFilter(TracedNode nodeMapped) {
+	private String getFilter(TracedNode nodeMapped, String currentTab) {
 		String text = "";
-		String tab = Util.getSpaces("", Util.getTabSpaces() * 8);
+		//String tab = currentTab + Util.getSpaces("", Util.getTabSize());
 
 		for (Filter filter : nodeMapped.getFilters()) {
 			text += "\n";
-			text += tab;
+			text += currentTab;
 			text += "and ";
 			text += nodeMapped.getNodeMapped().getName();
 			text += ".";
@@ -384,4 +533,6 @@ public class MySqlMC6 {
 		
 		return null;
 	}
+	
 }
+

@@ -3,7 +3,7 @@ package br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger;
 import java.util.ArrayList;
 
 import br.ufes.inf.nemo.ontoumltodb.transformation.Statistic;
-import br.ufes.inf.nemo.ontoumltodb.transformation.graph.ConstraintData;
+import br.ufes.inf.nemo.ontoumltodb.transformation.graph.MissingConstraintData;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
 //import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
@@ -30,7 +30,7 @@ public class MySqlMC1and2 {
 		
 		
 		if(currentNode.existsMissingConstraint(MissingConstraint.MC1_2) ) {
-			for(ConstraintData constraint : currentNode.getMissingConstraint(MissingConstraint.MC1_2)){
+			for(MissingConstraintData constraint : currentNode.getMissingConstraint(MissingConstraint.MC1_2)){
 				text.append(getRestriction(constraint, currentNode));
 			}
 			
@@ -44,7 +44,7 @@ public class MySqlMC1and2 {
 		}
 		
 		if(currentNode.existsMissingConstraint(MissingConstraint.MC1_2_Inverse) ) {
-			for(ConstraintData constraint : currentNode.getMissingConstraint(MissingConstraint.MC1_2_Inverse)){
+			for(MissingConstraintData constraint : currentNode.getMissingConstraint(MissingConstraint.MC1_2_Inverse)){
 				text.append(getInverseRestriction(constraint, currentNode));
 			}
 		}
@@ -52,7 +52,7 @@ public class MySqlMC1and2 {
 		return text.toString();
 	}
 	
-	private String getRestriction(ConstraintData constraint, Node currentNode) {
+	private String getRestriction(MissingConstraintData constraint, Node currentNode) {
 		StringBuilder text = new StringBuilder();
 		ArrayList<NodeProperty> properties = getProperties(constraint, currentNode);
 		
@@ -60,9 +60,9 @@ public class MySqlMC1and2 {
 			return "";
 		
 		boolean first = true;
-		String tab1 = Util.getSpaces("", Util.getTabSpaces());
-		String tab2 = Util.getSpaces("", Util.getTabSpaces() * 2);
-		String tab4 = Util.getSpaces("", Util.getTabSpaces() * 4);
+		String tab1 = Util.getSpaces("", Util.getTabSize());
+		String tab2 = Util.getSpaces("", Util.getTabSize() * 2);
+		String tab4 = Util.getSpaces("", Util.getTabSize() * 4);
 		
 		if(properties.size() < 2)
 			return "";
@@ -118,11 +118,11 @@ public class MySqlMC1and2 {
 		return text.toString();
 	}
 	
-	private ArrayList<NodeProperty> getProperties(ConstraintData constraint, Node node ){
+	private ArrayList<NodeProperty> getProperties(MissingConstraintData constraint, Node node ){
 		ArrayList<NodeProperty> properties = new ArrayList<NodeProperty>();
 		Node targetNode;
 		NodeProperty fkProperty;
-		TraceSet traceSet = traceTable.getTraceSetOfById(constraint.getSourceNode());
+		TraceSet traceSet = traceTable.getTraceSetById(constraint.getSourceNode());
 		
 		for(Trace trace : traceSet.getTraces()) {
 			targetNode = trace.getMainNode();
@@ -133,13 +133,13 @@ public class MySqlMC1and2 {
 		return properties;
 	}
 	
-	private String getInverseRestriction(ConstraintData constraint, Node currentNode) {
+	private String getInverseRestriction(MissingConstraintData constraint, Node currentNode) {
 		StringBuilder text = new StringBuilder();
 		boolean first = true;
-		String tab1 = Util.getSpaces("", Util.getTabSpaces());
-		String tab2 = Util.getSpaces("", Util.getTabSpaces() * 2);
-		String tab3 = Util.getSpaces("", Util.getTabSpaces() * 3);
-		String tab5 = Util.getSpaces("", Util.getTabSpaces() * 5);
+		String tab1 = Util.getSpaces("", Util.getTabSize());
+		String tab2 = Util.getSpaces("", Util.getTabSize() * 2);
+		String tab3 = Util.getSpaces("", Util.getTabSize() * 3);
+		String tab5 = Util.getSpaces("", Util.getTabSize() * 5);
 		
 		NodeProperty destinationProperty;
 		NodeProperty currentProperty = getProperty(constraint, currentNode);
@@ -205,7 +205,7 @@ public class MySqlMC1and2 {
 		return text.toString();
 	}
 	
-	private NodeProperty getProperty(ConstraintData constraint, Node currentNode ){
+	private NodeProperty getProperty(MissingConstraintData constraint, Node currentNode ){
 		//Node sourceNodeEnd = constraint.getSourceAssociation().getNodeEndOf(constraint.getSourceNode());
 		//Node targetNodeEnd = traceTable.getTraceSetOfById(sourceNodeEnd).getTraces().get(0).getMainNode();
 		//NodeProperty property  = currentNode.getFKRelatedOfNodeID(targetNodeEnd.getID());		
@@ -232,10 +232,10 @@ public class MySqlMC1and2 {
 		return null;
 	}
 	
-	private ArrayList<Node> getTargetNodes(ConstraintData constraint, Node currentNode){
+	private ArrayList<Node> getTargetNodes(MissingConstraintData constraint, Node currentNode){
 		ArrayList<Node> result = new ArrayList<Node>();
 		
-		TraceSet traceSet = traceTable.getTraceSetOfById(constraint.getSourceNode());
+		TraceSet traceSet = traceTable.getTraceSetById(constraint.getSourceNode());
 		
 		for(Trace trace : traceSet.getTraces()) {
 			if(!trace.getMainNode().isMyId(currentNode.getID()))

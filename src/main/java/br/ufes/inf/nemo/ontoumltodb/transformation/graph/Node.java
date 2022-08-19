@@ -139,6 +139,10 @@ public class Node extends Element {
 	public NodeProperty getPrimaryKey() {
 		return this.propertyContainer.getPrimaryKey();
 	}
+	
+	public ArrayList<NodeProperty> getForeignKeys(){
+		return this.propertyContainer.getForeignKeys();
+	}
 
 	public String getPKName() {
 		return this.propertyContainer.getPKName();
@@ -217,7 +221,6 @@ public class Node extends Element {
 		return this.associationContainer.hasMultipleInheritance();
 	}
 	
-	
 	public boolean existsAssociation(GraphAssociation association) {
 		return this.associationContainer.existsAssociation(association);
 	}
@@ -249,15 +252,15 @@ public class Node extends Element {
 		this.constraintContainer.addMissingConstraint(sourceNode, association, missingConstraint);
 	}
 	
-	public void addMissingConstraint(Node sourceNode, GraphAssociation association, NodeProperty propertyToFilter, String filterValue,  MissingConstraint missingConstraint) {
-		this.constraintContainer.addMissingConstraint(sourceNode, association, propertyToFilter, filterValue, missingConstraint);
-	}
+//	public void addMissingConstraint(Node sourceNode, GraphAssociation association, NodeProperty propertyToFilter, String filterValue,  MissingConstraint missingConstraint) {
+//		this.constraintContainer.addMissingConstraint(sourceNode, association, propertyToFilter, filterValue, missingConstraint);
+//	}
 	
-	public ArrayList<ConstraintData> getMissingConstraint(MissingConstraint missingConstraint){
+	public ArrayList<MissingConstraintData> getMissingConstraint(MissingConstraint missingConstraint){
 		return this.constraintContainer.getMissingConstraint(missingConstraint);
 	}
 	
-	public ArrayList<ConstraintData> getAllMissingConstraint(){
+	public ArrayList<MissingConstraintData> getAllMissingConstraint(){
 		return this.constraintContainer.getAllMissingConstraint();
 	}
 	
@@ -273,6 +276,10 @@ public class Node extends Element {
 		return this.constraintContainer.existsMissingConstraintForAssociation(association);
 	}
 	
+	public void removeMissingConstraint(MissingConstraintData mc) {
+		this.constraintContainer.removeMissingConstraint(mc);
+	}
+	
 	// ----------------------------------------------------
 	
 
@@ -282,6 +289,7 @@ public class Node extends Element {
 	 msg += this.propertyContainer.toString();
 	 msg += this.literalContainer.toString();
 	 msg += this.associationContainer.toString();
+	 msg += "\n\t";
 	 msg += this.constraintContainer.toString();
 
 	 return msg;
