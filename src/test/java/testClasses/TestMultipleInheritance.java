@@ -127,8 +127,6 @@ public class TestMultipleInheritance {
 		    
 		    String script = toDb.getRelationalSchemaScript();
 		    
-		    System.out.println(script);
-		    
 		    CheckTransformation check = new CheckTransformation( script );
 		    check.addCommand("CREATE TABLE super_class1 (  \n" + 
 		    		"        super_class1_id        INTEGER       NOT NULL PRIMARY KEY \n" + 

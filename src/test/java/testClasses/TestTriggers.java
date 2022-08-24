@@ -964,8 +964,6 @@ public class TestTriggers {
 		    	result += triggerResult.getScript() + "\n";
 		    }
 		    
-		    System.out.println(result);
-		    
 		    CheckTransformation check = new CheckTransformation( result );
 		    check.addCommand("delimiter //  \n" + 
 		    		"CREATE TRIGGER tg_person_i  BEFORE INSERT ON person  \n" + 

@@ -330,7 +330,7 @@ public class TestRunningExampleSlim {
 			fail("testRunningExample");
 		}
 	}
-	
+
 	
 	@Test
 	public void testRunningExampleSlimSchemaPTpCC() {

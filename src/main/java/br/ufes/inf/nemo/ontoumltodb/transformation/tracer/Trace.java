@@ -258,7 +258,8 @@ public class Trace {
 		//remove apenas se o nodo de origem existir no rastro
 		if(fromNodeMapped != null) {
 			for(Filter filter : fromNodeMapped.getFilters()) {
-				toNodeMapped.addFilter(filter.getFilterProperty(), filter.getValue(), filter.getMandatoryProperties());
+				//toNodeMapped.addFilter(filter.getFilterProperty(), filter.getValue(), filter.getMandatoryProperties());  Process restructured from version V0.2.
+				toNodeMapped.addFilter(filter.getFilterProperty(), filter.getValue());
 			}
 			removeNodeMapped(from);
 		}
@@ -281,14 +282,14 @@ public class Trace {
 		}
 		return null;
 	}
-	
-	public boolean hasMandatoryProperties() {
-		for (TracedNode tracedNode : tracedNodes) {
-			if(tracedNode.hasMandatoryProperties())
-				return true;
-		}
-		return false;
-	}
+//	Process restructured from version V0.2.
+//	public boolean hasMandatoryProperties() {
+//		for (TracedNode tracedNode : tracedNodes) {
+//			if(tracedNode.hasMandatoryProperties())
+//				return true;
+//		}
+//		return false;
+//	}
 	
 	public ArrayList<NodeProperty> getMandatoryProperteOf(NodeProperty discriminatorProperty){
 		ArrayList<NodeProperty> result = new ArrayList<NodeProperty>();

@@ -30,9 +30,9 @@ public class TestTraceability {
 		    CheckTransformation check = new CheckTransformation( traces );
 		    
 		    check.addCommand("TRACE SET: SubClass \n" + 
-		    		"	TRACE: super_class [is_sub_class = true (MANDATORY: age)];");
+		    		"	TRACE: super_class [is_sub_class = true];");
 		    check.addCommand("TRACE SET: SubSubClass \n" + 
-		    		"	TRACE: super_class [is_sub_sub_class = true (MANDATORY: hight) | is_sub_class = true (MANDATORY: age)];");
+		    		"	TRACE: super_class [is_sub_sub_class = true | is_sub_class = true ];");
 		    check.addCommand("TRACE SET: SuperClass \n" + 
 		    		"	TRACE: super_class;");
 		    
@@ -69,9 +69,9 @@ public class TestTraceability {
 		    check.addCommand("TRACE SET: SubClass \n" + 
 		    		"	TRACE: super_class_a [is_sub_class = true];");
 		    check.addCommand("TRACE SET: SubSubClass \n" + 
-		    		"	TRACE: super_class_a [is_sub_sub_class = true (MANDATORY: test) | is_sub_class = true];");
+		    		"	TRACE: super_class_a [is_sub_sub_class = true | is_sub_class = true];");
 		    check.addCommand("TRACE SET: superClassB \n" + 
-		    		"	TRACE: super_class_a [is_sub_sub_class = true (MANDATORY: test) | is_sub_class = true];");
+		    		"	TRACE: super_class_a [is_sub_sub_class = true | is_sub_class = true];");
 		    
 		    String result = check.run();
 		    
@@ -175,7 +175,7 @@ public class TestTraceability {
 		    check.addCommand("TRACE SET: SuperClass \n" + 
 		    		"	TRACE: super_class;");
 		    check.addCommand("TRACE SET: SubClass \n" + 
-		    		"	TRACE: super_class [is_sub_class = true (MANDATORY: age)];");
+		    		"	TRACE: super_class [is_sub_class = true ];");
 		    check.addCommand("TRACE SET: AssociatedClass \n" + 
 		    		"	TRACE: associated_class;");
 		    
@@ -209,9 +209,9 @@ public class TestTraceability {
 		    check.addCommand("TRACE SET: SuperClass \n" + 
 		    		"	TRACE: super_class;");
 		    check.addCommand("TRACE SET: SubClass1 \n" + 
-		    		"	TRACE: super_class [gs_test_enum = SubClass1 (MANDATORY: age)];");
+		    		"	TRACE: super_class [gs_test_enum = SubClass1 ];");
 		    check.addCommand("TRACE SET: SubClass2 \n" + 
-		    		"	TRACE: super_class [gs_test_enum = SubClass2 (MANDATORY: height)];");
+		    		"	TRACE: super_class [gs_test_enum = SubClass2 ];");
 		    check.addCommand("TRACE SET: AssociatedClass \n" + 
 		    		"	TRACE: associated_class;");
 		    
@@ -244,9 +244,9 @@ public class TestTraceability {
 		    check.addCommand("TRACE SET: SuperClass \n" + 
 		    		"	TRACE: super_class;");
 		    check.addCommand("TRACE SET: SubClass1 \n" + 
-		    		"	TRACE: super_class [gs_test_enum = SubClass1 (MANDATORY: age)];");
+		    		"	TRACE: super_class [gs_test_enum = SubClass1];");
 		    check.addCommand("TRACE SET: SubClass2 \n" + 
-		    		"	TRACE: super_class [gs_test_enum = SubClass2 (MANDATORY: height)];");
+		    		"	TRACE: super_class [gs_test_enum = SubClass2];");
 		    check.addCommand("TRACE SET: AssociatedClass \n" + 
 		    		"	TRACE: associated_class;");
 		    
@@ -280,9 +280,9 @@ public class TestTraceability {
 		    check.addCommand("TRACE SET: AssociatedClass \n" + 
 		    		"	TRACE: associated_class;");
 		    check.addCommand("TRACE SET: SubClass1 \n" + 
-		    		"	TRACE: super_class | gs_test [gs_test_enum = SubClass1 (MANDATORY: age)];");
+		    		"	TRACE: super_class | gs_test [gs_test_enum = SubClass1];");
 		    check.addCommand("TRACE SET: SubClass2 \n" + 
-		    		"	TRACE: super_class | gs_test [gs_test_enum = SubClass2 (MANDATORY: height)];");
+		    		"	TRACE: super_class | gs_test [gs_test_enum = SubClass2];");
 		    check.addCommand("TRACE SET: SuperClass \n" + 
 		    		"	TRACE: super_class ;");
 		    

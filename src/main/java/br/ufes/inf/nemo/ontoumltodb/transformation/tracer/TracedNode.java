@@ -61,17 +61,17 @@ public class TracedNode {
 			filters.add(new Filter(propertyFilter, valueFilter));
 		}
 	}
-	
-	public void addFilter(NodeProperty propertyFilter, Object valueFilter, ArrayList<NodeProperty> mandatoryProperties) {
-		Filter newFilter;
-		if(propertyFilter != null && valueFilter != null) {
-			newFilter = new Filter(propertyFilter, valueFilter);
-			for(NodeProperty property : mandatoryProperties) {
-				newFilter.addMandatoryProperty(property);
-			}
-			filters.add(newFilter);
-		}
-	}
+//	Process restructured from version V0.2.
+//	public void addFilter(NodeProperty propertyFilter, Object valueFilter, ArrayList<NodeProperty> mandatoryProperties) {
+//		Filter newFilter;
+//		if(propertyFilter != null && valueFilter != null) {
+//			newFilter = new Filter(propertyFilter, valueFilter);
+//			for(NodeProperty property : mandatoryProperties) {
+//				newFilter.addMandatoryProperty(property);
+//			}
+//			filters.add(newFilter);
+//		}
+//	}
 	
 	public void removeFilterOfProperty(NodeProperty property) {
 		
@@ -101,15 +101,15 @@ public class TracedNode {
 			return true;
 		else return false;
 	}
-	
-	public boolean hasMandatoryProperties() {
-		for(Filter filter : this.filters) {
-			if(filter.hasMandatoryProperties()) {
-				return true;
-			}
-		}
-		return false;
-	}
+//	Process restructured from version V0.2.
+//	public boolean hasMandatoryProperties() {
+//		for(Filter filter : this.filters) {
+//			if(filter.hasMandatoryProperties()) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 	
 	public void updateTraceNode(Node from, Node to, NodeProperty discriminatorProperty, Object discriminatorValue) {
 		nodeMapped = to;
@@ -119,16 +119,17 @@ public class TracedNode {
 		//update the filters cloned properties
 		for(Filter filter : filters) {
 			filter.setFilterProperty(getMigratedProperty(to, filter.getFilterProperty().getName()));
-			filter.updateMandatoryPrperties(to);
+//			filter.updateMandatoryPrperties(to); Process restructured from version V0.2.
 		}
 		
 		newFilter = new Filter(migratedProperty, discriminatorValue);
 		
-		for(NodeProperty fromProperty : from.getProperties()) {
-			if( ( !fromProperty.isNullable() ) && ( !fromProperty.isIdentifyOtherClass() ) ) {
-				newFilter.addMandatoryProperty(getMigratedProperty(to, fromProperty.getName()));
-			}
-		}
+//		Process restructured from version V0.2.
+//		for(NodeProperty fromProperty : from.getProperties()) {
+//			if( ( !fromProperty.isNullable() ) && ( !fromProperty.isIdentifyOtherClass() ) ) {
+//				newFilter.addMandatoryProperty(getMigratedProperty(to, fromProperty.getName()));
+//			}
+//		}
 		filters.add(newFilter);
 	}
 	
@@ -147,7 +148,7 @@ public class TracedNode {
 		ArrayList<NodeProperty> result = new ArrayList<NodeProperty>();
 		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
 		for(Filter filter : filters) {
-			mandatoryProperties = filter.getMandatoryProperteOf(discriminatorProperty);
+//			mandatoryProperties = filter.getMandatoryProperteOf(discriminatorProperty);Process restructured from version V0.2.
 			for(NodeProperty property : mandatoryProperties) {
 				result.add(property);
 			}

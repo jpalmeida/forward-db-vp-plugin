@@ -9,10 +9,10 @@ public class Filter {
 
 	private NodeProperty filterProperty;
 	private Object value;
-	private ArrayList<NodeProperty> mandatoryProperties;
+	//private ArrayList<NodeProperty> mandatoryProperties; Process restructured from version V0.2. 
 	
 	public Filter(NodeProperty filterProperty, Object value) {
-		this.mandatoryProperties = new ArrayList<NodeProperty>();
+		//this.mandatoryProperties = new ArrayList<NodeProperty>();  Process restructured from version V0.2.
 		this.filterProperty = filterProperty;
 		this.value = value;
 	}
@@ -29,19 +29,20 @@ public class Filter {
 		return this.value;
 	}
 	
-	public void addMandatoryProperty(NodeProperty property) {
-		this.mandatoryProperties.add(property);
-	}
-	
-	public ArrayList<NodeProperty> getMandatoryProperties(){
-		return this.mandatoryProperties;
-	}
-	
-	public boolean hasMandatoryProperties() {
-		if(this.mandatoryProperties.size() > 0)
-			return true;
-		else return false;
-	}
+//	Process restructured from version V0.2.
+//	public void addMandatoryProperty(NodeProperty property) {
+//		this.mandatoryProperties.add(property);
+//	}
+//	
+//	public ArrayList<NodeProperty> getMandatoryProperties(){
+//		return this.mandatoryProperties;
+//	}
+//	
+//	public boolean hasMandatoryProperties() {
+//		if(this.mandatoryProperties.size() > 0)
+//			return true;
+//		else return false;
+//	}
 	
 	public boolean isSame(Filter filter) {
 		if(	filterProperty.getName().equals(filter.getFilterProperty().getName()) &&
@@ -51,35 +52,37 @@ public class Filter {
 		else return false;
 	}
 	
-	public void updateMandatoryPrperties(Node to) {
-		for(int i = 0; i < mandatoryProperties.size(); i++) {
-			mandatoryProperties.set(i, getMigratedProperty(to, mandatoryProperties.get(i)));
-		}
-	}
-	
-	private NodeProperty getMigratedProperty(Node to, NodeProperty discriminatorProperty) {
-		for(NodeProperty nodeProperty : to.getProperties()) {
-			if(nodeProperty.getOriginalId().equals(discriminatorProperty.getOriginalId())  )
-				return nodeProperty;
-		}
-		return null;
-	}
-	
-	public ArrayList<NodeProperty> getMandatoryProperteOf(NodeProperty discriminatorProperty){
-		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
-		if(filterProperty.getName().equals(discriminatorProperty.getName())) {
-			for(NodeProperty property : this.mandatoryProperties) {
-				mandatoryProperties.add(property);
-			}
-		}
-		return mandatoryProperties;
-	}
+//	Process restructured from version V0.2.
+//	public void updateMandatoryPrperties(Node to) {
+//		for(int i = 0; i < mandatoryProperties.size(); i++) {
+//			mandatoryProperties.set(i, getMigratedProperty(to, mandatoryProperties.get(i)));
+//		}
+//	}
+//	
+//	private NodeProperty getMigratedProperty(Node to, NodeProperty discriminatorProperty) {
+//		for(NodeProperty nodeProperty : to.getProperties()) {
+//			if(nodeProperty.getOriginalId().equals(discriminatorProperty.getOriginalId())  )
+//				return nodeProperty;
+//		}
+//		return null;
+//	}
+//	
+//	public ArrayList<NodeProperty> getMandatoryProperteOf(NodeProperty discriminatorProperty){
+//		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
+//		if(filterProperty.getName().equals(discriminatorProperty.getName())) {
+//			for(NodeProperty property : this.mandatoryProperties) {
+//				mandatoryProperties.add(property);
+//			}
+//		}
+//		return mandatoryProperties;
+//	}
 	
 	public String toString() {
 		String text = "";
-		for(NodeProperty property : this.mandatoryProperties) {
-			text += property.getName() + " | ";
-		}
+//		Process restructured from version V0.2.
+//		for(NodeProperty property : this.mandatoryProperties) {
+//			text += property.getName() + " | ";
+//		}
 		if(!text.equals("")) {
 			text  = " (MANDATORY: " + text.substring(0, text.length() - 3) + ")";
 		}
