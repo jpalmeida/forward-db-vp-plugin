@@ -12,6 +12,8 @@ public class ToEntityRelationship {
 		SolvesMultivaluedProperty.run(graph, traceTable);
 
 		SolvesEnumeration.solves(graph, traceTable, enumFiledToLookupTable);
+		
+		SolvesDatatype.solves(graph, traceTable);
 
 		SolvesCardinalityNtoN.solves(graph, traceTable);
 		

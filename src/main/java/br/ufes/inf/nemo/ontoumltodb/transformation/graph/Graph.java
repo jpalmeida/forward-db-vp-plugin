@@ -465,12 +465,53 @@ public class Graph {
 		}
 	}
 	
+	public void transformDatatypeAssociationInProperties() {
+		for(Node node : this.nodes) {
+			if(node.getStereotype() == Stereotype.DATATYPE) {
+				putAsProperty(node);
+			}
+		}
+	}
+	
+	private void putAsProperty(Node node) {
+		Node relatedNode;
+		NodeProperty newProperty;
+		String name;
+		boolean acceptNull, isMultivalued;
+		
+		for(GraphAssociation association : node.getAssociations()) {
+			relatedNode = association.getNodeEndOf(node);
+			
+			name = association.getName();
+			name = name.substring(0, 1).toLowerCase() + name.substring(1, name.length());
+			
+			if(		association.getCardinalityBeginOf(node) == Cardinality.C0_N ||
+					association.getCardinalityBeginOf(node) == Cardinality.C1_N) 
+				isMultivalued = true;
+			else isMultivalued = false;
+			
+			if(		association.getCardinalityEndOf(node) == Cardinality.C0_1 ||
+					association.getCardinalityEndOf(node) == Cardinality.C0_N)
+				acceptNull = true;
+			else acceptNull = false;
+			
+			newProperty = new NodeProperty(
+					relatedNode,
+					Increment.getNextS(),
+					name, 
+					node.getName(),
+					acceptNull,
+					isMultivalued
+					);
+			
+			relatedNode.addProperty(newProperty);
+			removeAssociation(association);
+		}
+	}
+	
 	private void putAsEnumeration(Node node) {
 		ArrayList<String> literals = node.getLiterals();
-		
 		Node nodeAffected;
-		ArrayList<GraphAssociation> associationsToDelete = new ArrayList<GraphAssociation>();
-		GraphAssociation associationToDelete;
 		NodePropertyEnumeration enumProperty;
 		
 		for(GraphAssociation association : node.getAssociations()) {
@@ -486,13 +527,7 @@ public class Graph {
 				enumProperty.addValue(literal);
 			}
 			nodeAffected.addProperty(enumProperty);
-			associationsToDelete.add(association);
-		}
-		
-		while(associationsToDelete.size() > 0) {
-			associationToDelete = associationsToDelete.remove(0);
-			associationToDelete.disassociate();
-			removeAssociation(associationToDelete);
+			removeAssociation(association);
 		}
 	}
 	

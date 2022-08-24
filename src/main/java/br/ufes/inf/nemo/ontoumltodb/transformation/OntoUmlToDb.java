@@ -85,6 +85,7 @@ public class OntoUmlToDb {
 	 */
 	private void prepare() {
 		graph.transformEnumAssociationsInProperties();
+		graph.transformDatatypeAssociationInProperties();
 		graph.transform1To1AssociationIn1To01();
 	}
 
