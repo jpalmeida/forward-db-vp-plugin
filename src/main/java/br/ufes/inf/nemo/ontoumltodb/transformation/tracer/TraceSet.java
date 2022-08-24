@@ -142,17 +142,18 @@ public class TraceSet {
 		}
 	}
 	
-	public ArrayList<NodeProperty> getMandatoryProperteOf(NodeProperty discriminatorProperty){
-		ArrayList<NodeProperty> result = new ArrayList<NodeProperty>();
-		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
-		for (Trace trace : this.traces.values()) {
-			mandatoryProperties = trace.getMandatoryProperteOf(discriminatorProperty);
-			for(NodeProperty property : mandatoryProperties) {
-				result.add(property);
-			}
-		}
-		return result;
-	}
+//	Process restructured from version V0.2.
+//	public ArrayList<NodeProperty> getMandatoryProperteOf(NodeProperty discriminatorProperty){
+//		ArrayList<NodeProperty> result = new ArrayList<NodeProperty>();
+//		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
+//		for (Trace trace : this.traces.values()) {
+//			mandatoryProperties = trace.getMandatoryProperteOf(discriminatorProperty);
+//			for(NodeProperty property : mandatoryProperties) {
+//				result.add(property);
+//			}
+//		}
+//		return result;
+//	}
 
 	public String toString() {
 		String msg = "TRACE SET: " + this.originalNode.getName();;

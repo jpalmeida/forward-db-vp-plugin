@@ -1,8 +1,5 @@
 package br.ufes.inf.nemo.ontoumltodb.transformation.tracer;
 
-import java.util.ArrayList;
-
-import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
 
 public class Filter {

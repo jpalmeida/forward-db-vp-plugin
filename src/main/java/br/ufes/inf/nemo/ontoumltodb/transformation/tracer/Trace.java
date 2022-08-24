@@ -290,18 +290,18 @@ public class Trace {
 //		}
 //		return false;
 //	}
-	
-	public ArrayList<NodeProperty> getMandatoryProperteOf(NodeProperty discriminatorProperty){
-		ArrayList<NodeProperty> result = new ArrayList<NodeProperty>();
-		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
-		for (TracedNode tracedNode : tracedNodes) {
-			mandatoryProperties = tracedNode.getMandatoryProperteOf(discriminatorProperty);
-			for(NodeProperty property : mandatoryProperties) {
-				result.add(property);
-			}
-		}
-		return result;
-	}
+//	
+//	public ArrayList<NodeProperty> getMandatoryProperteOf(NodeProperty discriminatorProperty){
+//		ArrayList<NodeProperty> result = new ArrayList<NodeProperty>();
+//		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
+//		for (TracedNode tracedNode : tracedNodes) {
+//			mandatoryProperties = tracedNode.getMandatoryProperteOf(discriminatorProperty);
+//			for(NodeProperty property : mandatoryProperties) {
+//				result.add(property);
+//			}
+//		}
+//		return result;
+//	}
 
 	public String toString() {
 		String msg = "";

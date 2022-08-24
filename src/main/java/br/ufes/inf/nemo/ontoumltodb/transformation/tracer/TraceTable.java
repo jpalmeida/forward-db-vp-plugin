@@ -160,22 +160,22 @@ public class TraceTable {
 			traceSet.changeFiltersFromTo(from, to, disassociateNodeFrom);
 		}
 	}
-	
-	public ArrayList<NodeProperty> getMandatoryProperteOf(NodeProperty discriminatorProperty){
-		ArrayList<NodeProperty> result = new ArrayList<NodeProperty>();
-		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
-		
-		for (TraceSet traceSet : this.traceSets) {
-			mandatoryProperties = traceSet.getMandatoryProperteOf(discriminatorProperty);
-			//Eliminate duplicated properties.
-			for(NodeProperty property : mandatoryProperties) {
-				if(!existsProperty(result, property)) {
-					result.add(property);
-				}
-			}
-		}		
-		return result;
-	}
+//	Process restructured from version V0.2.
+//	public ArrayList<NodeProperty> getMandatoryProperteOf(NodeProperty discriminatorProperty){
+//		ArrayList<NodeProperty> result = new ArrayList<NodeProperty>();
+//		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
+//		
+//		for (TraceSet traceSet : this.traceSets) {
+//			mandatoryProperties = traceSet.getMandatoryProperteOf(discriminatorProperty);
+//			//Eliminate duplicated properties.
+//			for(NodeProperty property : mandatoryProperties) {
+//				if(!existsProperty(result, property)) {
+//					result.add(property);
+//				}
+//			}
+//		}		
+//		return result;
+//	}
 	
 	public boolean isSourceNodeMapped(Node node) {
 		for (TraceSet traceSet : traceSets) {

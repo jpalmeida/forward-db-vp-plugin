@@ -144,17 +144,18 @@ public class TracedNode {
 		return null;
 	}
 	
-	public ArrayList<NodeProperty> getMandatoryProperteOf(NodeProperty discriminatorProperty){
-		ArrayList<NodeProperty> result = new ArrayList<NodeProperty>();
-		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
-		for(Filter filter : filters) {
-//			mandatoryProperties = filter.getMandatoryProperteOf(discriminatorProperty);Process restructured from version V0.2.
-			for(NodeProperty property : mandatoryProperties) {
-				result.add(property);
-			}
-		}
-		return result;
-	}
+//	Process restructured from version V0.2.
+//	public ArrayList<NodeProperty> getMandatoryProperteOf(NodeProperty discriminatorProperty){
+//		ArrayList<NodeProperty> result = new ArrayList<NodeProperty>();
+//		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
+//		for(Filter filter : filters) {
+//			mandatoryProperties = filter.getMandatoryProperteOf(discriminatorProperty);
+//			for(NodeProperty property : mandatoryProperties) {
+//				result.add(property);
+//			}
+//		}
+//		return result;
+//	}
 	
 	public boolean existsOriginalPropertyInNodeMapped(NodeProperty property) {
 		for(NodeProperty nodeProperty : this.nodeMapped.getProperties()) {
