@@ -83,6 +83,11 @@ public class TraceTable {
 			if(traceSet.existsNode(from)) {
 				traceSet.addTrace(from, to, discriminatorProperty, discriminatorValue);
 			}
+			else {
+				if(traceSet.getSourceNode().isMyId(from.getID())) {
+					traceSet.addTrace(from, to, discriminatorProperty, discriminatorValue);
+				}
+			}
 		}
 	}
 	
@@ -118,16 +123,6 @@ public class TraceTable {
 		if(traceSet != null)
 			traceSet.addNodeGeneratedFromMultivaluedProperty(targetNode, newNode, propertyAffected);
 	}
-	
-	
-	/*
-	 * Adds a new node between two nodes. Is is used solves N:N cardinality.
-	 */
-//	public void addIntermediateNode(Node node1, Node node2, Node newNode) {
-//		for (TraceSet traceSet : this.traceSets) {
-//			traceSet.addIntermediateNode(node1, node2, newNode);
-//		}
-//	}
 	
 	/*
 	 * The new node must be added in the correct relative position for the 

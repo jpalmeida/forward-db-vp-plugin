@@ -240,7 +240,7 @@ public class PropertyContainer {
 	
 	public boolean isNecessaryGenerateMC3_4Constraint() {
 		for (NodeProperty property : this.properties) {
-			if(property.hasMandatoryProperty())
+			if(property.isBelongsDiscriminatoryProperty())
 				return true;
 		}
 		return false;
@@ -249,10 +249,10 @@ public class PropertyContainer {
 	public void atualizeMandatoryProperties() {
 		NodeProperty mandatoryProperty;
 		for (NodeProperty property : this.properties) {
-			if(property.hasMandatoryProperty()) {
-				mandatoryProperty = property.getMandatoryProperty(); // old property
+			if(property.isBelongsDiscriminatoryProperty()) {
+				mandatoryProperty = property.getDiscriminatoryProperty(); // old property
 				mandatoryProperty = getPropertyByName(mandatoryProperty.getName()); // get new property
-				property.setMandatoryProperty(mandatoryProperty); // atualize new property
+				property.setDiscriminatoryProperty(mandatoryProperty); // atualize new property
 			}
 		}
 	}

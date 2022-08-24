@@ -10,13 +10,11 @@ import br.ufes.inf.nemo.ontoumltodb.transformation.convert2er.ToEntityRelationsh
 import br.ufes.inf.nemo.ontoumltodb.transformation.database.BuildDatabase;
 import br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger.TriggerResult;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Graph;
-import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.obda.GenerateObdaConnection;
 import br.ufes.inf.nemo.ontoumltodb.transformation.obda.GenerateObda;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
 import br.ufes.inf.nemo.ontoumltodb.util.DbmsSupported;
 import br.ufes.inf.nemo.ontoumltodb.util.MappingStrategy;
-import br.ufes.inf.nemo.ontoumltodb.util.Origin;
 
 public class OntoUmlToDb {
 
@@ -59,26 +57,26 @@ public class OntoUmlToDb {
 			this.isEnumFieldToLookupTable = true;
 		
 		Statistic.initializes();
-		
-		System.out.println("***************************************");
-		System.out.println("Number of classes: " + graph.getNodes().size());
+//		
+//		System.out.println("***************************************");
+//		System.out.println("Number of classes: " + graph.getNodes().size());
 		
 		prepare();
 		doTransformations();
-		int qtd = 0;
-		for(Node node : graph.getNodes()) {
-			if(node.getOrigin() != Origin.N2NASSOCIATION && node.getOrigin() != Origin.MULTIVALUEATTRIBUTE) {
-				qtd++;
-			}
-		}
-		System.out.println("Number of tables: " + qtd);
-		getTriggersScripts();
-		System.out.println("Number of MC1 and 2: " + Statistic.getQtdMC12() *2);
-		System.out.println("Number of MC3 and 4: " + Statistic.getQtdMC34() *2);
-		System.out.println("Number of MC6: " + Statistic.getQtdMC6() *2);
-		System.out.println("Number of constraints: " + Statistic.getQtd()*2);
-		
-		System.out.println("***************************************");
+//		int qtd = 0;
+//		for(Node node : graph.getNodes()) {
+//			if(node.getOrigin() != Origin.N2NASSOCIATION && node.getOrigin() != Origin.MULTIVALUEATTRIBUTE) {
+//				qtd++;
+//			}
+//		}
+//		System.out.println("Number of tables: " + qtd);
+//		getTriggersScripts();
+//		System.out.println("Number of MC1 and 2: " + Statistic.getQtdMC12() *2);
+//		System.out.println("Number of MC3 and 4: " + Statistic.getQtdMC34() *2);
+//		System.out.println("Number of MC6: " + Statistic.getQtdMC6() *2);
+//		System.out.println("Number of constraints: " + Statistic.getQtd()*2);
+//		
+//		System.out.println("***************************************");
 	}
 	
 	/*

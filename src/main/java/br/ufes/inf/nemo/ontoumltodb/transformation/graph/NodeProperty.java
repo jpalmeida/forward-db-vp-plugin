@@ -31,12 +31,12 @@ public class NodeProperty extends Element{
 	// attributes intended for the trace
 	private boolean identifyOtherClass;
 	private boolean generatedFromTransformationProcess;
-	private Origin recivedBy;
+	private Origin origin;
 	
 	// properties intended for constraint generation
-	private NodeProperty mandatoryProperty;
+	private NodeProperty belongsDiscriminatoryProperty;
 	private boolean mandatoryFillingWhenMandatoryPropertyIsFilled;
-	private String mandatoryValue;
+	private String discriminatoryValue;
 
 	public NodeProperty(Node ownerNode, String id, String name, String dataType, boolean acceptNull, boolean multivalued) {
 		super(id, id, name, ElementType.PROPERTY);
@@ -66,10 +66,10 @@ public class NodeProperty extends Element{
 		this.indexType = IndexType.NOINDEX;
 		this.identifyOtherClass = false;
 		this.generatedFromTransformationProcess = false;
-		this.recivedBy = Origin.CREATION;
-		this.mandatoryProperty = null;
+		this.origin = Origin.CREATION;
+		this.belongsDiscriminatoryProperty = null;
 		this.mandatoryFillingWhenMandatoryPropertyIsFilled = false;
-		this.mandatoryValue = null;
+		this.discriminatoryValue = null;
 	}
 	
 	public Node getOwnerNode() {
@@ -290,11 +290,11 @@ public class NodeProperty extends Element{
 	}
 	
 	public void setRecivedBy(Origin origin) {
-		this.recivedBy = origin;
+		this.origin = origin;
 	}
 	
-	public Origin getRecivedBy() {
-		return this.recivedBy;
+	public Origin getOrigin() {
+		return this.origin;
 	}
 	
 	public boolean isSelfAssociation() {
@@ -303,35 +303,35 @@ public class NodeProperty extends Element{
 		return false;
 	}
 	
-	public boolean hasMandatoryProperty() {
-		if(this.mandatoryProperty != null)
+	public boolean isBelongsDiscriminatoryProperty() {
+		if(this.belongsDiscriminatoryProperty != null)
 			return true;
 		else return false;
 	}
 	
-	public NodeProperty getMandatoryProperty() {
-		return this.mandatoryProperty;
+	public NodeProperty getDiscriminatoryProperty() {
+		return this.belongsDiscriminatoryProperty;
 	}
 	
 	public boolean isMandatoryFillingWhenMandatoryPropertyIsFilled() {
 		return this.mandatoryFillingWhenMandatoryPropertyIsFilled;
 	}
 	
-	public String getMandatoryValue() {
-		return this.mandatoryValue;
+	public String getDiscriminatoryValue() {
+		return this.discriminatoryValue;
 	}
 	
-	public void setMandatoryProperty(NodeProperty property, boolean mandatoryFillingWhenMandatoryPropertyIsFilled, String mandatoryValue) {
+	public void setDiscriminatoryProperty(NodeProperty property, boolean mandatoryFillingWhenMandatoryPropertyIsFilled, String discriminatoryValue) {
 		// lose the first mandatory property in the lifting process, necessary for correct link  
-		if(this.mandatoryProperty == null) {
-			this.mandatoryProperty = property;
-			this.mandatoryValue = mandatoryValue;
+		if(this.belongsDiscriminatoryProperty == null) {
+			this.belongsDiscriminatoryProperty = property;
+			this.discriminatoryValue = discriminatoryValue;
 			this.mandatoryFillingWhenMandatoryPropertyIsFilled = mandatoryFillingWhenMandatoryPropertyIsFilled;
 		}
 	}
 	
-	public void setMandatoryProperty(NodeProperty property) {
-		this.mandatoryProperty = property;
+	public void setDiscriminatoryProperty(NodeProperty property) {
+		this.belongsDiscriminatoryProperty = property;
 	}
 
 	/**
@@ -355,9 +355,9 @@ public class NodeProperty extends Element{
 		newProperty.setDefaultValue(this.defaultValue);
 		newProperty.setIdentifyOtherClass(this.identifyOtherClass);
 		newProperty.setGeneratedFromTransformationProcess(this.generatedFromTransformationProcess);
-		newProperty.setRecivedBy(this.recivedBy);
-		if(this.mandatoryProperty != null)
-			newProperty.setMandatoryProperty(this.mandatoryProperty, this.mandatoryFillingWhenMandatoryPropertyIsFilled, this.mandatoryValue);
+		newProperty.setRecivedBy(this.origin);
+		if(this.belongsDiscriminatoryProperty != null)
+			newProperty.setDiscriminatoryProperty(this.belongsDiscriminatoryProperty, this.mandatoryFillingWhenMandatoryPropertyIsFilled, this.discriminatoryValue);
 				
 		return newProperty;
 	}
@@ -373,8 +373,8 @@ public class NodeProperty extends Element{
 			else msg = this.associationRelated.toString();
 		}
 		
-		if(mandatoryProperty != null) {
-			msgMandatory += "[MANDATORY PROPERTY: " + mandatoryProperty.getName() + "]";
+		if(belongsDiscriminatoryProperty != null) {
+			msgMandatory += "[MANDATORY PROPERTY: " + belongsDiscriminatoryProperty.getName() + "]";
 		}
 		
 		return 	"PROPERTY: "+

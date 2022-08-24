@@ -191,6 +191,10 @@ public class Node extends Element {
 	public ArrayList<GraphAssociation> getAssociations() {
 		return this.associationContainer.getAssociations();
 	}
+	
+	public GraphAssociation getAssociationWith(Node destinationNode) {
+		return this.associationContainer.getAssociationWith(destinationNode);
+	}
 
 	public boolean isSpecialization() {
 		return this.associationContainer.isSpecialization();

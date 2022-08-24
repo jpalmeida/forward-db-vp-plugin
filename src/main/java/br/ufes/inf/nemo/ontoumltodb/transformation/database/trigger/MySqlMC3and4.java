@@ -2,36 +2,243 @@ package br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger;
 
 import java.util.ArrayList;
 
-import br.ufes.inf.nemo.ontoumltodb.transformation.Statistic;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
-import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.Filter;
-import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.Trace;
-import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceSet;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
-import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TracedNode;
 import br.ufes.inf.nemo.ontoumltodb.util.MissingConstraint;
 import br.ufes.inf.nemo.ontoumltodb.util.Util;
 
 public class MySqlMC3and4 {
 	
-	private TraceTable traceTable;
-	private ArrayList<Filter> filtersUsed;
-	private ArrayList<String> attributesUsed;
+//	private TraceTable traceTable;
+//	private ArrayList<Filter> filtersUsed;
+//	private ArrayList<String> attributesUsed;
 
 	public MySqlMC3and4(TraceTable traceTable) {
-		this.traceTable = traceTable;
+//		this.traceTable = traceTable;
 	}
 	
+	public String getRestrictions(Node node) {
+		StringBuilder text = new StringBuilder();
+		ArrayList<NodeProperty> slaveProperties;
+		ArrayList<NodeProperty> dependentProperties;
+		NodeProperty discriminatoryProperty, slave;
+		String discriminatoryValue;
+		
+		if(!node.existsMissingConstraint(MissingConstraint.MC3_4)) 
+			return "";
+		
+		slaveProperties = getSlaveProperties(node);
+		
+		while(!slaveProperties.isEmpty()) {
+			slave = slaveProperties.get(0);
+			discriminatoryProperty = slave.getDiscriminatoryProperty();
+			discriminatoryValue = slave.getDiscriminatoryValue();
+			
+			dependentProperties = getDependentProperties(discriminatoryProperty, discriminatoryValue, slaveProperties);
+			
+			text.append(getMC3and4Restrictions(discriminatoryProperty, discriminatoryValue, dependentProperties));
+			
+		}
+		
+		return text.toString();
+	}
+	
+	private ArrayList<NodeProperty> getSlaveProperties(Node node){
+		ArrayList<NodeProperty> slaveProperties = new ArrayList<NodeProperty>();
+		for(NodeProperty property : node.getProperties()) {
+			if(property.isBelongsDiscriminatoryProperty()) {
+				slaveProperties.add(property);
+			}
+		}
+		return slaveProperties;
+	}
+	
+	private ArrayList<NodeProperty> getDependentProperties(NodeProperty discriminitor, String value, ArrayList<NodeProperty> slaveProperties){
+		ArrayList<NodeProperty> dependentProperties = new ArrayList<NodeProperty>();
+		NodeProperty property;
+		int index = 0;
+		
+		while(index < slaveProperties.size()) {
+			property = slaveProperties.get(index);
+			
+			if(	property.getDiscriminatoryProperty().getName().equals(discriminitor.getName()) &&
+				property.getDiscriminatoryValue().equals(value))	{
+				dependentProperties.add(property);
+				slaveProperties.remove(index);
+			}
+			else {
+				index++;
+			}
+		}
+		return dependentProperties;
+	}
+	
+	private String getMC3and4Restrictions(NodeProperty discriminitor, String value, ArrayList<NodeProperty> dependentProperties) {
+		StringBuilder text = new StringBuilder();
+		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
+		String tab = Util.getSpaces("", Util.getTabSize());
+		String tab2 = Util.getSpaces("", Util.getTabSize()*2);
+		
+		mandatoryProperties = getMandatoryProperties(dependentProperties);
+		
+		text.append(tab);
+		text.append("if( \n");
+		
+		if(!mandatoryProperties.isEmpty()) {
+			text.append(gerMC3Restriction(discriminitor, value, mandatoryProperties));
+			text.append(" or \n");
+		}
+		
+		if(!dependentProperties.isEmpty())
+			text.append(gerMC4Restriction(discriminitor, value, dependentProperties));
+		
+		text.append(tab);
+		text.append(") \n");
+		text.append(tab);
+		text.append("then \n");
+		text.append(tab2);
+		text.append("set msg = 'ERROR: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n"); 
+		text.append(tab2);
+		text.append("signal sqlstate '45000' set message_text = msg;\n");
+		
+		text.append(tab);
+		text.append("end if; \n\n");
+		
+		return text.toString();
+	}
+	
+	private ArrayList<NodeProperty> getMandatoryProperties(ArrayList<NodeProperty> dependentProperties){
+		ArrayList<NodeProperty> mandatoryProperties = new ArrayList<NodeProperty>();
+		
+		for(NodeProperty property :dependentProperties) {
+			if(property.isMandatoryFillingWhenMandatoryPropertyIsFilled()) {
+				mandatoryProperties.add(property);
+			}
+		}
+		return mandatoryProperties;
+	}
+//	
+//	private ArrayList<NodeProperty> getDependentPropertiesOf(NodeProperty currentProperty, Node node){
+//		ArrayList<NodeProperty> dependentProperties = new ArrayList<NodeProperty>();
+//		
+//		for(NodeProperty property : node.getProperties()) {
+//			if(property.isBelongsDiscriminatoryProperty()) {
+//				if(property.getDiscriminatoryProperty().getName().equals(currentProperty.getName())) {
+//					dependentProperties.add(property);
+//				}
+//			}
+//		}
+//		return dependentProperties;
+//	}
+	
+	private String gerMC3Restriction(NodeProperty discriminatorProperty, String value, ArrayList<NodeProperty> mandatoryProperties) {
+		StringBuilder text = new StringBuilder();
+		boolean first = true;
+		String tab2 = Util.getSpaces("", Util.getTabSize()*2);
+		
+		text.append(tab2);
+		text.append("( new.");
+		text.append(discriminatorProperty.getName());
+		text.append(" = ");
+		
+		if(isBooleanColumn(discriminatorProperty)) {
+			text.append(value.toUpperCase());
+		}
+		else {
+			text.append("'");
+			text.append(value.toUpperCase());
+			text.append("'");	
+		}
+		
+		text.append(" and ");
+		text.append(" ( ");
+		
+		for(NodeProperty property : mandatoryProperties) {
+			if(first)
+				first = false;
+			else text.append(" or ");
+			
+			text.append("new.");
+			text.append(property.getName());
+			text.append(" is null");	
+		}
+		
+		text.append(" ) ");
+		text.append(" ) ");
+		
+		return text.toString();
+	}
+	
+	private String gerMC4Restriction(NodeProperty discriminatorProperty, String value, ArrayList<NodeProperty> dependentProperties) {
+		StringBuilder text = new StringBuilder();
+		boolean first = true;
+		String tab2 = Util.getSpaces("", Util.getTabSize()*2);
+		
+//		if(isAttributeUsed(mandatoryProperty.getName())) 
+//			return "";
+//			
+//		attributesUsed.add(mandatoryProperty.getName());
+		
+		text.append(tab2);
+		text.append("( new.");
+		text.append(discriminatorProperty.getName());
+		text.append(" <> ");
+		
+		if(isBooleanColumn(discriminatorProperty)) {
+			text.append(value.toUpperCase());
+		}
+		else {
+			text.append("'");
+			text.append(value.toUpperCase());
+			text.append("'");	
+		}
+		
+		text.append(" and ");
+		text.append(" ( ");
+		
+		for(NodeProperty property : dependentProperties) {
+			if(first)
+				first = false;
+			else text.append(" or ");
+			
+			if(isBooleanColumn(property)) {
+				text.append(" ifnull(");
+				text.append("new.");
+				text.append(property.getName());
+				text.append(", false)");
+				
+				text.append(" = true");
+			}
+			else {
+				text.append("new.");
+				text.append(property.getName());
+				text.append(" is not null");
+			}			
+		}
+		
+		text.append(" ) ");
+		text.append(" ) \n");
+		
+		return text.toString();
+	}
+	
+	private boolean isBooleanColumn(NodeProperty property) {
+		
+		if(property.getDataType().equalsIgnoreCase("BOOLEAN"))
+			return true;
+		return false;
+	}
+	
+	/*
 	public String getRestrictions(Node node) {
 		StringBuilder text = new StringBuilder();
 		this.filtersUsed = new ArrayList<Filter>();
 		this.attributesUsed = new ArrayList<String>();
 		String mc3, mc4;
 		
-		
-		//Next version: change MC3 constraint generation from trace table to node (as done for MC4).
 		mc3 = getMC3Restrictions(node);
+	
 		mc4 = getMC4Restrictions(node);
 				
 		text.append(mc3);
@@ -201,6 +408,20 @@ public class MySqlMC3and4 {
 		return false;
 	}
 	
+	private ArrayList<NodeProperty> getDependentPropertiesOf(NodeProperty currentProperty, Node node, String value){
+		ArrayList<NodeProperty> dependentProperties = new ArrayList<NodeProperty>();
+		
+		for(NodeProperty property : node.getProperties()) {
+			if(property.hasMandatoryProperty()) {
+				if(property.getMandatoryProperty().getName().equals(currentProperty.getName())) {
+					if(property.getMandatoryValue().equalsIgnoreCase(value))
+						dependentProperties.add(property);
+				}
+			}
+		}
+		return dependentProperties;
+	}
+	
 	private String getMC4Restrictions(Node node) {
 		StringBuilder text = new StringBuilder();
 		ArrayList<NodeProperty> dependentProperties;
@@ -223,20 +444,6 @@ public class MySqlMC3and4 {
 			if(property.hasMandatoryProperty()) {
 				if(property.getMandatoryProperty().getName().equals(currentProperty.getName())) {
 					dependentProperties.add(property);
-				}
-			}
-		}
-		return dependentProperties;
-	}
-	
-	private ArrayList<NodeProperty> getDependentPropertiesOf(NodeProperty currentProperty, Node node, String value){
-		ArrayList<NodeProperty> dependentProperties = new ArrayList<NodeProperty>();
-		
-		for(NodeProperty property : node.getProperties()) {
-			if(property.hasMandatoryProperty()) {
-				if(property.getMandatoryProperty().getName().equals(currentProperty.getName())) {
-					if(property.getMandatoryValue().equalsIgnoreCase(value))
-						dependentProperties.add(property);
 				}
 			}
 		}
@@ -327,4 +534,5 @@ public class MySqlMC3and4 {
 		}
 		return false;
 	}
+	*/
 }

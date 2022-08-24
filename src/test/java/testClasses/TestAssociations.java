@@ -6,10 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import br.ufes.inf.nemo.ontoumltodb.transformation.OntoUmlToDb;
 import br.ufes.inf.nemo.ontoumltodb.util.DbmsSupported;
-import br.ufes.inf.nemo.ontoumltodb.util.Increment;
 import br.ufes.inf.nemo.ontoumltodb.util.MappingStrategy;
 import testModels.AssociationsModel;
-import testModels.HierarchyModel;
 
 public class TestAssociations {
 
@@ -30,7 +28,7 @@ public class TestAssociations {
 		    		");");
 		    check.addCommand("CREATE TABLE node1to1 ( \n" + 
 		    		"         person_id             INTEGER        NOT NULL PRIMARY KEY \n" + 
-		    		",        test                    INTEGER        NOT NULL \n" + 
+		    		",        test                  INTEGER        NOT NULL \n" + 
 		    		");");
 		    
 		    check.addCommand("ALTER TABLE node1to1   ADD FOREIGN KEY ( person_id ) REFERENCES Person ( person_id );");
@@ -358,58 +356,6 @@ public class TestAssociations {
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("SelfRelationship");
-		}
-	}
-	
-	@Test
-	public void testComplexDimandoAssociation() {
-		try {
-			Increment.inicialzate();
-			OntoUmlToDb toDb = new OntoUmlToDb( HierarchyModel.getComplexDimond());
-		    
-			toDb.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_KIND);
-		    toDb.setDbms(DbmsSupported.MYSQL);
-		    toDb.setStandardizeNames(true);
-		    toDb.runTransformation();
-		    String script = toDb.getRelationalSchemaScript();
-		    
-		    CheckTransformation check = new CheckTransformation( script );
-		    check.addCommand("CREATE TABLE super_class (  \n" + 
-		    		"        super_class_id         INTEGER       NOT NULL PRIMARY KEY \n" + 
-		    		",       is_sub_class1          BOOLEAN       NOT NULL DEFAULT FALSE \n" + 
-		    		",       is_bottom_class        BOOLEAN       NOT NULL DEFAULT FALSE \n" + 
-		    		",       is_sub_class4          BOOLEAN       NOT NULL DEFAULT FALSE \n" + 
-		    		",       is_sub_class3          BOOLEAN       NOT NULL DEFAULT FALSE \n" + 
-		    		",       is_sub_class2          BOOLEAN       NOT NULL DEFAULT FALSE \n" + 
-		    		"); ");
-		    
-		    check.addCommand("CREATE TABLE relator (  \n" + 
-		    		"        relator_id             INTEGER       NOT NULL PRIMARY KEY \n" + 
-		    		",       super_class_id         INTEGER       NOT NULL" + 
-		    		"); ");
-		    
-		    check.addCommand("CREATE TABLE sub_class3_super_class (  \n" + 
-		    		"        sub_class3_super_class_id INTEGER       NOT NULL PRIMARY KEY \n" + 
-		    		",       super_class_has_sub_class343_id INTEGER       NOT NULL \n" + 
-		    		",       super_class_has_sub_class344_id INTEGER       NOT NULL \n" + 
-		    		"); ");
-		    
-		    check.addCommand("ALTER TABLE relator ADD FOREIGN KEY ( super_class_id ) REFERENCES super_class ( super_class_id );");
-		    
-		    check.addCommand("ALTER TABLE sub_class3_super_class ADD FOREIGN KEY ( super_class_has_sub_class343_id ) REFERENCES super_class ( super_class_id );");
-		   
-		    check.addCommand("ALTER TABLE sub_class3_super_class ADD FOREIGN KEY ( super_class_has_sub_class344_id ) REFERENCES super_class ( super_class_id );");
-		    
-		    String result = check.run();
-		    
-		    if(result != null) {
-		    	System.out.println("Test [ComplexDimandoAssociation] has problems: " + result);
-		    	fail("ComplexDimandoAssociation");
-		    }
-		    
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("ComplexDimandoAssociation");
 		}
 	}
 	

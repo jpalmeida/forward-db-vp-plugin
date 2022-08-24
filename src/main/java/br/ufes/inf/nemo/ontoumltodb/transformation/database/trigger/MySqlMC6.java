@@ -38,16 +38,14 @@ public class MySqlMC6 {
 		StringBuilder text = new StringBuilder();
 		ArrayList <Trace> traces = new ArrayList<Trace>();
 		
-		for (NodeProperty property : node.getProperties()) {
+		for (NodeProperty property : node.getForeignKeys()) {
 			if(isForeignKeyToValidade(property)) {
 				traces = getTargetNodesBelongToForeignKey(property);
 				for(Trace trace : traces) {
 					text.append(getConstraintToFk(property, trace));
 				}
-				
 			}
 		}
-		
 		return text.toString();
 	}
 	
@@ -73,31 +71,28 @@ public class MySqlMC6 {
 		ArrayList <Trace> traces = new ArrayList<Trace>();
 		boolean existsFilter = false;
 		
-		if(property.isForeignKey()) {
-			//Checks if the table referenced by the foreign key exists in the original model. 
-			//If it does not exist, is because it was created in the transformation process 
-			//(from an ENUMbor multivalued attribute)
-			id = property.getForeignKeyNodeID();
-			node = traceTable.getOriginalGraph().getNodeById(id);
-			if(node == null) {
-				return false;
-			}
-			
-			//The absence of filters means that it comes from a flattening or there were no 
-			//changes in the original model class, so there will be nothing to validate. 
-			//Referential integrity resolves.
-			traces = getTargetNodesBelongToForeignKey(property);
-			for(Trace trace : traces) {
-				if(trace.hasFilter())
-					existsFilter = true;
-			}
-			
-			if(!existsFilter)
-				return false;
-			
-			return true;
+		//Checks if the table referenced by the foreign key exists in the original model. 
+		//If it does not exist, is because it was created in the transformation process 
+		//(from an ENUMbor multivalued attribute)
+		id = property.getForeignKeyNodeID();
+		node = traceTable.getOriginalGraph().getNodeById(id);
+		if(node == null) {
+			return false;
 		}
-		return false;
+		
+		//The absence of filters means that it comes from a flattening or there were no 
+		//changes in the original model class, so there will be nothing to validate. 
+		//Referential integrity resolves.
+		traces = getTargetNodesBelongToForeignKey(property);
+		for(Trace trace : traces) {
+			if(trace.hasFilter())
+				existsFilter = true;
+		}
+		
+		if(!existsFilter)
+			return false;
+		
+		return true;
 	}
 	
 	private ArrayList<Trace> getTargetNodesBelongToForeignKey(NodeProperty property){
@@ -124,10 +119,6 @@ public class MySqlMC6 {
 			if( isSourceNodeToEvaluate(association))
 				node = originalAssociation.getSourceNode();
 			else node = originalAssociation.getTargetNode();
-			
-//			if( Util.isLowCartinality(association.getSourceCardinality()) &&  Util.isHightCartinality(association.getTargetCardinality()))
-//				node = originalAssociation.getSourceNode();
-//			else node = originalAssociation.getTargetNode();
 			
 			traceSet = traceTable.getTraceSetById(node);
 			for(Trace trace : traceSet.getTraces()) {

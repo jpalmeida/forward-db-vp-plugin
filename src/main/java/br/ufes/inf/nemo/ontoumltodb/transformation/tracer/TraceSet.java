@@ -6,6 +6,7 @@ import java.util.Map;
 
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
+import br.ufes.inf.nemo.ontoumltodb.util.Origin;
 
 public class TraceSet {
 
@@ -31,7 +32,6 @@ public class TraceSet {
 	}
 	
 	public void removeTracedNode(Node to) {
-		//traces.remove(to.getID());
 		String toRemove = null;
 		Trace trace;
 		for (String key : traces.keySet()) {
@@ -48,7 +48,6 @@ public class TraceSet {
 	}
 	
 	public void addTrace(Node sourceNode, Node targetNode, NodeProperty discriminatorProperty, Object discriminatorValue) {
-//		System.out.println("**** MI sourceNode: " + sourceNode.getName() + "\t targetNode: " + targetNode.getName());
 		Trace newTrace = new Trace(targetNode, discriminatorProperty, discriminatorValue);	
 		this.traces.put(targetNode.getID(), newTrace);
 	}
@@ -60,23 +59,11 @@ public class TraceSet {
 	}
 	
 	public void updateTrace(Node from, Node to, NodeProperty discriminatorProperty, Object discriminatorValue) {
-//		System.out.println("**** From: " + from.getName() + "\t To: " + to.getName());
-		
-		//Verifica que vai alterar para um nodo destino que já esiste na tabela de rastros
-//		if(existsNode(from) && existsNode(to)) {
-//			ArrayList<Filter> filtersFrom = getFiltersOf(from);
-//			this.traces.remove(from.getID());
-//			Trace trace = getTraceOf(to);;
-//			trace.addFilters(filtersFrom, to);
-//			trace.updateTrace(from, to, discriminatorProperty, discriminatorValue);
-//		}
-//		else {
-			for (Trace trace : this.traces.values()) {
-				if(trace.existsNode(from)) {
-					trace.updateTrace(from, to, discriminatorProperty, discriminatorValue);
-				}
+		for (Trace trace : this.traces.values()) {
+			if(trace.existsNode(from)) {
+				trace.updateTrace(from, to, discriminatorProperty, discriminatorValue);
 			}
-//		}
+		}
 	}
 	
 	public void moveFilters(Node node) {
@@ -129,16 +116,19 @@ public class TraceSet {
 	public void addNodeGeneratedFromMultivaluedProperty(Node targetNode, Node newNode, NodeProperty propertyAffected) {
 		for(Trace trace : this.traces.values()) {
 			if(trace.existsNode(targetNode)) {
-				trace.addNodeGeneratedFromMultivaluedProperty(targetNode, newNode, propertyAffected);
+				if(propertyAffected.getOrigin() == Origin.LIFTING) {
+					for(Filter filter : trace.getFilters()) {
+						if(filter.getFilterProperty().getName().equals(propertyAffected.getName())) {
+							trace.addNodeGeneratedFromMultivaluedProperty(targetNode, newNode, propertyAffected);
+						}
+					}
+				}
+				else{
+					trace.addNodeGeneratedFromMultivaluedProperty(targetNode, newNode, propertyAffected);
+				}
 			}
 		}
 	}
-	
-//	public void addIntermediateNode(Node node1, Node node2, Node newNode) {
-//		for (Trace trace : this.traces.values()) {
-//			trace.addIntermediateNode(node1, node2, newNode);
-//		}
-//	}
 	
 	public void addIntermediateNode(Node newNode, Node afterNode) {
 		for (Trace trace : this.traces.values()) {

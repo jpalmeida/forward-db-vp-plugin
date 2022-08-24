@@ -7,18 +7,20 @@
 package br.ufes.inf.nemo.ontoumltodb.transformation.graph;
 
 import br.ufes.inf.nemo.ontoumltodb.util.ElementType;
+import br.ufes.inf.nemo.ontoumltodb.util.Increment;
+import br.ufes.inf.nemo.ontoumltodb.util.IndexType;
 
 public class GraphGeneralization extends GraphAssociation {
-	private GraphGeneralizationSet belongToGS;
+	private GraphGeneralizationSet generalizationSet;
 
 	public GraphGeneralization(String id, Node generalizationNode, Node specializationNode) {
 		super(id, id, "unnamed", ElementType.GENERALIZATION, generalizationNode, null, specializationNode, null);
-		this.belongToGS = null;
+		this.generalizationSet = null;
 	}
 	
 	public GraphGeneralization(String id, String originalId, Node generalizationNode, Node specializationNode) {
 		super(id, originalId, "unnamed", ElementType.GENERALIZATION, generalizationNode, null, specializationNode, null);
-		this.belongToGS = null;
+		this.generalizationSet = null;
 	}
 
 	/**
@@ -44,25 +46,50 @@ public class GraphGeneralization extends GraphAssociation {
 	 *
 	 * @param gs Generalization set to be associated with generalization.
 	 */
-	public void setBelongGeneralizationSet(GraphGeneralizationSet gs) {
-		this.belongToGS = gs;
+	public void setGeneralizationSet(GraphGeneralizationSet gs) {
+		this.generalizationSet = gs;
 	}
 
 	/**
 	 * Returns which set of generalizations the generalization belongs to.
 	 */
-	public GraphGeneralizationSet getBelongGeneralizationSet() {
-		return this.belongToGS;
+	public GraphGeneralizationSet getGeneralizationSet() {
+		return this.generalizationSet;
 	}
 
 	/**
 	 * Tells whether the generalization belongs to a generalization set.
 	 */
 	public boolean isBelongGeneralizationSet() {
-		if (this.belongToGS == null)
+		if (this.generalizationSet == null)
 			return false;
 		else
 			return true;
+	}
+	
+	public NodeProperty getPropertyRelated() {
+		NodeProperty newProperty = new NodeProperty(
+				getGeneral(), 
+				Increment.getNextS(),
+				"is" + getSpecific().getName(), 
+				"boolean", 
+				false, 
+				false);
+		newProperty.setIdentifyOtherClass(true);
+		newProperty.setDefaultValue(false);
+		newProperty.setIndexType(IndexType.INDEX);
+		newProperty.setGeneratedFromTransformationProcess(true);
+		
+		return newProperty;
+	}
+	
+	public Object getValueRelated() {
+		if(!isBelongGeneralizationSet()) {
+			return Boolean.TRUE;
+		}
+		else {
+			return getSpecific().getName().toUpperCase();
+		}
 	}
 	
 	public GraphGeneralization clone(Node newGeneralizationNode, Node newSpecializationNode) {

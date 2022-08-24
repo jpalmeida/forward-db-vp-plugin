@@ -9,6 +9,7 @@ import br.ufes.inf.nemo.ontoumltodb.util.DbmsSupported;
 import br.ufes.inf.nemo.ontoumltodb.util.Increment;
 import br.ufes.inf.nemo.ontoumltodb.util.MappingStrategy;
 import testModels.HierarchyModel;
+import testModels.MultipleInheritanceModel;
 import testModels.TraceTableModel;
 
 public class TestTraceability {
@@ -276,14 +277,15 @@ public class TestTraceability {
 		    
 		    CheckTransformation check = new CheckTransformation( traces );
 		    
-		    check.addCommand("TRACE SET: SuperClass \n" + 
-		    		"	TRACE: super_class | gs_test;");
+		    check.addCommand("TRACE SET: AssociatedClass \n" + 
+		    		"	TRACE: associated_class;");
 		    check.addCommand("TRACE SET: SubClass1 \n" + 
 		    		"	TRACE: super_class | gs_test [gs_test_enum = SubClass1 (MANDATORY: age)];");
 		    check.addCommand("TRACE SET: SubClass2 \n" + 
 		    		"	TRACE: super_class | gs_test [gs_test_enum = SubClass2 (MANDATORY: height)];");
-		    check.addCommand("TRACE SET: AssociatedClass \n" + 
-		    		"	TRACE: associated_class;");
+		    check.addCommand("TRACE SET: SuperClass \n" + 
+		    		"	TRACE: super_class ;");
+		    
 		    
 		    String result = check.run();
 		    
@@ -302,7 +304,7 @@ public class TestTraceability {
 	public void testTraceabilityComplexDimandoAssociation() {
 		try {
 			Increment.inicialzate();
-			OntoUmlToDb toDb = new OntoUmlToDb( HierarchyModel.getComplexDimond());
+			OntoUmlToDb toDb = new OntoUmlToDb( MultipleInheritanceModel.getComplexDimond());
 		    
 			toDb.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_KIND);
 		    toDb.setDbms(DbmsSupported.MYSQL);
@@ -370,7 +372,7 @@ public class TestTraceability {
 		    		"	TRACE: super_class | type [typeenum = SubClass3] ;");
 		    
 		    check.addCommand("TRACE SET: SuperClass \n" + 
-		    		"	TRACE: super_class | type;");
+		    		"	TRACE: super_class ;");
 		    
 		    String result = check.run();
 		    

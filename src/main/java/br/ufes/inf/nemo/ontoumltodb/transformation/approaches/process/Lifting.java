@@ -6,20 +6,79 @@ import br.ufes.inf.nemo.ontoumltodb.transformation.graph.MissingConstraintData;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Graph;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphGeneralization;
-import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphGeneralizationSet;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
-import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodePropertyEnumeration;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
 import br.ufes.inf.nemo.ontoumltodb.util.Cardinality;
 import br.ufes.inf.nemo.ontoumltodb.util.Increment;
-import br.ufes.inf.nemo.ontoumltodb.util.IndexType;
 import br.ufes.inf.nemo.ontoumltodb.util.MissingConstraint;
 import br.ufes.inf.nemo.ontoumltodb.util.Origin;
 import br.ufes.inf.nemo.ontoumltodb.util.Util;
 
 public class Lifting {
 
+	
+	public static void run(Node node, Graph graph, TraceTable traceTable) {
+		NodeProperty newProperty;
+		boolean hasMultipleInheritance = false;
+		
+		if(node.hasMultipleInheritance()) {
+			hasMultipleInheritance = true;
+		}
+		
+		for(GraphGeneralization generalization : node.getGeneralizations()) {
+			newProperty = getNewProperty(generalization);
+			
+			// Put new property in the generalization node.
+			generalization.getGeneral().addProperty(newProperty);
+			
+			// Lifting the attributes
+			liftingAttributes(node, generalization.getGeneral(), newProperty, generalization.getValueRelated());
+			
+			// Lifting the constraints
+			addLostConstraintM6(node, traceTable);
+			liftConstraints(node, generalization.getGeneral());
+			
+			// for tracing
+			if(hasMultipleInheritance) 
+				traceTable.addTargetNode(node, generalization.getGeneral(), newProperty, generalization.getValueRelated());
+			else traceTable.updateTrace(node, generalization.getGeneral(), newProperty, generalization.getValueRelated());
+						
+			liftingReferences(node, generalization.getGeneral(), traceTable, graph);
+			
+			generalization.disassociate();
+			
+			graph.removeGeneralization(generalization);
+			
+		}
+
+		// for tracing
+		if(hasMultipleInheritance) {
+			traceTable.moveFilters(node);
+			traceTable.removeTracedNode(node);
+		}
+						
+		graph.removeNode(node);			
+		
+		graph.removeEmptyGeneralizationSet();
+	}
+	
+	private static NodeProperty getNewProperty(GraphGeneralization generalization) {
+		NodeProperty newProperty = null;
+		
+		if(generalization.isBelongGeneralizationSet()) 
+			newProperty = generalization.getGeneralizationSet().getNodePropertyEnumerationRelated();
+		else newProperty = generalization.getPropertyRelated();
+		
+		newProperty.setRecivedBy(Origin.LIFTING);
+		
+		return newProperty;
+	}
+	
+	
+	
+	
+	/*
 	public static void run(Node node, Graph graph, TraceTable traceTable) {
 		
 		if(node.getGeneralizationSets().size() == 0)
@@ -32,6 +91,7 @@ public class Lifting {
 	// **************************************************************************************
 	private static void resolveGeneralization(Node node, Graph graph, TraceTable traceTable) {
 		NodeProperty newProperty;
+		ArrayList<GraphGeneralization> generalizationsToRemove = new ArrayList<GraphGeneralization>();
 		boolean hasMultipleInheritance = false;
 		
 		if(node.hasMultipleInheritance()) {
@@ -57,29 +117,40 @@ public class Lifting {
 			generalization.getGeneral().addProperty(newProperty);
 			
 			// Lifting the attributes
-			liftAttributes(node, generalization.getGeneral(), newProperty, "true");
+			liftingAttributes(node, generalization.getGeneral(), newProperty, "true");
 			
 			// Lifting the constraints
 			addLostConstraintM6(node, traceTable);
 			liftConstraints(node, generalization.getGeneral());
 			
 			// for tracing
-			if(hasMultipleInheritance) {
+			if(hasMultipleInheritance) 
 				traceTable.addTargetNode(node, generalization.getGeneral(), newProperty, true);
-			}
-			else {
-				traceTable.updateTrace(node, generalization.getGeneral(), newProperty, true);
-			}
+			else traceTable.updateTrace(node, generalization.getGeneral(), newProperty, true);
+						
+			liftingReferences(node, generalization.getGeneral(), traceTable, graph);
 			
-			remakeReferences(node, generalization.getGeneral(), traceTable, graph);
+			generalizationsToRemove.add(generalization);
 		}
+		
+		while(!generalizationsToRemove.isEmpty()) {
+			generalizationsToRemove.get(0).disassociate();
+			graph.removeAssociation(generalizationsToRemove.get(0));
+			generalizationsToRemove.remove(0);
+		}
+		
 		if(hasMultipleInheritance) {
 			traceTable.moveFilters(node);
 			traceTable.removeTracedNode(node);
 		}
+		
 		removeNodeAssociations(node, graph);
 		
-		graph.removeNode(node);
+		// The node keeps having the generalizations that participate in a generalization set. 
+		// The associations and the node will be removed when solving the generalization set.
+		if(node.getGeneralizations().isEmpty()) {
+			graph.removeNode(node);
+		}
 	}
 	
 	// **************************************************************************************
@@ -96,16 +167,16 @@ public class Lifting {
 			for (Node specializationNode : gs.getSpecializationNodes()) {
 				
 				// Lifting the attributes
-				liftAttributes(specializationNode, gs.getGeneral(), newEnumerationField, specializationNode.getName());
+				liftingAttributes(specializationNode, gs.getGeneral(), newEnumerationField, specializationNode.getName());
 				
 				// Lifting the constraints
 				addLostConstraintM6(specializationNode, traceTable);
 				liftConstraints(specializationNode, gs.getGeneral());
 				
-				// for the tracing
+				// for tracing
 				traceTable.updateTrace(specializationNode, gs.getGeneral(), newEnumerationField, specializationNode.getName());
 				
-				remakeReferences(specializationNode, gs.getGeneral(), traceTable, graph);
+				liftingReferences(specializationNode, gs.getGeneral(), traceTable, graph);
 				removeNodeAssociations(specializationNode, graph);
 				
 				if(!graph.belongAnotherGS(specializationNode)) {
@@ -113,7 +184,6 @@ public class Lifting {
 				}
 			}
 			
-			gs.setResolved(true);
 			graph.removeGeneralizationSet(gs);
 		}
 	}
@@ -145,12 +215,12 @@ public class Lifting {
 		}
 		return newEnumeration;
 	}
-	
+	*/
 	// **************************************************************************************
 	// *********** Resolve the node attributes
 	// **************************************************************************************
 	// must be called after creating all attributes on the specialization nodes.
-	private static void liftAttributes(Node subnode, Node superNode, NodeProperty mandatoryProperty, String mandatoryValue) {
+	private static void liftingAttributes(Node subnode, Node superNode, NodeProperty mandatoryProperty, Object mandatoryValue) {
 		ArrayList<NodeProperty> newProperties = new ArrayList<NodeProperty>();
 		NodeProperty newProperty;
 
@@ -162,12 +232,12 @@ public class Lifting {
 				// default false)
 				newProperty.setNullable(true);
 			}
-			if(newProperty.getRecivedBy() == Origin.CREATION) { // Change only one time
-				newProperty.setRecivedBy(Origin.LIFTING);
+			if(newProperty.getOrigin() == Origin.CREATION) { // Change only one time
+				newProperty.setOrigin(Origin.LIFTING);
 			}
 			
-			if(!newProperty.hasMandatoryProperty())
-				newProperty.setMandatoryProperty(mandatoryProperty, property.isNullable() ? false : true, mandatoryValue);
+			if(!newProperty.isBelongsDiscriminatoryProperty())
+				newProperty.setDiscriminatoryProperty(mandatoryProperty, property.isNullable() ? false : true, mandatoryValue.toString());
 			
 			newProperties.add(newProperty);
 		}
@@ -178,7 +248,7 @@ public class Lifting {
 	// **************************************************************************************
 	// *********** Resolve the references
 	// **************************************************************************************
-	private static void remakeReferences(Node node, Node superNode, TraceTable traceTable, Graph graph) {
+	private static void liftingReferences(Node node, Node superNode, TraceTable traceTable, Graph graph) {
 		GraphAssociation newAssociation, originalAssociation;
 		Boolean existsAssociation = false;
 		
@@ -220,7 +290,7 @@ public class Lifting {
 			}
 		}
 	}
-	
+	/*
 	private static void removeNodeAssociations(Node node, Graph graph) {
 		GraphAssociation association;
 	
@@ -229,7 +299,7 @@ public class Lifting {
 			node.removeAssociation(association);
 			graph.removeAssociation(association);
 		}
-	}
+	}*/
 	
 	private static Cardinality getNewCardinality(Cardinality oldCardinality) {
 		if (oldCardinality == Cardinality.C1_N) {
@@ -239,14 +309,14 @@ public class Lifting {
 		} else
 			return oldCardinality;
 	}
-	
+	/*
 	private static String getEnumName(GraphGeneralizationSet gs) {
 		if (gs.getName() == null || gs.getName().trim().equals(""))
 			return gs.getGeneral().getName() + "Type";
 		else
 			return gs.getName();
 	}
-	
+	*/
 	private static void liftConstraints(Node sourceNode, Node targetNode) {
 		for(MissingConstraintData data : sourceNode.getAllMissingConstraint()) {
 			targetNode.addMissingConstraint(data.getSourceNode(), data.getSourceAssociation(), data.getMissingConstraint());
@@ -255,16 +325,12 @@ public class Lifting {
 	
 	private static void addLostConstraintM6(Node liftedNode, TraceTable traceTable) {
 		Node relatedNode;
-//		GraphAssociation originalAssociation;
 		Cardinality cardinalityBegin;
 		Cardinality cardinalityEnd;
 		
 		for(GraphAssociation association : liftedNode.getAssociations()) {
-//			originalAssociation = association.getOriginalAssociation();
 			cardinalityBegin = association.getCardinalityBeginOf(liftedNode);
 			cardinalityEnd = association.getCardinalityEndOf(liftedNode);
-//			cardinalityBegin = originalAssociation.getCardinalityBeginOf(liftedNode);
-//			cardinalityEnd = originalAssociation.getCardinalityEndOf(liftedNode);
 			
 			if(		(cardinalityBegin == Cardinality.C0_1 && cardinalityEnd == Cardinality.C0_N) ||
 					(cardinalityBegin == Cardinality.C0_1 && cardinalityEnd == Cardinality.C1_N) ||
@@ -272,9 +338,7 @@ public class Lifting {
 					(cardinalityBegin == Cardinality.C1   && cardinalityEnd == Cardinality.C1_N) ||
 					(cardinalityBegin == Cardinality.C1   && cardinalityEnd == Cardinality.C0_1)
 			) {
-				relatedNode = association.getNodeEndOf(liftedNode);
-//				relatedNode = originalAssociation.getNodeEndOf(liftedNode);
-//				relatedNode = traceTable.getTracesById(relatedNode).get(0).getMainNode();				
+				relatedNode = association.getNodeEndOf(liftedNode);			
 				relatedNode.addMissingConstraint(liftedNode, association, MissingConstraint.MC6);
 			}
 			else {
@@ -284,16 +348,12 @@ public class Lifting {
 						(cardinalityBegin == Cardinality.C1_N && cardinalityEnd == Cardinality.C1)   ||
 						(cardinalityBegin == Cardinality.C0_1 && cardinalityEnd == Cardinality.C1)
 				) {
-					//relatedNode = association.getNodeEndOf(liftedNode);
-					//relatedNode.addMissingConstraint(liftedNode, association, MissingConstraint.MC6);
 					liftedNode.addMissingConstraint(liftedNode, association, MissingConstraint.MC6_Inverse);
 				}
 				else {
 					if(		(cardinalityBegin == Cardinality.C0_1 && cardinalityEnd == Cardinality.C0_1) 
 					) {
 						relatedNode = association.getNodeEndOf(liftedNode);
-//						relatedNode = originalAssociation.getNodeEndOf(liftedNode);
-//						relatedNode = traceTable.getTracesById(relatedNode).get(0).getMainNode();
 						relatedNode.addMissingConstraint(liftedNode, association, MissingConstraint.MC6);
 						liftedNode.addMissingConstraint(liftedNode, association, MissingConstraint.MC6);
 					}
@@ -302,4 +362,5 @@ public class Lifting {
 			//  N:N associations is produced by the trace table only
 		}
 	}
+
 }

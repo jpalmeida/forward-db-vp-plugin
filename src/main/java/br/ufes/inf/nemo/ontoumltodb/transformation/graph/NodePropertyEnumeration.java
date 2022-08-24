@@ -94,8 +94,8 @@ public class NodePropertyEnumeration extends NodeProperty {
 		newProperty.setForeignNodeID(this.getForeignKeyNodeID(), this.getAssociationRelatedOfFK(), this.getPrimaryKeyRelated());
 		newProperty.setDefaultValue(this.getDefaultValue());
 		newProperty.setOriginGeneralizationSet(this.originGeneralizationSet);
-		if(hasMandatoryProperty())
-			newProperty.setMandatoryProperty(getMandatoryProperty(),  isMandatoryFillingWhenMandatoryPropertyIsFilled(), getMandatoryValue());
+		if(isBelongsDiscriminatoryProperty())
+			newProperty.setDiscriminatoryProperty(getDiscriminatoryProperty(),  isMandatoryFillingWhenMandatoryPropertyIsFilled(), getDiscriminatoryValue());
 		
 		
 		for(String nodeValue : values) {
@@ -117,8 +117,8 @@ public class NodePropertyEnumeration extends NodeProperty {
 		 }
 		 result += "]";
 		 
-		 if(hasMandatoryProperty()) {
-				msgMandatory += "[MANDATORY PROPERTY: " + getMandatoryProperty().getName() + "]";
+		 if(isBelongsDiscriminatoryProperty()) {
+				msgMandatory += "[MANDATORY PROPERTY: " + getDiscriminatoryProperty().getName() + "]";
 			}
 		
 		return 	"PROPERTY: "+

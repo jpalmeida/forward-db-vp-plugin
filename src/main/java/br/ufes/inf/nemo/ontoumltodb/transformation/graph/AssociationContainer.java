@@ -56,6 +56,14 @@ public class AssociationContainer {
 		}
 		return result;
 	}
+	
+	public GraphAssociation getAssociationWith(Node destinationNode) {
+		for(GraphAssociation association : this.associations) {
+			if(association.getNodeEndOf(this.parentNode).getName().equals(destinationNode.getName()))
+				return association;
+		}
+		return null;
+	}
 	  
 	/**
 	 * Returns generalizations belonging to the node.
@@ -79,7 +87,7 @@ public class AssociationContainer {
 
 	    for (GraphGeneralization generalization : getGeneralizations()) {
 	    	if (generalization.isBelongGeneralizationSet()) {
-		          gSets.add(generalization.getBelongGeneralizationSet());
+		          gSets.add(generalization.getGeneralizationSet());
 		      }
 		} 
 		return gSets;

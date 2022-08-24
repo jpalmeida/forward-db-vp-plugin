@@ -4,10 +4,8 @@ import java.util.ArrayList;
 
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Graph;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
-import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphGeneralization;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
-import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodePropertyEnumeration;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
 import br.ufes.inf.nemo.ontoumltodb.util.Cardinality;
 import br.ufes.inf.nemo.ontoumltodb.util.Increment;
@@ -94,23 +92,25 @@ public class SolvesMultivaluedProperty {
 	    graph.addAssociation(association);
 	    
 	    //For tracing
-	    if(property instanceof NodePropertyEnumeration) {
-	    	NodePropertyEnumeration enumProperty = (NodePropertyEnumeration) property;
-	    	
-	    	if(enumProperty.getOriginGeneralizationSet() != null) {
-	    		
-	    		traceTable.addNodeGeneratedFromMultivaluedProperty(enumProperty.getOriginGeneralizationSet().getGeneral(), node, newNode, property);
-	    		
-	    		for(GraphGeneralization generalization : enumProperty.getOriginGeneralizationSet().getGeneralizations()) {
-	    			traceTable.addNodeGeneratedFromMultivaluedProperty(generalization.getSpecific() ,node, newNode, property);
-	    		}
-	    	}
-	    	else {
-	    		traceTable.addNodeGeneratedFromMultivaluedProperty(node, newNode, property);
-	    	}
-	    }else {
-	    	traceTable.addNodeGeneratedFromMultivaluedProperty(node, newNode, property);
-	    }
+	    traceTable.addNodeGeneratedFromMultivaluedProperty(node, newNode, property);
+//	    if(property instanceof NodePropertyEnumeration) {
+//	    	NodePropertyEnumeration enumProperty = (NodePropertyEnumeration) property;
+//	    	
+//	    	if(enumProperty.getOriginGeneralizationSet() != null) {
+//	    		
+//	    		traceTable.addNodeGeneratedFromMultivaluedProperty(enumProperty.getOriginGeneralizationSet().getGeneral(), node, newNode, property);
+//	    		
+//	    		for(GraphGeneralization generalization : enumProperty.getOriginGeneralizationSet().getGeneralizations()) {
+//	    			traceTable.addNodeGeneratedFromMultivaluedProperty(generalization.getSpecific() ,node, newNode, property);
+//	    		}
+//	    	}
+//	    	else {
+//	    		traceTable.addNodeGeneratedFromMultivaluedProperty(node, newNode, property);
+//	    	}
+//	    }else {
+//	    	traceTable.addNodeGeneratedFromMultivaluedProperty(node, newNode, property);
+//	    }
+	    
 	  }
 	 
 	 

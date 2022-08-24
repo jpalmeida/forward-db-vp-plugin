@@ -9,6 +9,7 @@ package br.ufes.inf.nemo.ontoumltodb.transformation.graph;
 import java.util.ArrayList;
 
 import br.ufes.inf.nemo.ontoumltodb.util.ElementType;
+import br.ufes.inf.nemo.ontoumltodb.util.Increment;
 
 public class GraphGeneralizationSet extends Element {
 	private ArrayList<GraphGeneralization> generalizations;
@@ -16,6 +17,7 @@ public class GraphGeneralizationSet extends Element {
 	private boolean disjoint;
 	private boolean complete;
 	private boolean isResolved;
+	private NodePropertyEnumeration nodePropertyEnumerationRelated;
 
 	public GraphGeneralizationSet(String id,String name, boolean disjoint, boolean complete) {
 		super(id, id, name, ElementType.GENERALIZATION_SET);
@@ -23,6 +25,7 @@ public class GraphGeneralizationSet extends Element {
 		this.disjoint = disjoint;
 		this.complete = complete;
 		this.isResolved = false;
+		this.nodePropertyEnumerationRelated = null;
 	}
 	
 	public GraphGeneralizationSet(String id, String originalId, String name, boolean disjoint, boolean complete) {
@@ -31,6 +34,7 @@ public class GraphGeneralizationSet extends Element {
 		this.disjoint = disjoint;
 		this.complete = complete;
 		this.isResolved = false;
+		this.nodePropertyEnumerationRelated = null;
 	}
 	
 	/**
@@ -41,14 +45,22 @@ public class GraphGeneralizationSet extends Element {
 	public void addGeneralization(GraphGeneralization generalization){
 		if(generalizations.isEmpty()) {
 			generalizations.add(generalization);
-			generalization.setBelongGeneralizationSet(this);
+			generalization.setGeneralizationSet(this);
 		}
 		else{
 			if(!existsGeneralization(generalization.getID()) && hasSameSuperNode(generalization)) {
 				generalizations.add(generalization);
-				generalization.setBelongGeneralizationSet(this);
+				generalization.setGeneralizationSet(this);
 			}
 		}
+	}
+	
+	public void removeGeneralzation(GraphGeneralization generalization) {
+		this.generalizations.remove(generalization);
+	}
+	
+	public boolean isEmpty() {
+		return this.generalizations.isEmpty();
 	}
 	
 	public ArrayList<GraphGeneralization> getGeneralizations(){
@@ -158,6 +170,39 @@ public class GraphGeneralizationSet extends Element {
 	 */
 	public void setResolved(boolean isResolved) {
 		this.isResolved = isResolved;
+	}
+	
+	public NodeProperty getNodePropertyEnumerationRelated() {
+		if(this.nodePropertyEnumerationRelated != null) {
+			return this.nodePropertyEnumerationRelated;
+		}
+		else {
+			String enumName = getName() + "Enum";
+			
+			nodePropertyEnumerationRelated = new NodePropertyEnumeration(
+						getGeneral(), 
+						Increment.getNextS(), 
+						enumName,
+						"string", 
+						false, 
+						false);
+			
+			nodePropertyEnumerationRelated.setGeneratedFromTransformationProcess(true);
+			//nodePropertyEnumerationRelated.setOriginGeneralizationSet(this);
+			
+			if(isComplete())
+				nodePropertyEnumerationRelated.setNullable(false);
+			else nodePropertyEnumerationRelated.setNullable(true);
+			
+			if(isDisjoint())
+				nodePropertyEnumerationRelated.setMultivalued(false);
+			else nodePropertyEnumerationRelated.setMultivalued(true);
+						
+			for (Node specializationNode : getSpecializationNodes()) {
+				nodePropertyEnumerationRelated.addValue(specializationNode.getName());
+			}
+			return nodePropertyEnumerationRelated;
+		}
 	}
 	
 	/**

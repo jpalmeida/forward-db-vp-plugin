@@ -245,9 +245,29 @@ public class Graph {
 		}
 	}
 	
+	/**
+	 * Removes the generalization association of the graph (not remove the nodes). 
+	 *
+	 * @param generalization. Generalization to be removed.
+	 */
+	public void removeGeneralization(GraphGeneralization generalization) {
+		if (generalization instanceof GraphGeneralization) {
+			generalization.disassociate();
+		}
+		
+		if(generalization.isBelongGeneralizationSet()) {
+			generalization.getGeneralizationSet().removeGeneralzation(generalization);
+		}
+		
+		int index = this.associations.indexOf(generalization);
+		if (index != -1) {
+			this.associations.remove(index);
+		}
+	}
+	
 	public void removeGeneralizationSet(GraphGeneralizationSet gs) {
 		for(GraphGeneralization generalization: gs.getGeneralizations()) {
-			generalization.setBelongGeneralizationSet(null);
+			generalization.setGeneralizationSet(null);
 		}
 		this.generalizationSets.remove(gs);
 	}
@@ -256,6 +276,22 @@ public class Graph {
 		if(node.getGeneralizationSets().size() > 1) 
 			return true;
 		else return false;
+	}
+	
+	public void removeEmptyGeneralizationSet() {
+		int index = 0;
+		GraphGeneralizationSet gs;
+		
+		while(index < this.generalizationSets.size()) {
+			gs = this.generalizationSets.get(index);
+			
+			if(gs.isEmpty()) {
+				this.generalizationSets.remove(index);
+			}
+			else {
+				index++;
+			}
+		}
 	}
 	
 	/**

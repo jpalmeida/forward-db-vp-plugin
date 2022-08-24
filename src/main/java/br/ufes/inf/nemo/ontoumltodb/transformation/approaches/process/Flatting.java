@@ -46,8 +46,8 @@ public class Flatting {
 		for (NodeProperty nodeProperty : properties) {
 			newProperty = nodeProperty.clone(generalization.getGeneral(), Increment.getNextS());
 			newProperty.setOwnerNode(generalization.getSpecific());
-			if(newProperty.getRecivedBy() == Origin.CREATION) { // Change only one time
-				newProperty.setRecivedBy(Origin.FLATTENING);
+			if(newProperty.getOrigin() == Origin.CREATION) { // Change only one time
+				newProperty.setOrigin(Origin.FLATTENING);
 			}
 			
 			if(!generalization.getSpecific().existsPropertyName(newProperty.getName())) {

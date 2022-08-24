@@ -96,8 +96,8 @@ public class TestRunningExampleSlim {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        ( new.is_personal_customer = TRUE and ( new.credit_rating is null  or new.credit_card is null  )  ) or  \n" + 
-		    		"        ( new.is_personal_customer <> TRUE and  (new.credit_rating is not null  or new.credit_card is not null ) )  \n" + 
+		    		"        ( new.life_phase_enum = 'ADULT' and  ( new.is_personal_customer is null )  )  or  \n" + 
+		    		"        ( new.life_phase_enum <> 'ADULT' and  (  ifnull(new.is_personal_customer, false) = true )  )  \n" + 
 		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_i].';  \n" + 
@@ -105,7 +105,8 @@ public class TestRunningExampleSlim {
 		    		"    end if;  \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        ( new.life_phase_enum <> 'ADULT' and  (  ifnull(new.is_personal_customer, false) = true )  )  \n" + 
+		    		"        ( new.is_personal_customer = TRUE and  ( new.credit_rating is null or new.credit_card is null )  )  or  \n" + 
+		    		"        ( new.is_personal_customer <> TRUE and  ( new.credit_rating is not null or new.credit_card is not null )  )  \n" + 
 		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_i].';  \n" + 
@@ -124,8 +125,8 @@ public class TestRunningExampleSlim {
 		    		"    declare msg varchar(128); \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        ( new.is_personal_customer = TRUE and ( new.credit_rating is null  or new.credit_card is null  )  ) or  \n" + 
-		    		"        ( new.is_personal_customer <> TRUE and  (new.credit_rating is not null  or new.credit_card is not null ) )  \n" + 
+		    		"        ( new.life_phase_enum = 'ADULT' and  ( new.is_personal_customer is null )  )  or  \n" + 
+		    		"        ( new.life_phase_enum <> 'ADULT' and  (  ifnull(new.is_personal_customer, false) = true )  )  \n" + 
 		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_u].';  \n" + 
@@ -133,7 +134,8 @@ public class TestRunningExampleSlim {
 		    		"    end if;  \n" + 
 		    		" \n" + 
 		    		"    if(  \n" + 
-		    		"        ( new.life_phase_enum <> 'ADULT' and  (  ifnull(new.is_personal_customer, false) = true )  )  \n" + 
+		    		"        ( new.is_personal_customer = TRUE and  ( new.credit_rating is null or new.credit_card is null )  )  or  \n" + 
+		    		"        ( new.is_personal_customer <> TRUE and  ( new.credit_rating is not null or new.credit_card is not null )  )  \n" + 
 		    		"    )  \n" + 
 		    		"    then  \n" + 
 		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_u].';  \n" + 
