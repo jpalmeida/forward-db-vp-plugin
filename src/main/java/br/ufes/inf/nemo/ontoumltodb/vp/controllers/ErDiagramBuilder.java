@@ -171,7 +171,7 @@ public class ErDiagramBuilder {
 			Node nodeX = null;
 			int x = 999999;
 			for(GraphAssociation association : node.getAssociations()) {
-				nodeAux = graph.getNodeEndOf(association, node);
+				nodeAux = association.getNodeEndOf(node);
 				if(nodeAux.getPositionX() < x && nodeAux.getPositionX() != 0) {
 					x = nodeAux.getPositionX();
 					nodeX = nodeAux;

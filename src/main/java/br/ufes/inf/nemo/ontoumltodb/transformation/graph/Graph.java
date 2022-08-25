@@ -153,14 +153,14 @@ public class Graph {
 		return result;
 	}
 	
-	public boolean existsA(GraphAssociation association) {
-		for(Node node : this.nodes) {
-			if(node.existsAssociation(association)) {
-				return true;
-			}
-		}
-		return false;
-	}
+//	public boolean existsA(GraphAssociation association) {
+//		for(Node node : this.nodes) {
+//			if(node.existsAssociation(association)) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 	
 	/**
 	 * Returns all associations of one specific type from the graph.
@@ -272,11 +272,11 @@ public class Graph {
 		this.generalizationSets.remove(gs);
 	}
 	
-	public boolean belongAnotherGS(Node node) {
-		if(node.getGeneralizationSets().size() > 1) 
-			return true;
-		else return false;
-	}
+//	public boolean belongAnotherGS(Node node) {
+//		if(node.getGeneralizationSets().size() > 1) 
+//			return true;
+//		else return false;
+//	}
 	
 	public void removeEmptyGeneralizationSet() {
 		int index = 0;
@@ -328,12 +328,6 @@ public class Graph {
 		
 		return newGraph;
 	}
-	
-	public Node getNodeEndOf(GraphAssociation association, Node node) {
-		if(association.getTargetNode().isMyId(node.getID()))
-			return association.getSourceNode();
-		else return association.getTargetNode();
-	}
 
 	/**
 	 * Returns the Super Nodes of the current node;
@@ -373,18 +367,6 @@ public class Graph {
 			}
 		}
 		return false;
-	}
-	
-	public boolean isSuperNodeOf(Node currentNode, Node superNode) {
-		if(currentNode.getName().equals(superNode.getName())) {
-			return true;
-		}
-		else {
-			for(Node node : getSuperNodes(currentNode)) {
-				return isSuperNodeOf(node, superNode);
-			}
-			return false;
-		}
 	}
 	
 	/**

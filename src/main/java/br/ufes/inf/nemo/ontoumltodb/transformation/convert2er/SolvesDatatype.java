@@ -57,33 +57,5 @@ public class SolvesDatatype {
 		for(NodeProperty nodeProperty : datatypeNode.getProperties()) {
 			currentNode.addProperty(nodeProperty.clone(currentNode, Increment.getNextS()));
 		}
-		
-//		if(property.isMultivalued())
-//			generateAssociationWithDatatype(graph, traceTable, property , currentNode, datatypeNode);
-//		else applyDatatypeAttributesInNode(currentNode, datatypeNode);
 	}
-	
-//	private static void generateAssociationWithDatatype(Graph graph, TraceTable traceTable, NodeProperty property, Node currentNode, Node datatypeNode) {
-//		GraphAssociation newAssociation = new GraphAssociation(
-//				Increment.getNextS(), // id 
-//				currentNode.getName() + "X" + datatypeNode.getName(), // name 
-//				ElementType.ASSOCIATION, // elementType 
-//				currentNode, // sourceNode 
-//				Cardinality.C1, // sourceCardinality 
-//				datatypeNode, // targetNode 
-//				Cardinality.C0_N // targetCardinality
-//				);
-//		currentNode.addAssociation(newAssociation);
-//		datatypeNode.addAssociation(newAssociation);
-//		
-//		traceTable.addNodeGeneratedFromMultivaluedProperty(currentNode, datatypeNode, property);
-//		
-//		graph.addAssociation(newAssociation);
-//	}
-	
-//	private static void applyDatatypeAttributesInNode(Node currentNode, Node datatypeNode) {
-//		for(NodeProperty property : datatypeNode.getProperties()) {
-//			currentNode.addProperty(property.clone(currentNode, Increment.getNextS()));
-//		}
-//	}
 }
