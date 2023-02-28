@@ -19,7 +19,7 @@ public class GraphAssociation extends Element {
 	
 	private String nodeNameRemoved; // this is important when there is a name collision in the FK name propagation
 	// process.
-	private boolean derivedFromGeneralization;
+	private boolean overridesGeneralization;
 
 	public GraphAssociation(String id, String name, Node sourceNode, Cardinality sourceCardinality, Node targetNode,
 			Cardinality targetCardinality) {
@@ -29,7 +29,7 @@ public class GraphAssociation extends Element {
 		this.sourceCardinality = sourceCardinality;
 		this.targetCardinality = targetCardinality;
 		this.nodeNameRemoved = null;
-		this.derivedFromGeneralization = false;
+		this.overridesGeneralization = false;
 		this.sourceNode.addAssociation(this);
 		this.targetNode.addAssociation(this);
 		this.originalAssociation = this;
@@ -43,7 +43,7 @@ public class GraphAssociation extends Element {
 		this.sourceCardinality = sourceCardinality;
 		this.targetCardinality = targetCardinality;
 		this.nodeNameRemoved = null;
-		this.derivedFromGeneralization = false;
+		this.overridesGeneralization = false;
 		this.sourceNode.addAssociation(this);
 		this.targetNode.addAssociation(this);
 		this.originalAssociation = this;
@@ -57,7 +57,7 @@ public class GraphAssociation extends Element {
 		this.sourceCardinality = sourceCardinality;
 		this.targetCardinality = targetCardinality;
 		this.nodeNameRemoved = null;
-		this.derivedFromGeneralization = false;
+		this.overridesGeneralization = false;
 		this.sourceNode.addAssociation(this);
 		this.targetNode.addAssociation(this);
 		this.originalAssociation = this;
@@ -71,7 +71,7 @@ public class GraphAssociation extends Element {
 		this.sourceCardinality = sourceCardinality;
 		this.targetCardinality = targetCardinality;
 		this.nodeNameRemoved = null;
-		this.derivedFromGeneralization = false;
+		this.overridesGeneralization = false;
 		this.sourceNode.addAssociation(this);
 		this.targetNode.addAssociation(this);
 		this.originalAssociation = null;
@@ -246,8 +246,8 @@ public class GraphAssociation extends Element {
 	 * 
 	 * @param falg
 	 */
-	public void setDerivedFromGeneralization(boolean falg) {
-		this.derivedFromGeneralization = falg;
+	public void setOverridesGeneralization(boolean falg) {
+		this.overridesGeneralization = falg;
 	}
 
 	/**
@@ -255,8 +255,8 @@ public class GraphAssociation extends Element {
 	 * 
 	 * @returns
 	 */
-	public boolean isDerivedFromGeneralization() {
-		return this.derivedFromGeneralization;
+	public boolean isOverridesGeneralization() {
+		return this.overridesGeneralization;
 	}
 	
 	/**

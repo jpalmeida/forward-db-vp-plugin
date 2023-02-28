@@ -7,6 +7,10 @@ public class ToEntityRelationship {
 
 	public static void run(Graph graph, TraceTable traceTable, boolean isStandardizeNames, boolean enumFiledToLookupTable) {
 
+		graph.transform1To1AssociationIn1To01();
+		
+		SolvesWeakEntities.run(graph, traceTable);
+		
 		SolvesGeneralization.run(graph);
 		
 		SolvesMultivaluedProperty.run(graph, traceTable);

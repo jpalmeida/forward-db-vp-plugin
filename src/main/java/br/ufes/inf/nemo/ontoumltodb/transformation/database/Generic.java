@@ -36,15 +36,17 @@ public class Generic implements IDbms{
 	
 
 	public String getSchema(Graph graph) {
-		String ddl = "";
+		StringBuilder ddl = new StringBuilder();;
 
-		ddl = createTables(graph);
+		ddl.append(createTables(graph));
 
-		ddl += createForeignKeys(graph);	
+		ddl.append(createForeignKeys(graph));	
 		
-		ddl += createInserts(graph);
+		ddl.append(createInserts(graph));
 		
-		return ddl;
+		ddl.append(createUniqueIndexs(graph)); //this index must ensure the correct source model rules.
+		
+		return ddl.toString();
 	}
 	
 	public String getStringValue(Object value) {
@@ -60,28 +62,30 @@ public class Generic implements IDbms{
 
 	// ************************************************************************
 	public String createTables(Graph graph) {
-		String ddl = "";
+		StringBuilder ddl = new StringBuilder();
 		for (Node node : graph.getNodes()) {
-			ddl += createTable(node);
+			ddl.append(createTable(node));
 		}
-		return ddl;
+		return ddl.toString();
 	}
 
 	public String createTable(Node node) {
-		String ddl = "";
+		StringBuilder ddl = new StringBuilder();
 		boolean firstColumn = true;
 
-		ddl += createTableDescription() + node.getName() + " ( ";
+		ddl.append(createTableDescription());
+		ddl.append(node.getName());
+		ddl.append(" ( ");
 
 		for (NodeProperty property : node.getProperties()) {
-			ddl += createColumn(property, firstColumn);
+			ddl.append(createColumn(property, firstColumn));
 			firstColumn = false;
 		}
 
-		ddl += this.getConstraintTable(node);
+		ddl.append(this.getConstraintTable(node));
 
-		ddl += "\n); \n\n";
-		return ddl;
+		ddl.append("\n); \n\n");
+		return ddl.toString();
 	}
 
 	public String createTableDescription() {
@@ -93,7 +97,7 @@ public class Generic implements IDbms{
 	}
 
 	public String createColumn(NodeProperty property, boolean firstColumn) {
-		String ddl = "";
+		StringBuilder ddl = new StringBuilder();
 		String comma = "";
 		String columnName = "";
 		String columnType = "";
@@ -106,9 +110,9 @@ public class Generic implements IDbms{
 		else
 			comma = "\n," + Util.getSpaces(",", 8);
 
-		columnName = property.getName() + Util.getSpaces(property.getName(), 23);
+		columnName = getColumnName(property);// + Util.getSpaces(property.getName(), 23);
 
-		columnType = getColumnName(property);
+		columnType = getColumnType(property);
 
 		primaryKey = getPKDescription(property);
 
@@ -116,14 +120,15 @@ public class Generic implements IDbms{
 
 		defaultValue = getDefaultValue(property);
 
-		ddl += comma;
-		ddl += columnName;
-		ddl += columnType;
-		ddl += nullable;
-		ddl += primaryKey;
-		ddl += defaultValue;
+		ddl.append(comma);
+		ddl.append(columnName);
+		ddl.append(Util.getSpaces(columnName, 25));
+		ddl.append(columnType);
+		ddl.append(nullable);
+		ddl.append(primaryKey);
+		ddl.append(defaultValue);
 
-		return ddl;
+		return ddl.toString();
 	}
 
 	public String getPKDescription(NodeProperty property) {
@@ -141,7 +146,7 @@ public class Generic implements IDbms{
 	}
 
 	public String getColumnName(NodeProperty property) {
-		return this.getColumnType(property);
+		return property.getName() + Util.getSpaces(property.getName(), 23);
 	}
 
 	public String getDefaultValue(NodeProperty property) {
@@ -152,75 +157,101 @@ public class Generic implements IDbms{
 	}
 
 	public String getColumnType(NodeProperty property) {
-		String ddl = "";
+		StringBuilder ddl = new StringBuilder();
 		boolean first;
 
 		if ( 	property instanceof NodePropertyEnumeration &&
 				((NodePropertyEnumeration)property).isGenerateEnumColumn()	){
-			ddl = "ENUM(";
+			ddl.append("ENUM(");
 			first = true;
 			for (String value : ((NodePropertyEnumeration) property).getValues()) {
 				if (first) {
-					ddl += "'" + value + "'";
+					ddl.append("'");
+					ddl.append(value);
+					ddl.append("'");
 					first = false;
 				} else {
-					ddl += ",'" + value + "'";
+					ddl.append(",'");
+					ddl.append(value);
+					ddl.append("'");
 				}
 			}
-			ddl += ")";
+			ddl.append(")");
 		} else {
-			if (this.types.get(property.getDataType()) != null) {
-				ddl = this.types.get(property.getDataType());
+			if (property.getDataType() == null) {
+				ddl.append("INT");
 			} else {
-				if(property.getDataType() != null) {
-					ddl = property.getDataType().toUpperCase();
+				if(this.types.get(property.getDataType().toLowerCase()) != null) {
+					ddl.append(this.types.get(property.getDataType().toLowerCase()));
 				}
 				else {
-					ddl = "int";
+					ddl.append(property.getDataType().toUpperCase());
 				}
 			}
+//			if (this.types.get(property.getDataType().toLowerCase()) != null) {
+//				ddl = this.types.get(property.getDataType().toLowerCase());
+//			} else {
+//				if(property.getDataType() != null) {
+//					ddl = property.getDataType().toUpperCase();
+//				}
+//				else {
+//					ddl = "INT";
+//				}
+//			}
 		}
-		ddl += Util.getSpaces(ddl, 13);
-		return ddl;
+		ddl.append(Util.getSpaces(ddl.toString(), 13));
+		return ddl.toString();
 	}
 
 	// ***************************************************************************
 
 	public String createForeignKeys(Graph graph) {
-		String ddl = "";
+		StringBuilder ddl = new StringBuilder();
 
 		for (Node node : graph.getNodes()) {
 			for (NodeProperty property : node.getProperties()) {
 				if (property.isForeignKey()) {
-					ddl += "\n\nALTER TABLE ";
-					ddl += node.getName();
-					ddl += " ADD FOREIGN KEY ( ";
-					ddl += property.getName();
-					ddl += " ) REFERENCES ";
-					ddl += graph.getNodeById(property.getForeignKeyNodeID()).getName();
-					ddl += " ( ";
-					ddl += graph.getNodeById(property.getForeignKeyNodeID()).getPKName();
-					ddl += " );";
+					ddl.append("\n\nALTER TABLE ");
+					ddl.append(node.getName());
+					ddl.append(" ADD FOREIGN KEY ( ");
+					ddl.append(property.getName());
+					ddl.append(" ) REFERENCES ");
+					ddl.append(graph.getNodeById(property.getForeignKeyNodeID()).getName());
+					ddl.append(" ( ");
+					ddl.append(graph.getNodeById(property.getForeignKeyNodeID()).getPKName());
+					ddl.append(" );");
 				}
 			}
 		}
-		return ddl;
+		return ddl.toString();
+	}
+	
+	private String createUniqueIndexs(Graph graph) {
+		StringBuilder text = new StringBuilder();
+		text.append("\n\n");
+		
+		for (Node node : graph.getNodes()) {
+			text.append(getUniqueIndex(node));
+		}
+		
+		return text.toString();
 	}
 
 	// ***************************************************************************
 	
 	public String getIndexes(Graph graph) {
-		String text = "\n\n";
+		StringBuilder text = new StringBuilder();
+		text.append("\n\n");
 
 		for (Node node : graph.getNodes()) {
 			indexNumber = 0;
-			text += getIndexForFk(node);
+			text.append(getIndexForFk(node));
 			
-			text += getCommonIndex(node);
+			text.append(getCommonIndex(node));
 			
-			text += getUniqueIndexWithFk(node);
+			text.append(getUniqueIndexWithFk(node));
 		}
-		return text;
+		return text.toString();
 	}
 	
 	private ArrayList<NodeProperty> getIndexProperties(Node node, IndexType indexType){
@@ -235,31 +266,35 @@ public class Generic implements IDbms{
 	
 	private String getCommonIndex(Node node) {
 		ArrayList<NodeProperty> properties = getIndexProperties(node, IndexType.INDEX);
-		String text = "";
+		StringBuilder text = new StringBuilder();
 		
 		if(properties.size() == 0)
 			return "";
 		
 		for(NodeProperty property : properties) {
 			indexNumber++;
-			text += "CREATE INDEX ";
-			text += "ix_" + node.getName() + "_" + indexNumber;
-			text += " ON " + node.getName();
-			text += " ( ";
+			text.append("CREATE INDEX ");
+			text.append("ix_");
+			text.append(node.getName());
+			text.append("_");
+			text.append(indexNumber);
+			text.append(" ON ");
+			text.append(node.getName());
+			text.append(" ( ");
 		
-			text += property.getName();
-			text += ", ";
-			text += node.getPKName();
-			text += " );";
-			text += "\n\n";
+			text.append(property.getName());
+			text.append(", ");
+			text.append(node.getPKName());
+			text.append(" );");
+			text.append("\n\n");
 			
 		}
-		return text;
+		return text.toString();
 	}
 	
 	private String getUniqueIndexWithFk(Node node) {
 		ArrayList<NodeProperty> properties = getIndexProperties(node, IndexType.UNIQUEINDEXSWITHFK);
-		String text = "";
+		StringBuilder text = new StringBuilder();
 		String fkFieldName = "";
 		
 		if(properties.size() == 0)
@@ -267,64 +302,94 @@ public class Generic implements IDbms{
 		
 		for(NodeProperty property : properties) {
 			indexNumber++;
-			text += "CREATE UNIQUE INDEX ";
-			text += "ix_" + node.getName() + "_" + indexNumber;
-			text += " ON " + node.getName();
-			text += " ( ";
+			text.append("CREATE UNIQUE INDEX ");
+			text.append("ix_");
+			text.append(node.getName());
+			text.append("_");
+			text.append(indexNumber);
+			text.append(" ON ");
+			text.append(node.getName());
+			text.append(" ( ");
 		
-			text += property.getName();
-			text += ", ";
+			text.append(property.getName());
+			text.append(", ");
 			fkFieldName = getFKFieldName(node);
 			if (fkFieldName != "") {
-				text += fkFieldName;
+				text.append(fkFieldName);
 			}
-			text += " );";
-			text += "\n\n";
+			text.append(" );");
+			text.append("\n\n");
 		}
-		return text;
+		return text.toString();
+	}
+	
+	private String getUniqueIndex(Node node) {
+		ArrayList<NodeProperty> properties = getIndexProperties(node, IndexType.UNIQUEINDEX);
+		StringBuilder text = new StringBuilder();
+		
+		if(properties.size() == 0)
+			return "";
+		
+		for(NodeProperty property : properties) {
+			indexNumber++;
+			text.append("CREATE UNIQUE INDEX ");
+			text.append("ix_");
+			text.append(node.getName());
+			text.append("_");
+			text.append(indexNumber);
+			text.append(" ON ");
+			text.append(node.getName());
+			text.append(" ( ");
+			text.append(property.getName());
+			text.append(" );\n\n");
+		}
+		return text.toString();
 	}
 	
 	private String getIndexForFk(Node node) {
-		String text = "";
+		StringBuilder text = new StringBuilder();
 		
 		for (NodeProperty property : node.getProperties()) {
 			if (property.isForeignKey()) {
 				indexNumber++;
-				text += "CREATE INDEX ";
-				text += "ix_" + node.getName() + "_" + indexNumber;
-				text += " ON " + node.getName();
-				text += " ( ";
-				text += property.getName();
+				text.append("CREATE INDEX ");
+				text.append("ix_");
+				text.append(node.getName());
+				text.append("_");
+				text.append(indexNumber);
+				text.append(" ON ");
+				text.append(node.getName());
+				text.append(" ( ");
+				text.append(property.getName());
 				if(!property.getName().equals(node.getPKName())) {
-					text += ", ";
-					text += node.getPKName();
+					text.append(", ");
+					text.append(node.getPKName());
 				}
-				text += " );\n\n";
+				text.append(" );\n\n");
 			}
 		}
-		
-		return text;
+		return text.toString();
 	}
 
 	public String getFKFieldName(Node node) {
-		String fkNames = "";
+		StringBuilder fkNames = new StringBuilder();
 		boolean first = true;
 
 		for (NodeProperty property : node.getProperties()) {
 			if (property.isForeignKey()) {
 				if (!first) {
-					fkNames += ", ";
+					fkNames.append(", ");
 				}
-				fkNames += property.getName();
+				fkNames.append(property.getName());
 				first = false;
 			}
 		}
-		return fkNames;
+		return fkNames.toString();
 	}
 	
 	// *****************************************************************************************
 	public String createInserts(Graph graph) {
-		String ddl = "";
+		StringBuilder ddl = new StringBuilder();
 		int index = 1;
 		for (Node node : graph.getNodes()) {
 			if (node.getStereotype() == Stereotype.ENUMERATION) {
@@ -332,20 +397,26 @@ public class Generic implements IDbms{
 					if (property instanceof NodePropertyEnumeration) {
 						index = 1;
 						for (String value : ((NodePropertyEnumeration) property).getValues()) {
-							ddl += "INSERT INTO " + node.getName() + "("+ 
-									node.getPrimaryKey().getName()+ ", "+ 
-									property.getName() +" )"+ 
-							" VALUES("+ 
-									index + ", '"+ 
-									value + "');\n";
+							ddl.append("INSERT INTO ");
+							ddl.append(node.getName());
+							ddl.append("("); 
+							ddl.append(node.getPrimaryKey().getName());
+							ddl.append(", "); 
+							ddl.append(property.getName());
+							ddl.append(" )"); 
+							ddl.append(" VALUES("); 
+							ddl.append(index);
+							ddl.append(", '"); 
+							ddl.append(value);
+							ddl.append("');\n");
 							index++;
 						}
-						ddl += "\n";
+						ddl.append("\n");
 					}
 				}
 			}
 		}
-		return ddl;
+		return ddl.toString();
 	}
 
 	//*************************************************************************************

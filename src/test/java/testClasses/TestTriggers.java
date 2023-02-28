@@ -2348,4 +2348,114 @@ public class TestTriggers {
 		}
 	}
 	
+
+	@Test
+	public void testSelfAssociationSuperNode() {
+		try {
+			OntoUmlToDb toDb = new OntoUmlToDb( AssociationsModel.getGraphToSelfAssociationWithGS() );
+		    
+			toDb.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_KIND);
+		    toDb.setDbms(DbmsSupported.MYSQL);
+		    toDb.runTransformation();
+		    
+		    String result = "";
+		    for(TriggerResult triggerResult : toDb.getTriggersScripts()) {
+		    	result += triggerResult.getScript() + "\n";
+		    }
+		    
+		    CheckTransformation check = new CheckTransformation( result );
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_MyClass_i  BEFORE INSERT ON MyClass  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if( new.ModuleLogical_id is not null )  \n" + 
+		    		"    then  \n" + 
+		    		"        if not exists (  \n" + 
+		    		"                    select 1 \n" + 
+		    		"                    from Module  \n" + 
+		    		"                    where ComposedEnum = 'LOGICAL'  \n" + 
+		    		"                    and   Module.Module_id = new.ModuleLogical_id \n" + 
+		    		"        )  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_MyClass_i].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"        end if;  \n" + 
+		    		" \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		"    if( new.ModulePhysical_id is not null )  \n" + 
+		    		"    then  \n" + 
+		    		"        if not exists (  \n" + 
+		    		"                    select 1 \n" + 
+		    		"                    from Module  \n" + 
+		    		"                    where ComposedEnum = 'PHYSICAL'  \n" + 
+		    		"                    and   Module.Module_id = new.ModulePhysical_id \n" + 
+		    		"        )  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_MyClass_i].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"        end if;  \n" + 
+		    		" \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
+		    		"delimiter ;");
+		    
+		    check.addCommand("delimiter //  \n" + 
+		    		"CREATE TRIGGER tg_MyClass_u  BEFORE UPDATE ON MyClass  \n" + 
+		    		"FOR EACH ROW  \n" + 
+		    		"BEGIN \n" + 
+		    		" \n" + 
+		    		"    declare msg varchar(128); \n" + 
+		    		" \n" + 
+		    		"    if( new.ModuleLogical_id is not null )  \n" + 
+		    		"    then  \n" + 
+		    		"        if not exists (  \n" + 
+		    		"                    select 1 \n" + 
+		    		"                    from Module  \n" + 
+		    		"                    where ComposedEnum = 'LOGICAL'  \n" + 
+		    		"                    and   Module.Module_id = new.ModuleLogical_id \n" + 
+		    		"        )  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_MyClass_u].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"        end if;  \n" + 
+		    		" \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		"    if( new.ModulePhysical_id is not null )  \n" + 
+		    		"    then  \n" + 
+		    		"        if not exists (  \n" + 
+		    		"                    select 1 \n" + 
+		    		"                    from Module  \n" + 
+		    		"                    where ComposedEnum = 'PHYSICAL'  \n" + 
+		    		"                    and   Module.Module_id = new.ModulePhysical_id \n" + 
+		    		"        )  \n" + 
+		    		"        then  \n" + 
+		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_MyClass_u].';  \n" + 
+		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
+		    		"        end if;  \n" + 
+		    		" \n" + 
+		    		"    end if;  \n" + 
+		    		" \n" + 
+		    		" \n" + 
+		    		"END; //  \n" + 
+		    		"delimiter ;");		    
+		    
+		    result = check.run();
+		    
+		    if(result != null) {
+		    	System.out.println("Test [testSelfAssociationSuperNode] has problems: " + result);
+		    	fail("testSelfAssociationSuperNode");
+		    }
+		    
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("testSelfAssociationSuperNode");
+		}
+	}
 }

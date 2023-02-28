@@ -338,7 +338,7 @@ public class QueryBuilder {
 		
 		if(		destinationNode.getNodeOrigin() == NodeOrigin.FROM_GENERALIZATION_SET ||
 				destinationNode.getNodeOrigin() == NodeOrigin.FROM_N_TO_N ||
-				association.isDerivedFromGeneralization()) {
+				association.isOverridesGeneralization()) {
 			text += "INNER JOIN";
 		}
 		else {

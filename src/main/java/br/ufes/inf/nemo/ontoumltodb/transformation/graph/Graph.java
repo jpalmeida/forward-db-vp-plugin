@@ -153,15 +153,6 @@ public class Graph {
 		return result;
 	}
 	
-//	public boolean existsA(GraphAssociation association) {
-//		for(Node node : this.nodes) {
-//			if(node.existsAssociation(association)) {
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-	
 	/**
 	 * Returns all associations of one specific type from the graph.
 	 *
@@ -271,12 +262,6 @@ public class Graph {
 		}
 		this.generalizationSets.remove(gs);
 	}
-	
-//	public boolean belongAnotherGS(Node node) {
-//		if(node.getGeneralizationSets().size() > 1) 
-//			return true;
-//		else return false;
-//	}
 	
 	public void removeEmptyGeneralizationSet() {
 		int index = 0;

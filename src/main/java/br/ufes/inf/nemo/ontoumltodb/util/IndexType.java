@@ -5,7 +5,7 @@ public enum IndexType {
 	NOINDEX("noIndex"),
 	INDEX("index"),
 	//GROUPINDEXS("groupIndex"),
-	//UNIQUEINDEX("uniqueIndex"),
+	UNIQUEINDEX("uniqueIndex"),
 	UNIQUEINDEXSWITHFK("UniqueIndexWithFk");
 
 	private final String display;

@@ -83,7 +83,7 @@ public class GenerateObdaTarget {
 		for (NodeProperty property : targetNode.getMainNode().getProperties()) {
 			if (property.isForeignKey()) {
 				association = property.getAssociationRelatedOfFK();
-				if (!association.isDerivedFromGeneralization()) {
+				if (!association.isOverridesGeneralization()) {
 					text += "; ";
 					text += generatePredicateFromAssociation(association);
 					text += " :";

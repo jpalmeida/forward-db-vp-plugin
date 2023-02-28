@@ -3,6 +3,7 @@ package testModels;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Graph;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphGeneralization;
+import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphGeneralizationSet;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
 import br.ufes.inf.nemo.ontoumltodb.util.Cardinality;
@@ -414,6 +415,86 @@ public class AssociationsModel {
 		graph.addAssociation(generalization1);
 		graph.addAssociation(generalization2);
 				
+		return graph;
+	}
+	
+	public static Graph getGraphToSelfAssociationWithGS() {
+		Graph graph = new Graph();
+		
+		Node module = new Node(Increment.getNextS(), "Module", Stereotype.KIND);
+		
+		Node physical = new Node(Increment.getNextS(), "Physical", Stereotype.SUBKIND);
+		
+		Node logical = new Node(Increment.getNextS(), "Logical", Stereotype.SUBKIND);
+		
+		Node myClass = new Node(Increment.getNextS(), "MyClass", Stereotype.KIND);
+		
+		
+		GraphGeneralization generalization1 = new GraphGeneralization(
+				Increment.getNextS(), 
+				module, 
+				physical);
+		
+		GraphGeneralization generalization2 = new GraphGeneralization(
+				Increment.getNextS(), 
+				module, 
+				logical);
+		
+		GraphAssociation association1 = new GraphAssociation(
+				Increment.getNextS(), 
+				"hasPhysical", 
+				myClass, 
+				Cardinality.C1_N, 
+				physical, 
+				Cardinality.C1);
+		
+		GraphAssociation association2 = new GraphAssociation(
+				Increment.getNextS(), 
+				"hasLogical", 
+				myClass, 
+				Cardinality.C0_N, 
+				logical, 
+				Cardinality.C1);
+		
+		GraphAssociation association3 = new GraphAssociation(
+				Increment.getNextS(), 
+				"hasMySelf", 
+				module, 
+				Cardinality.C0_N, 
+				module, 
+				Cardinality.C0_1);
+		
+		GraphGeneralizationSet gs = new GraphGeneralizationSet(
+				Increment.getNextS(), 
+				"Composed", 
+				true, 
+				false);
+		
+		gs.addGeneralization(generalization1);
+		gs.addGeneralization(generalization2);
+		
+		module.addAssociation(association3);
+		
+		physical.addAssociation(association1);
+		myClass.addAssociation(association1);
+		
+		logical.addAssociation(association2);
+		myClass.addAssociation(association3);
+		
+		graph.addNode(module);
+		graph.addNode(physical);
+		graph.addNode(logical);
+		graph.addNode(myClass);
+		
+		graph.addAssociation(association1);
+		graph.addAssociation(association2);
+		graph.addAssociation(association3);
+		
+		graph.addAssociation(generalization1);
+		graph.addAssociation(generalization2);
+		
+		graph.addGeneralizationSet(gs);
+		
 		return graph;
 	}
 }

@@ -24,6 +24,8 @@ public class TestDatatype {
 		    toDb.runTransformation();
 		    String script = toDb.getRelationalSchemaScript();
 		    
+		    System.out.println(script);
+		    
 		    CheckTransformation check = new CheckTransformation( script );
 		    
 		    check.addCommand("CREATE TABLE person (  \n" + 
@@ -70,19 +72,19 @@ public class TestDatatype {
 		    
 		    CheckTransformation check = new CheckTransformation( script );
 		    
-		    check.addCommand("CREATE TABLE person ( \r\n" + 
-		    		"        person_id              INTEGER       NOT NULL PRIMARY KEY\r\n" + 
-		    		",       name                   STRING        NOT NULL\r\n" + 
-		    		",       my_date                DATE          NOT NULL\r\n" + 
-		    		",       latitude               int           NOT NULL\r\n" + 
-		    		",       longitude              int           NOT NULL\r\n" + 
+		    check.addCommand("CREATE TABLE person (  \n" + 
+		    		"        person_id              INTEGER       NOT NULL PRIMARY KEY \n" + 
+		    		",       name                   VARCHAR(20)   NOT NULL \n" + 
+		    		",       my_date                DATE          NOT NULL \n" + 
+		    		",       latitude               int           NOT NULL \n" + 
+		    		",       longitude              int           NOT NULL \n" + 
 		    		"); ");
 		    
-		    check.addCommand("CREATE TABLE multiple_positions ( \r\n" + 
-		    		"        multiple_positions_id  INTEGER       NOT NULL PRIMARY KEY\r\n" + 
-		    		",       person_id              INTEGER       NOT NULL\r\n" + 
-		    		",       latitude               int           NOT NULL\r\n" + 
-		    		",       longitude              int           NOT NULL\r\n" + 
+		    check.addCommand("CREATE TABLE multiple_positions (  \n" + 
+		    		"        multiple_positions_id  INTEGER       NOT NULL PRIMARY KEY \n" + 
+		    		",       person_id              INTEGER       NOT NULL \n" + 
+		    		",       latitude               int           NOT NULL \n" + 
+		    		",       longitude              int           NOT NULL \n" + 
 		    		"); ");
 		    
 		    check.addCommand("ALTER TABLE multiple_positions ADD FOREIGN KEY ( person_id ) REFERENCES person ( person_id );");

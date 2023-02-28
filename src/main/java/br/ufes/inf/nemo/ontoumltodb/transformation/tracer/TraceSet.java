@@ -31,16 +31,24 @@ public class TraceSet {
 		return result;
 	}
 	
-	public void removeTracedNode(Node to) {
+	public void removeTargetNode(Node targetNode) {
 		String toRemove = null;
 		Trace trace;
 		for (String key : traces.keySet()) {
 			trace = traces.get(key);
-             if(trace.existsNode(to)){
+             if(trace.existsNode(targetNode)){
             	 toRemove = key;
              }
 		}
 		traces.remove(toRemove);
+	}
+	
+	public void removeNodeFromTraces(Node nodeToRemove) {
+		for (Trace trace : this.traces.values()) {
+			if(trace.existsNode(nodeToRemove)) {
+				trace.removeNodeMapped(nodeToRemove);
+			}
+		}
 	}
 	
 	public void addTrace(Node newNode) {

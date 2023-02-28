@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Graph;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphAssociation;
+import br.ufes.inf.nemo.ontoumltodb.transformation.graph.GraphGeneralization;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
 import br.ufes.inf.nemo.ontoumltodb.util.Cardinality;
 import br.ufes.inf.nemo.ontoumltodb.util.Increment;
+import br.ufes.inf.nemo.ontoumltodb.util.IndexType;
 
 public class SolvesForeignKey {
 
@@ -85,14 +87,14 @@ public class SolvesForeignKey {
 				originalAssociation = association.getOriginalAssociation();
 				
 				if(originalAssociation.getTargetCardinality() == Cardinality.C1) {
-					propagateForeignKey(association.getTargetNode(), association.getSourceCardinality(), association.getSourceNode(), association, false);
+					propagateForeignKey(association.getTargetNode(), association.getSourceCardinality(), association.getSourceNode(), association, true);
 				}
 				else {
 					if(originalAssociation.getSourceCardinality() == Cardinality.C1)
-						propagateForeignKey(association.getSourceNode(), association.getTargetCardinality(), association.getTargetNode(), association, false);
+						propagateForeignKey(association.getSourceNode(), association.getTargetCardinality(), association.getTargetNode(), association, true);
 					else {
-						propagateForeignKey(association.getSourceNode(), association.getTargetCardinality(), association.getTargetNode(), association, false);
-						propagateForeignKey(association.getTargetNode(), association.getSourceCardinality(), association.getSourceNode(), association, false);
+						propagateForeignKey(association.getSourceNode(), association.getTargetCardinality(), association.getTargetNode(), association, true);
+						propagateForeignKey(association.getTargetNode(), association.getSourceCardinality(), association.getSourceNode(), association, true);
 					}
 				}
 			} else {
@@ -205,7 +207,7 @@ public class SolvesForeignKey {
 	
 	// **************************************************************************************************************
 	
-	private static void propagateForeignKey(Node from, Cardinality cardinalityFrom, Node to, GraphAssociation association, boolean asPk) {
+	private static void propagateForeignKey(Node from, Cardinality cardinalityFrom, Node to, GraphAssociation association, boolean uniqueIndex) {
 		NodeProperty fk = from.getPrimaryKey().clone(to, from.getPrimaryKey().getName() + '_' + Increment.getNext());
 
 		fk.setForeignNodeID(from.getID(), association, from.getPrimaryKey());
@@ -216,17 +218,22 @@ public class SolvesForeignKey {
 			fk.setNullable(false);
 		}
 		
-		if(asPk) {
+		//if(asPk) {
+		if(association.getOriginalAssociation() instanceof GraphGeneralization) {
 			fk.setPrimaryKey(true);
 			fk.setPKAutoIncrement(false);
 			to.removeProperty(to.getPrimaryKey().getID());
-			
 			to.addPropertyAt(0, fk);
 		}
 		else{
 			fk.setPrimaryKey(false);
 			fk.setPKAutoIncrement(false);
+			if(uniqueIndex) {
+				fk.setIndexType(IndexType.UNIQUEINDEX);
+			}
 			to.addPropertyAt(1, fk);
 		}
+		
+		
 	}
 }

@@ -20,6 +20,16 @@ public class TraceTable {
 		mountcorrespondences(graph);
 	}
 
+	private void mountcorrespondences(Graph graph) {
+		TraceSet newTraceSet;
+		for (Node node : graph.getNodes()) {
+			newTraceSet = new TraceSet(
+					originalGraph.getNodeById(node.getID()), // original node
+					graph.getNodeById(node.getID())); // node to be transformed/traced
+			traceSets.add(newTraceSet);
+		}
+	}
+
 	public Graph getOriginalGraph() {
 		return this.originalGraph;
 	}
@@ -53,22 +63,33 @@ public class TraceTable {
 		}
 		return null;
 	}
-
-	private void mountcorrespondences(Graph graph) {
-		TraceSet newTraceSet;
-		for (Node node : graph.getNodes()) {
-			newTraceSet = new TraceSet(
-					originalGraph.getNodeById(node.getID()), // original node
-					graph.getNodeById(node.getID())); // node to be transformed/traced
-			traceSets.add(newTraceSet);
+	
+	public void removeTraceOfSourceNode(Node node) {
+		int index = 0;
+		TraceSet traceSet;
+		
+		while(index < this.traceSets.size()) {
+			traceSet = this.traceSets.get(index);
+			
+			if(traceSet.getSourceNode().getName().equals(node.getName())) {
+				this.traceSets.remove(index);
+				return;
+			}
+			index++;
 		}
 	}
 	
-	public void removeTracedNode(Node from) {
+	public void removeTracOfTargetNode(Node targetNode) {
 		for (TraceSet traceSet : this.traceSets) {
-			if(traceSet.existsNode(from)) {
-				traceSet.removeTracedNode(from);
+			if(traceSet.existsNode(targetNode)) {
+				traceSet.removeTargetNode(targetNode);
 			}
+		}
+	}
+	
+	public void removeNodeFromTraces(Node nodeToRemove) {
+		for(TraceSet traceSet : this.traceSets) {
+			traceSet.removeNodeFromTraces(nodeToRemove);
 		}
 	}
 	

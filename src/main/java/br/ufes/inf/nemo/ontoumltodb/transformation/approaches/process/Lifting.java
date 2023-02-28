@@ -55,7 +55,7 @@ public class Lifting {
 		// for tracing
 		if(hasMultipleInheritance) {
 			traceTable.moveFilters(node);
-			traceTable.removeTracedNode(node);
+			traceTable.removeTracOfTargetNode(node);
 		}
 						
 		graph.removeNode(node);			

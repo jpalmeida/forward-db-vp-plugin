@@ -17,7 +17,7 @@
 		        description="Generates the relational schema and its mappings."
 		        style="normal"
 		        tooltip="Generates the relational schema and its mappings."
-		        icon="icons/export_schema.png"
+		        icon="icons/export_schema3.png"
 		        label="Database mapping"
 		        menuPath="br.ufes.inf.nemo.actionset1.toolbar1/br.ufes.inf.nemo.actionset1.menu1/#">
 		        <actionController class="br.ufes.inf.nemo.ontoumltodb.vp.controllers.DbGenerationController"/>
@@ -29,7 +29,7 @@
 		        description="Generates the relational schema and its mappings."
 		        style="normal"
 		        tooltip="Generates the relational schema and its mappings."
-		        icon="icons/export_schema.png"
+		        icon="icons/export_schema3.png"
 		        label="Database mapping"
 		        ribbonPath="Tools/DB/#">
 		        <!--  <actionController class="br.ufes.inf.nemo.ontoumltodb.vp.controllers.DbGenerationController"/>

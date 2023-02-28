@@ -2,8 +2,8 @@ package br.ufes.inf.nemo.ontoumltodb.transformation.database;
 
 import java.util.ArrayList;
 
-import br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger.MySqlTrigger;
 import br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger.TriggerResult;
+import br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger.mysql.MySqlTrigger;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Graph;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;

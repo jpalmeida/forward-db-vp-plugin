@@ -20,11 +20,18 @@ public class Trace {
 		this.tracedNodes.add(tracedNode);
 	}
 	
+	public TracedNode getTracedNodeFor(Node nodeTo) {
+		for (TracedNode tracedNode : tracedNodes) {
+			if(tracedNode.getNodeMapped().getName().equals(nodeTo.getName()))
+				return tracedNode;
+		}
+		return null;
+	}
 	
 	public ArrayList<TracedNode> getTracedNodes(){
 		ArrayList<TracedNode> result = new ArrayList<TracedNode>();
-		for (TracedNode nodeMapped : tracedNodes) {
-			result.add(nodeMapped);
+		for (TracedNode tracedNode : tracedNodes) {
+			result.add(tracedNode);
 		}
 		return result;
 	}
@@ -268,7 +275,7 @@ public class Trace {
 	public void removeNodeMapped(Node node) {
 		int i = 0;
 		while( i < this.tracedNodes.size() ) {
-			if( tracedNodes.get(i).getNodeMapped().isMyId(node.getID()) ) {
+			if( tracedNodes.get(i).getNodeMapped().getName().equals(node.getName() )) {
 				tracedNodes.remove(i);
 			}
 			else i++;

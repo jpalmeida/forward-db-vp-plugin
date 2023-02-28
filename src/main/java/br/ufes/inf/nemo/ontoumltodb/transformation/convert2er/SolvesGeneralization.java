@@ -30,7 +30,7 @@ public class SolvesGeneralization {
 						Cardinality.C0_1 // targetCardinality
 				);
 				newAssociation.setOriginalAssociation(association);
-				newAssociation.setDerivedFromGeneralization(true);
+				newAssociation.setOverridesGeneralization(true);
 
 				generalization.getGeneral().addAssociation(newAssociation);
 				generalization.getSpecific().addAssociation(newAssociation);

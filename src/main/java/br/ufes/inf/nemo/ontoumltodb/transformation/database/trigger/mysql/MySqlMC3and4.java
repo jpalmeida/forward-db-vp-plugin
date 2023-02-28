@@ -1,4 +1,4 @@
-package br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger;
+package br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger.mysql;
 
 import java.util.ArrayList;
 

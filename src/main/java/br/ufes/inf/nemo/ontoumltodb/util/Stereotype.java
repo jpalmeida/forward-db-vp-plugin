@@ -23,7 +23,8 @@ public enum Stereotype {
 	PHASE("phase"),
 	ENUMERATION("enumeration"), 
 	DATATYPE("datatype"),
-	ABSTRACT("abstract");
+	ABSTRACT("abstract"),
+	DISPOSITION("disposition");
 
 	private final String display;
 
@@ -61,6 +62,14 @@ public enum Stereotype {
 	    if (	type == Stereotype.ROLE || 
 	    		type == Stereotype.PHASE || 
 	    		type == Stereotype.SUBKIND) 
+	    	return true;
+	    else return false;
+	}
+	
+	public static boolean isWeakStereotype(Stereotype type) {
+	    if (	type == Stereotype.QUALITY || 
+	    		type == Stereotype.MODE || 
+	    		type == Stereotype.DISPOSITION) 
 	    	return true;
 	    else return false;
 	}

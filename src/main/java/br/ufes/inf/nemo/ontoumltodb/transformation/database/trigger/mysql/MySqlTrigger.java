@@ -1,7 +1,8 @@
-package br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger;
+package br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger.mysql;
 
 import java.util.ArrayList;
 
+import br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger.TriggerResult;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Graph;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
@@ -33,7 +34,7 @@ public class MySqlTrigger {
 		TriggerResult result;
 		
 		for(Node node : graph.getNodes()) {
-			text = new StringBuilder();	
+			text = new StringBuilder();
 			
 			text.append(mySqlMC1and2.getRestrictions(node));
 			

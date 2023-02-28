@@ -8,6 +8,7 @@ import br.ufes.inf.nemo.ontoumltodb.transformation.OntoUmlToDb;
 import br.ufes.inf.nemo.ontoumltodb.util.DbmsSupported;
 import br.ufes.inf.nemo.ontoumltodb.util.Increment;
 import br.ufes.inf.nemo.ontoumltodb.util.MappingStrategy;
+import testModels.AssociationsModel;
 import testModels.HierarchyModel;
 import testModels.MultipleInheritanceModel;
 import testModels.TraceTableModel;
@@ -384,6 +385,43 @@ public class TestTraceability {
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("TracebalitySelfAssociationInSubnode");
+		}
+	}
+	
+	@Test
+	public void testSelfAssociationSuperNode() {
+		try {
+			OntoUmlToDb toDb = new OntoUmlToDb( AssociationsModel.getGraphToSelfAssociationWithGS() );
+		    
+			toDb.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_KIND);
+		    toDb.setDbms(DbmsSupported.MYSQL);
+		    toDb.runTransformation();
+		    String script = toDb.getStringTrace();
+		    
+		    CheckTransformation check = new CheckTransformation( script );
+		    check.addCommand("TRACE SET: Logical \n" + 
+		    		"	TRACE: Module [ComposedEnum = LOGICAL];");
+		    
+		    check.addCommand("TRACE SET: Module \n" + 
+		    		"	TRACE: Module;");
+		    
+		    check.addCommand("TRACE SET: MyClass \n" + 
+		    		"	TRACE: MyClass;");
+		    
+		    check.addCommand("TRACE SET: Physical \n" + 
+		    		"	TRACE: Module [ComposedEnum = PHYSICAL];");
+		    
+		    
+		    String result = check.run();
+		    
+		    if(result != null) {
+		    	System.out.println("Test [testSelfAssociationSuperNode] has problems: " + result);
+		    	fail("testSelfAssociationSuperNode");
+		    }
+		    
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("testSelfAssociationSuperNode");
 		}
 	}
 }

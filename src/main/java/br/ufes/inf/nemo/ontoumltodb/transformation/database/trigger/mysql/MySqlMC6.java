@@ -1,4 +1,4 @@
-package br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger;
+package br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger.mysql;
 
 import java.util.ArrayList;
 
@@ -26,16 +26,6 @@ public class MySqlMC6 {
 	
 	public String getRestrictions(Node node) {
 		StringBuilder text = new StringBuilder();
-		
-		text.append(getMC6(node));
-		// DO NOT REMOVE THIS CODE (GETMC6INVERSE) !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//		text.append(getMC6Inverse(node));
-		
-		return text.toString();
-	}	
-	
-	private String getMC6(Node node) {
-		StringBuilder text = new StringBuilder();
 		ArrayList <Trace> traces = new ArrayList<Trace>();
 		
 		for (NodeProperty property : node.getForeignKeys()) {
@@ -46,6 +36,10 @@ public class MySqlMC6 {
 				}
 			}
 		}
+		
+		// DO NOT REMOVE THIS CODE (GETMC6INVERSE) !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//		text.append(getMC6Inverse(node));
+		
 		return text.toString();
 	}
 	
@@ -270,6 +264,38 @@ public class MySqlMC6 {
 	private String getFrom(Trace trace, NodeProperty fkProperty, String currentTab) {
 		StringBuilder text = new StringBuilder();
 		String joinText;
+		GraphAssociation association = null;
+		ArrayList<Node> nodesUsed = new ArrayList<Node>();
+		Node nodeFrom, nodeTo;
+		
+		ArrayList<GraphAssociation> allAssociations = getAssociationsOfTracedNodes(trace);
+		
+		nodeFrom = trace.getMainNodeMapped().getNodeMapped();
+		nodesUsed.add(nodeFrom);
+		
+		text.append("from ");
+		text.append(nodeFrom.getName());
+		text.append(" ");
+		
+		while( (association = getNextAssociation(allAssociations) )!= null ) {
+			if( isNodeUsed(association.getSourceNode(), nodesUsed)) {
+				nodeFrom = association.getSourceNode();
+				nodeTo = association.getTargetNode();
+			}
+			else {
+				nodeFrom = association.getTargetNode();
+				nodeTo = association.getSourceNode();
+			}
+			nodesUsed.add(nodeTo);
+			
+			joinText = getJoin(nodeFrom, nodeTo, association, trace, currentTab);
+			if(joinText != null) {
+				text.append(joinText);
+			}
+		}
+		
+		/*
+		String joinText;
 		Node fromNode, toNode = null;
 		TracedNode toTracedNode;
 		
@@ -279,6 +305,7 @@ public class MySqlMC6 {
 		text.append("from ");
 		text.append(fromNode.getName());
 		text.append(" ");
+		
 		
 		while(existsNodeNotResolved(trace)) {
 			toTracedNode = getNextTracedNodeToJoin(trace);
@@ -292,50 +319,210 @@ public class MySqlMC6 {
 			
 			fromNode = toNode;
 		}
-		
+		*/
 		text.append("\n");
 		
 		return text.toString();
 	}
 	
-	private String getWhere(Trace trace, NodeProperty fKProperty) {
+	private ArrayList<GraphAssociation> getAssociationsOfTracedNodes(Trace trace){
+		ArrayList<GraphAssociation> result = new ArrayList<GraphAssociation>();
+		ArrayList<Node> nodesTraced = new ArrayList<Node>();
+		int index = 1; // start from second traced node.
 		Node node;
-		boolean first = true;
-		String text = "";
-		String tab = Util.getSpaces("", Util.getTabSize() * 5);
+		boolean exists = false;
 		
-		text += "where ";
-
-		for (Filter filter : trace.getMainNodeMapped().getFilters()) {
-
-			if (first) {
-				first = false;
-			} else {
-				text += tab;
-				text += "and   ";
+		nodesTraced.add(trace.getMainNode()); // the first node must participate of select
+		
+		// get the nodes to do the joins
+		for(TracedNode tracedNode : trace.getTracedNodes()) {
+			if(tracedNode.getNodeMapped().getOrigin() != Origin.N2NASSOCIATION) {
+				if(tracedNode.hasFilter()) {
+					if(!hasNode(tracedNode.getNodeMapped(), nodesTraced))
+						nodesTraced.add(tracedNode.getNodeMapped());
+				}
 			}
+		}
+		
+		// get the associations between the nodes to do the joins
+		while(index < nodesTraced.size()) {
+			node = nodesTraced.get(index);
+			for(GraphAssociation association : node.getAssociations()) {
+				exists = false;
+				if(association.getSourceNode().getName().equals(node.getName() ) )
+					exists = hasDestinationNode(association.getTargetNode(), nodesTraced);
+				else exists  = hasDestinationNode(association.getSourceNode(), nodesTraced);
+				
+				if(exists) {
+					if(!hasAssociation(association, result)) {
+						association.setResolved(false);
+						result.add(association);
+					}
+				}
+			}
+			index++;
+		}
+		
+		return result;
+	}
+	
+	private boolean hasDestinationNode(Node evaluatedNode, ArrayList<Node> nodesTraced) {
+		for(Node node : nodesTraced) {
+			if(node.getName().equals(evaluatedNode.getName()))
+				return true;
+		}
+		return false;
+	}
+	
+	private boolean hasNode(Node evaluatedNode, ArrayList<Node> nodesTraced) {
+		for(Node node : nodesTraced) {
+			if(evaluatedNode.getName().equals(node.getName()))
+				return true;
+		}
+		return false;
+	}
+	
+	private boolean hasAssociation(GraphAssociation evaluatedAssociation, ArrayList<GraphAssociation> result) {
+		
+		for(GraphAssociation association : result) {
+			if(evaluatedAssociation.isMyId(association.getID()))
+				return true;
+		}
+		return false;
+	}
+	
+	private GraphAssociation getNextAssociation(ArrayList<GraphAssociation> allAssociations) {
+		for(GraphAssociation association : allAssociations) {
+			if(association.isResolved() == false) {
+				association.setResolved(true);
+				return association;
+			}
+		}
+		return null;
+	}
+	
+	private boolean isNodeUsed(Node evaluatedNode, ArrayList<Node> nodesUsed) {
+		for(Node node : nodesUsed) {
+			if(evaluatedNode.getName().equals(node.getName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+//	private Node getNodeFrom(GraphAssociation association, ArrayList<Node> nodesUsed) {
+//		//The evaluated node must exists in nodesUsed
+//		Node evaluatedNode = association.getSourceNode();
+//		
+//		for(Node node : nodesUsed) {
+//			if(evaluatedNode.getName().equals(node.getName())) {
+//				return node;
+//			}
+//		}
+//		
+//		evaluatedNode = association.getTargetNode();
+//		for(Node node : nodesUsed) {
+//			if(evaluatedNode.getName().equals(node.getName())) {
+//				return node;
+//			}
+//		}
+//		return null;
+//	}
+//	
+//	private Node getNodeTo(GraphAssociation association, ArrayList<Node> nodesUsed) {
+//		// The evaluated node must NOT exists in nodesUsed
+//		boolean exists = false;
+//		Node evaluatedNode = association.getSourceNode();
+//		for(Node node : nodesUsed) {
+//			if(evaluatedNode.getName().equals(node.getName())) {
+//				exists = true;;
+//			}
+//		}
+//		
+//		if(!exists) {
+//			return evaluatedNode;
+//		}
+//		
+//		exists = false;
+//		evaluatedNode = association.getTargetNode();
+//		for(Node node : nodesUsed) {
+//			if(evaluatedNode.getName().equals(node.getName())) {
+//				exists = true;
+//			}
+//		}
+//		
+//		if(!exists) {
+//			return evaluatedNode;
+//		}
+//		
+//		return null;
+//	}
+	
+	private String getJoin(Node nodeFrom, Node nodeTo, GraphAssociation association, Trace trace, String currentTab) {
+		StringBuilder text = new StringBuilder();
+		String tab2 = currentTab + Util.getSpaces("", Util.getTabSize() * 2);
+		Cardinality cardinalityEnd;
+		TracedNode tracedNodeTo;
+		
+		text.append("\n");
+		text.append(currentTab);
 
+		cardinalityEnd = association.getCardinalityEndOf(nodeFrom);
+		
+		if(cardinalityEnd == Cardinality.C1 || cardinalityEnd == Cardinality.C1_N)
+			text.append("inner join ");
+		else text.append("left join ");
+		
+		text.append(nodeTo.getName());
+		text.append("\n");
+		
+		text.append(tab2);
+		text.append("on  ");
+
+		if (nodeTo.getFKRelatedOfNodeID(nodeFrom.getID()) != null) {
+			text.append(nodeFrom.getName());
+			text.append(".");
+			text.append(nodeFrom.getPKName());
+			text.append(" = ");
+			text.append(nodeTo.getName());
+			text.append(".");
+			text.append(nodeTo.getFKRelatedOfNodeID(nodeFrom.getID()).getName());
+		} else {
+			if (nodeFrom.getFKRelatedOfNodeID(nodeTo.getID()) != null) {
+				text.append(nodeFrom.getName());
+				text.append(".");
+				text.append(nodeFrom.getFKRelatedOfNodeID(nodeTo.getID()).getName());
+				text.append(" = ");
+				text.append(nodeTo.getName());
+				text.append(".");
+				text.append(nodeTo.getPKName());
+			}
+		}
+		
+		tracedNodeTo = trace.getTracedNodeFor(nodeTo);
+		text.append( getFilter(tracedNodeTo, tab2) );
+		
+		return text.toString();
+	}
+	
+	private String getFilter(TracedNode nodeMapped, String currentTab) {
+		String text = "";
+
+		for (Filter filter : nodeMapped.getFilters()) {
+			text += "\n";
+			text += currentTab;
+			text += "and ";
+			text += nodeMapped.getNodeMapped().getName();
+			text += ".";
 			text += filter.getFilterProperty().getName();
 			text += " = ";
 			text += Util.getStringValue(filter.getValue());
-			text += " \n";
+			text += " ";
 		}
-		
-		if( !first )
-			text += tab + "and   ";
-		
-		node = trace.getNodeMappedById(fKProperty.getForeignKeyNodeID());
-		
-		text += node.getName();
-		text += ".";
-		text += node.getPKName();
-		text += " = ";
-		text += "new."+ fKProperty.getName();
-		text += "\n";
-		
 		return text;
 	}
 	
+	/*
 	private void setUnsolvedNodes(Trace trace) {
 		Node node;
 		for(TracedNode tracedNode : trace.getTracedNodes()) {
@@ -468,6 +655,44 @@ public class MySqlMC6 {
 		
 		return null;
 	}
+	*/
 	
+	private String getWhere(Trace trace, NodeProperty fKProperty) {
+		Node node;
+		boolean first = true;
+		String text = "";
+		String tab = Util.getSpaces("", Util.getTabSize() * 5);
+		
+		text += "where ";
+
+		for (Filter filter : trace.getMainNodeMapped().getFilters()) {
+
+			if (first) {
+				first = false;
+			} else {
+				text += tab;
+				text += "and   ";
+			}
+
+			text += filter.getFilterProperty().getName();
+			text += " = ";
+			text += Util.getStringValue(filter.getValue());
+			text += " \n";
+		}
+		
+		if( !first )
+			text += tab + "and   ";
+		
+		node = trace.getNodeMappedById(fKProperty.getForeignKeyNodeID());
+		
+		text += node.getName();
+		text += ".";
+		text += node.getPKName();
+		text += " = ";
+		text += "new."+ fKProperty.getName();
+		text += "\n";
+		
+		return text;
+	}
 }
 

@@ -56,27 +56,11 @@ public class OntoUmlToDb {
 		if(this.dbms == DbmsSupported.GENERIC_SCHEMA)
 			this.isEnumFieldToLookupTable = true;
 		
-		Statistic.initializes();
-//		
-//		System.out.println("***************************************");
-//		System.out.println("Number of classes: " + graph.getNodes().size());
-		
 		prepare();
 		doTransformations();
-//		int qtd = 0;
-//		for(Node node : graph.getNodes()) {
-//			if(node.getOrigin() != Origin.N2NASSOCIATION && node.getOrigin() != Origin.MULTIVALUEATTRIBUTE) {
-//				qtd++;
-//			}
-//		}
-//		System.out.println("Number of tables: " + qtd);
-//		getTriggersScripts();
-//		System.out.println("Number of MC1 and 2: " + Statistic.getQtdMC12() *2);
-//		System.out.println("Number of MC3 and 4: " + Statistic.getQtdMC34() *2);
-//		System.out.println("Number of MC6: " + Statistic.getQtdMC6() *2);
-//		System.out.println("Number of constraints: " + Statistic.getQtd()*2);
-//		
-//		System.out.println("***************************************");
+		
+		getRelationalSchemaScript();
+		getTriggersScripts();
 	}
 	
 	/*
@@ -86,7 +70,7 @@ public class OntoUmlToDb {
 	private void prepare() {
 		graph.transformEnumAssociationsInProperties();
 		graph.transformDatatypeAssociationInProperties();
-		graph.transform1To1AssociationIn1To01();
+//		graph.transform1To1AssociationIn1To01(); // moved to ToEntityRelatinship class
 	}
 
 	private void doTransformations() {
@@ -112,6 +96,8 @@ public class OntoUmlToDb {
 		intermediateGraph = graph.clone();
 		
 		ToEntityRelationship.run(graph, traceTable, isStandardizeNames, isEnumFieldToLookupTable);
+		
+		
 	}
 
 	public Graph getGraph() {

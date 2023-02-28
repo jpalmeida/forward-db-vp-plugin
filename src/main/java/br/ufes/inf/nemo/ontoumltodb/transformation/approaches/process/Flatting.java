@@ -18,7 +18,7 @@ import br.ufes.inf.nemo.ontoumltodb.util.Util;
 public class Flatting {
 	
 	public static void run(Node flattenNode, Graph graph, TraceTable traceTable) {
-		traceTable.removeTracedNode(flattenNode);
+		traceTable.removeTracOfTargetNode(flattenNode);
 		
 		for (GraphGeneralization generalization : flattenNode.getGeneralizations()) {
 			flattenGeneralization(generalization);
