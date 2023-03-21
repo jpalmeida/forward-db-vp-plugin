@@ -13,7 +13,7 @@ import testModels.AssociationsModel;
 import testModels.HierarchyModel;
 import testModels.RunningExampleModel;
 
-public class TestTriggers {
+public class TestMySqlTriggers {
 
 	@Test
 	public void testTriggerSimpleLifting() {

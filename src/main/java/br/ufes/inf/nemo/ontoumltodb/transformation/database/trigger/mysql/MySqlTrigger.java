@@ -99,5 +99,4 @@ public class MySqlTrigger {
 	private String getTriggerNameForUpdate(Node node) {
 		return "tg_" + node.getName() + "_u";
 	}
-	
 }

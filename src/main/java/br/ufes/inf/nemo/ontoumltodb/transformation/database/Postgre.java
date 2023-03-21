@@ -1,9 +1,14 @@
 package br.ufes.inf.nemo.ontoumltodb.transformation.database;
 
+import java.util.ArrayList;
+
+import br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger.TriggerResult;
+import br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger.postgre.PostgreTrigger;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Graph;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodeProperty;
 import br.ufes.inf.nemo.ontoumltodb.transformation.graph.NodePropertyEnumeration;
+import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
 import br.ufes.inf.nemo.ontoumltodb.util.Util;
 
 public class Postgre extends Generic implements IDbms {
@@ -88,5 +93,13 @@ public class Postgre extends Generic implements IDbms {
 		}
 		
 		return ddl;
+	}
+	
+	//*************************************************************************************
+	//** Method for generate the Triggers
+	//*************************************************************************************
+	public ArrayList<TriggerResult> generateTriggers(Graph graph, TraceTable traceTable) {
+		PostgreTrigger postgreTrigger = new PostgreTrigger(graph, traceTable);
+		return postgreTrigger.getTriggers();
 	}
 }
