@@ -177,7 +177,7 @@ public class GraphGeneralizationSet extends Element {
 			return this.nodePropertyEnumerationRelated;
 		}
 		else {
-			String enumName = getName() + "Enum";
+			String enumName = getGeneralizationSetName();// getName() + "Enum";
 			
 			nodePropertyEnumerationRelated = new NodePropertyEnumeration(
 						getGeneral(), 
@@ -203,6 +203,16 @@ public class GraphGeneralizationSet extends Element {
 			}
 			return nodePropertyEnumerationRelated;
 		}
+	}
+	
+	private String getGeneralizationSetName() {
+		
+		if(getName().length() >= "unspecified".length()) {
+			if(getName().substring(0,11).equals("unspecified")) {
+				return generalizations.get(0).getGeneral().getName() + "Type" + "Enum";
+			}
+		}
+		return getName() + "Enum";
 	}
 	
 	/**

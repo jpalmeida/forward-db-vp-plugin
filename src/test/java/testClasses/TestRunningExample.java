@@ -97,4 +97,39 @@ public class TestRunningExample {
 		}
 	}
 	
+	@Test
+	public void testRunningExampleSchemaOFTpLC() {
+		try {
+			Increment.inicialzate();
+			OntoUmlToDb toDb = new OntoUmlToDb( RunningExampleModel.getGraph() );
+		    
+			toDb.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_LEAF_CLASS);
+		    toDb.setDbms(DbmsSupported.POSTGRE);
+		    toDb.setStandardizeNames(true);
+		    
+		    toDb.runTransformation();
+		    
+		    String script = toDb.getRelationalSchemaScript();
+		    
+		    System.out.println(script);
+		    
+		    CheckTransformation check = new CheckTransformation( script );
+		    
+		    check.addCommand("");
+		    
+		    //String result = check.run();
+		    /*
+		     1 - the key of subclasse need be the same
+		     2 - add one attribute to identify the existence of only the superclass instance
+		    
+		    if(result != null) {
+		    	System.out.println("Test [RunningExample] has problems: \n" + result);
+		    	fail("testRunningExample");
+		    }
+		    */
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("testRunningExample");
+		}
+	}
 }

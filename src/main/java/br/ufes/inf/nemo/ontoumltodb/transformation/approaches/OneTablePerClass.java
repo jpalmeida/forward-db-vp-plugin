@@ -7,4 +7,7 @@ public class OneTablePerClass implements IStrategy {
 
 	public void run(Graph graph, TraceTable traceTale) {
 	}
+	
+	public void setTransformaNtoNFirst(boolean flag) {
+	}
 }

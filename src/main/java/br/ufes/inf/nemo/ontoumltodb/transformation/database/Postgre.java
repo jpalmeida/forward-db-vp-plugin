@@ -13,17 +13,21 @@ import br.ufes.inf.nemo.ontoumltodb.util.Util;
 
 public class Postgre extends Generic implements IDbms {
 
+	private int indexEnumName;
+	
 	public Postgre() {
 		super();
 		this.types.put("boolean", "BOOLEAN");
 		this.types.put("byte", "BYTE(4)");
 		this.types.put("double", "FLOAT(8)");
 		this.types.put("float", "FLOAT(4)");
-		this.types.put("int", "INTEGER");
+		this.indexEnumName = 1;
 	}
 
 	public String getSchema(Graph graph) {
 		String ddl = ""; 
+		
+		removeDuplicaeEnumerationAttributeName(graph);
 		
 		ddl += generateEnums(graph);
 		
@@ -31,9 +35,30 @@ public class Postgre extends Generic implements IDbms {
 
 		return ddl;
 	}
-//	public String createTableDescription() {
-//		return "CREATE TABLE IF NOT EXISTS ";
-//	}
+
+	private void removeDuplicaeEnumerationAttributeName(Graph graph) {
+		for(Node node : graph.getNodes()) {
+			for(NodeProperty property : node.getProperties()) {
+				if(property instanceof NodePropertyEnumeration) {
+					changeNameIfExistsInAnotherTable(graph, node, property);
+				}
+			}
+		}
+	}
+	
+	private void changeNameIfExistsInAnotherTable(Graph graph, Node currentNode, NodeProperty nodeProperty) {
+		for(Node node : graph.getNodes()) {
+			if(!node.getName().equals(currentNode.getName())) {
+				for(NodeProperty property : node.getProperties()) {
+					if(property instanceof NodePropertyEnumeration) {
+						if(property.getName().equals(nodeProperty.getName())) {
+							property.setName(nodeProperty.getName() + (indexEnumName++));
+						}
+					}
+				}
+			}
+		}
+	}
 
 	public String getPKDescription(NodeProperty property) {
 		if (property.isPrimaryKey())

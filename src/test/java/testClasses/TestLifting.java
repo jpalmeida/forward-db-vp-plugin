@@ -288,4 +288,41 @@ public class TestLifting {
 		}
 	}
 	
+	@Test
+	public void testGSwithoutName() {
+		try {
+			Increment.inicialzate();
+			OntoUmlToDb toDb = new OntoUmlToDb(HierarchyModel.getGraphGSwithoutName());
+		    
+			toDb.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_KIND);
+		    toDb.setDbms(DbmsSupported.POSTGRE);
+		    toDb.setStandardizeNames(true);
+		    toDb.runTransformation();
+		    String script = toDb.getRelationalSchemaScript();
+		    
+		    CheckTransformation check = new CheckTransformation( script );
+		    
+		    check.addCommand("CREATE TYPE super_class_type_enum_enum_type AS ENUM ('SUBCLASS1', 'SUBCLASS2'); ");
+		    
+		    check.addCommand("CREATE TABLE super_class ( \n" + 
+		    		"        super_class_id           SERIAL        NOT NULL PRIMARY KEY \n" + 
+		    		",       super_class_type_enum    super_class_type_enum_enum_type  NULL \n" + 
+		    		");");
+		    
+		    
+		    String result = check.run();
+		    
+		    if(result != null) {
+		    	System.out.println("Test [SelfAssociationInSubnode] has problems: " + result);
+		    	fail("SelfAssociationInSubnode");
+		    }
+		    
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("SelfAssociationInSubnode");
+		}
+	}
+	
+	
+	
 }

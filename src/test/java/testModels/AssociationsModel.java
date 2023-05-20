@@ -497,4 +497,62 @@ public class AssociationsModel {
 		
 		return graph;
 	}
+	
+	
+	public static Graph getGraphNtoNWithAnAbstractClass() {
+		Graph graph = new Graph();
+		
+		Node associatedClass = new Node(Increment.getNextS(), "AssociatedClass", Stereotype.KIND);
+		
+		Node superClass = new Node(Increment.getNextS(), "SuperClass", Stereotype.CATEGORY);
+		
+		Node subClass1 = new Node(Increment.getNextS(), "SubClass1", Stereotype.KIND);
+		
+		Node subClass2 = new Node(Increment.getNextS(), "SubClass2", Stereotype.KIND);
+		
+		
+		GraphGeneralization generalization1 = new GraphGeneralization(
+				Increment.getNextS(), 
+				superClass, 
+				subClass1);
+		
+		GraphGeneralization generalization2 = new GraphGeneralization(
+				Increment.getNextS(), 
+				superClass, 
+				subClass2);
+		
+		GraphAssociation association1 = new GraphAssociation(
+				Increment.getNextS(), 
+				"has", 
+				superClass, 
+				Cardinality.C0_N, 
+				associatedClass, 
+				Cardinality.C1_N);
+		
+		GraphGeneralizationSet gs = new GraphGeneralizationSet(
+				Increment.getNextS(), 
+				"Composed", 
+				true, 
+				false);
+		
+		gs.addGeneralization(generalization1);
+		gs.addGeneralization(generalization2);
+		
+		superClass.addAssociation(association1);
+		associatedClass.addAssociation(association1);
+		
+		graph.addNode(superClass);
+		graph.addNode(subClass1);
+		graph.addNode(subClass2);
+		graph.addNode(associatedClass);
+		
+		graph.addAssociation(association1);
+		
+		graph.addAssociation(generalization1);
+		graph.addAssociation(generalization2);
+		
+		graph.addGeneralizationSet(gs);
+		
+		return graph;
+	}
 }

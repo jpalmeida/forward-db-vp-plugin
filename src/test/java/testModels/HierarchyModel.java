@@ -1112,5 +1112,44 @@ public class HierarchyModel {
 		
 		return graph;
 	}
-	
+
+	public static Graph getGraphGSwithoutName() {
+		Graph graph = new Graph();
+		
+		Node superclass = new Node(Increment.getNextS(), "SuperClass", Stereotype.KIND);
+		
+		Node subclass1 = new Node(Increment.getNextS(), "SubClass1", Stereotype.SUBKIND);
+		
+		Node subclass2 = new Node(Increment.getNextS(), "SubClass2", Stereotype.SUBKIND);
+		
+		GraphGeneralization generalization1 = new GraphGeneralization(
+				Increment.getNextS(), 
+				superclass, 
+				subclass1);
+		
+		GraphGeneralization generalization2 = new GraphGeneralization(
+				Increment.getNextS(), 
+				superclass, 
+				subclass2);
+		
+		GraphGeneralizationSet gs = new GraphGeneralizationSet(
+				Increment.getNextS(), 
+				"", 
+				true, 
+				false);
+		
+		gs.addGeneralization(generalization1);
+		gs.addGeneralization(generalization2);
+		
+		graph.addNode(superclass);
+		graph.addNode(subclass1);
+		graph.addNode(subclass2);
+		
+		graph.addAssociation(generalization1);
+		graph.addAssociation(generalization2);
+		
+		graph.addGeneralizationSet(gs);
+		
+		return graph;
+	}
 }

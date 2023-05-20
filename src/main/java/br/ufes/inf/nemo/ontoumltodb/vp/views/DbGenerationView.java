@@ -69,6 +69,7 @@ public class DbGenerationView extends JPanel {
 	private JRadioButton rbtOneTablePerClass;
 	private JRadioButton rbtOneTablePerConcreteClass;
 	private JRadioButton rbtOneTablePerKind;
+	private JRadioButton rbtOneTablePerLeafClass;
 	
 	/**
 	 * Create the panel.
@@ -131,6 +132,10 @@ public class DbGenerationView extends JPanel {
 		
 		rbtOneTablePerKind = new JRadioButton("One Table per Kind");
 		mappingStrategyGroup.add(rbtOneTablePerKind);
+		
+		rbtOneTablePerLeafClass = new JRadioButton("One Table per Leaf Class");
+		mappingStrategyGroup.add(rbtOneTablePerLeafClass);
+		
 		GroupLayout gl_panel_4 = new GroupLayout(panel_4);
 		gl_panel_4.setHorizontalGroup(
 			gl_panel_4.createParallelGroup(Alignment.LEADING)
@@ -139,19 +144,22 @@ public class DbGenerationView extends JPanel {
 					.addGroup(gl_panel_4.createParallelGroup(Alignment.LEADING)
 						.addComponent(rbtOneTablePerClass)
 						.addComponent(rbtOneTablePerConcreteClass)
+						.addComponent(rbtOneTablePerLeafClass)
 						.addComponent(rbtOneTablePerKind))
-					.addContainerGap(33, Short.MAX_VALUE))
+					.addContainerGap(23, Short.MAX_VALUE))
 		);
 		gl_panel_4.setVerticalGroup(
 			gl_panel_4.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_4.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(rbtOneTablePerClass)
-					.addPreferredGap(ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+					.addGap(18)
 					.addComponent(rbtOneTablePerConcreteClass)
-					.addGap(43)
+					.addGap(18)
+					.addComponent(rbtOneTablePerLeafClass)
+					.addGap(18)
 					.addComponent(rbtOneTablePerKind)
-					.addGap(29))
+					.addContainerGap(48, Short.MAX_VALUE))
 		);
 		panel_4.setLayout(gl_panel_4);
 		GroupLayout gl_panel_5 = new GroupLayout(panel_5);
@@ -418,6 +426,8 @@ public class DbGenerationView extends JPanel {
 				rbtOneTablePerClass.setSelected(true);
 			else if (configurations.getMappingStrategy() == MappingStrategy.ONE_TABLE_PER_CONCRETE_CLASS)
 				rbtOneTablePerConcreteClass.setSelected(true);
+			else if (configurations.getMappingStrategy() == MappingStrategy.ONE_TABLE_PER_LEAF_CLASS)
+				rbtOneTablePerLeafClass.setSelected(true);
 			else
 				rbtOneTablePerKind.setSelected(true);
 		}
@@ -452,6 +462,8 @@ public class DbGenerationView extends JPanel {
 			configurations.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_CLASS);
 		else if (rbtOneTablePerConcreteClass.isSelected())
 			configurations.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_CONCRETE_CLASS);
+		else if (rbtOneTablePerLeafClass.isSelected())
+			configurations.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_LEAF_CLASS);
 		else
 			configurations.setMappingStrategy(MappingStrategy.ONE_TABLE_PER_KIND);
 

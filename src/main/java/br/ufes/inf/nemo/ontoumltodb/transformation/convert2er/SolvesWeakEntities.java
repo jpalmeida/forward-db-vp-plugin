@@ -49,7 +49,7 @@ public class SolvesWeakEntities {
 						relatedNode,
 						Increment.getNextS(),
 						name, 
-						"String",
+						"string",
 						acceptNull,
 						isMultivalued
 						);

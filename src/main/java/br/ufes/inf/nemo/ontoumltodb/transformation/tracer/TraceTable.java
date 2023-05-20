@@ -176,6 +176,34 @@ public class TraceTable {
 		}
 	}
 	
+	/*
+	 * The new node must be added in the correct relative position for the 
+	 * join to be done correctly.
+	 */
+	public void addIntermediateNodeOnlyDirectAssociatedClass(Node newNode, GraphAssociation association){
+		Node originalNode;
+		GraphAssociation originalAssociation;
+		
+		originalAssociation = this.originalGraph.getAssociationByID(association.getOriginalAssociation().getID()); //complete original association; with original nodes
+		
+		originalNode = originalAssociation.getSourceNode();
+		addIntermediateNodeInTraceOnlyDirectAssociatedClass(originalNode, newNode, association.getSourceNode());
+		
+		originalNode = originalAssociation.getTargetNode();
+		addIntermediateNodeInTraceOnlyDirectAssociatedClass(originalNode, newNode, association.getTargetNode());
+		
+	}
+	
+	private void addIntermediateNodeInTraceOnlyDirectAssociatedClass(Node sourceNode, Node newNode, Node afterNode) {
+		
+		for(TraceSet traceSet : this.traceSets) {
+			if(traceSet.getSourceNode().isMyId(sourceNode.getID())) {
+				traceSet.addIntermediateNode(newNode, afterNode);
+			}
+		}
+	}
+	
+	
 	public void changeFiltersFromTo(Node from, Node to, boolean disassociateNodeFrom) {
 		for (TraceSet traceSet : this.traceSets) {
 			traceSet.changeFiltersFromTo(from, to, disassociateNodeFrom);

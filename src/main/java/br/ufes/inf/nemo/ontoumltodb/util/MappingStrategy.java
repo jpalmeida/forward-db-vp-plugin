@@ -7,7 +7,9 @@ package br.ufes.inf.nemo.ontoumltodb.util;
 public enum MappingStrategy {
   ONE_TABLE_PER_CLASS("One Table per Class"),
   ONE_TABLE_PER_KIND("One Table per Kind"),
-  ONE_TABLE_PER_CONCRETE_CLASS("One Table per Concrete Class");
+  ONE_TABLE_PER_CONCRETE_CLASS("One Table per Concrete Class"),
+  ONE_TABLE_PER_LEAF_CLASS("One Table per Leaf Class")
+  ;
 
   private final String display;
 

@@ -32,236 +32,241 @@ public class TestPostgreTrigger {
 		    }
 		    
 		    CheckTransformation check = new CheckTransformation( result );
-		    check.addCommand("delimiter //  \n" + 
-		    		"CREATE TRIGGER tg_person_i  BEFORE INSERT ON person  \n" + 
-		    		"FOR EACH ROW  \n" + 
+		    check.addCommand("CREATE OR REPLACE FUNCTION check_person_i\n" + 
+		    		"  RETURNS TRIGGER\n" + 
+		    		"  LANGUAGE PLPGSQL\n" + 
+		    		"AS \n" + 
+		    		"$$ \n" + 
 		    		"BEGIN \n" + 
-		    		" \n" + 
-		    		"    declare msg varchar(128); \n" + 
-		    		" \n" + 
-		    		"    if(  \n" + 
-		    		"        ( new.life_phase_enum = 'ADULT' and  ( new.is_personal_customer is null )  )  or  \n" + 
-		    		"        ( new.life_phase_enum <> 'ADULT' and  (  ifnull(new.is_personal_customer, false) = true )  )  \n" + 
-		    		"    )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_i].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		"    if(  \n" + 
-		    		"        ( new.is_personal_customer = TRUE and  ( new.credit_rating is null or new.credit_card is null )  )  or  \n" + 
-		    		"        ( new.is_personal_customer <> TRUE and  ( new.credit_rating is not null or new.credit_card is not null )  )  \n" + 
-		    		"    )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_i].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		" \n" + 
-		    		"END; //  \n" + 
-		    		"delimiter ;");
+		    		"    if( \n" + 
+		    		"        ( new.life_phase_enum = 'ADULT' and  ( new.is_personal_customer is null )  )  or \n" + 
+		    		"        ( new.life_phase_enum <> 'ADULT' and  (  ifnull(new.is_personal_customer, false) = true )  ) \n" + 
+		    		"    ) \n" + 
+		    		"    then \n" + 
+		    		"        RAISE EXCEPTION  'ERROR 3: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"    if( \n" + 
+		    		"        ( new.is_personal_customer = TRUE and  ( new.credit_rating is null or new.credit_card is null )  )  or \n" + 
+		    		"        ( new.is_personal_customer <> TRUE and  ( new.credit_rating is not null or new.credit_card is not null )  ) \n" + 
+		    		"    ) \n" + 
+		    		"    then \n" + 
+		    		"        RAISE EXCEPTION  'ERROR 3: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"END; \n" + 
+		    		"$$; \n" + 
+		    		"\n" + 
+		    		"CREATE TRIGGER tg_person_i\n" + 
+		    		"AFTER INSERT ON person\n" + 
+		    		"FOR EACH ROW \n" + 
+		    		"EXECUTE PROCEDURE check_person_i; ");
 		    
-		    check.addCommand("delimiter //  \n" + 
-		    		"CREATE TRIGGER tg_person_u  BEFORE UPDATE ON person  \n" + 
-		    		"FOR EACH ROW  \n" + 
+		    check.addCommand("CREATE OR REPLACE FUNCTION check_person_u\n" + 
+		    		"  RETURNS TRIGGER\n" + 
+		    		"  LANGUAGE PLPGSQL\n" + 
+		    		"AS \n" + 
+		    		"$$ \n" + 
 		    		"BEGIN \n" + 
-		    		" \n" + 
-		    		"    declare msg varchar(128); \n" + 
-		    		" \n" + 
-		    		"    if(  \n" + 
-		    		"        ( new.life_phase_enum = 'ADULT' and  ( new.is_personal_customer is null )  )  or  \n" + 
-		    		"        ( new.life_phase_enum <> 'ADULT' and  (  ifnull(new.is_personal_customer, false) = true )  )  \n" + 
-		    		"    )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_u].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		"    if(  \n" + 
-		    		"        ( new.is_personal_customer = TRUE and  ( new.credit_rating is null or new.credit_card is null )  )  or  \n" + 
-		    		"        ( new.is_personal_customer <> TRUE and  ( new.credit_rating is not null or new.credit_card is not null )  )  \n" + 
-		    		"    )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_person_u].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		" \n" + 
-		    		"END; //  \n" + 
-		    		"delimiter ;");
+		    		"    if( \n" + 
+		    		"        ( new.life_phase_enum = 'ADULT' and  ( new.is_personal_customer is null )  )  or \n" + 
+		    		"        ( new.life_phase_enum <> 'ADULT' and  (  ifnull(new.is_personal_customer, false) = true )  ) \n" + 
+		    		"    ) \n" + 
+		    		"    then \n" + 
+		    		"        RAISE EXCEPTION  'ERROR 3: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"    if( \n" + 
+		    		"        ( new.is_personal_customer = TRUE and  ( new.credit_rating is null or new.credit_card is null )  )  or \n" + 
+		    		"        ( new.is_personal_customer <> TRUE and  ( new.credit_rating is not null or new.credit_card is not null )  ) \n" + 
+		    		"    ) \n" + 
+		    		"    then \n" + 
+		    		"        RAISE EXCEPTION  'ERROR 3: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"END; \n" + 
+		    		"$$; \n" + 
+		    		"\n" + 
+		    		"CREATE TRIGGER tg_person_u\n" + 
+		    		"AFTER UPDATE ON person\n" + 
+		    		"FOR EACH ROW \n" + 
+		    		"EXECUTE PROCEDURE check_person_u; ");
 		    
-		    check.addCommand("delimiter // "+
-		    		"CREATE TRIGGER tg_organization_i BEFORE INSERT ON organization  \n" + 
-		    		"FOR EACH ROW  \n" + 
+		    check.addCommand("CREATE OR REPLACE FUNCTION check_organization_i\n" + 
+		    		"  RETURNS TRIGGER\n" + 
+		    		"  LANGUAGE PLPGSQL\n" + 
+		    		"AS \n" + 
+		    		"$$ \n" + 
 		    		"BEGIN \n" + 
-		    		" \n" + 
-		    		"    declare msg varchar(128); \n" + 
-		    		" \n" + 
-		    		"    if(  \n" + 
-		    		"        (  NEW.is_corporate_customer = TRUE and ( NEW.credit_rating is null  OR NEW.credit_limit is null  )  ) OR  \n" + 
-		    		"        (  NEW.is_corporate_customer <> TRUE and ( NEW.credit_rating is not null  OR NEW.credit_limit is not null  )  )  \n" + 
-		    		"      )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_organization_i].'; \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		" \n" + 
-		    		"END; //  \n" + 
-		    		"delimiter ;");
+		    		"    if( \n" + 
+		    		"        ( new.is_corporate_customer = TRUE and  ( new.credit_rating is null or new.credit_limit is null )  )  or \n" + 
+		    		"        ( new.is_corporate_customer <> TRUE and  ( new.credit_rating is not null or new.credit_limit is not null )  ) \n" + 
+		    		"    ) \n" + 
+		    		"    then \n" + 
+		    		"        RAISE EXCEPTION  'ERROR 3: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"END; \n" + 
+		    		"$$; \n" + 
+		    		"\n" + 
+		    		"CREATE TRIGGER tg_organization_i\n" + 
+		    		"AFTER INSERT ON organization\n" + 
+		    		"FOR EACH ROW \n" + 
+		    		"EXECUTE PROCEDURE check_organization_i; ");
 		    
-		    check.addCommand("delimiter // "+
-		    		"CREATE TRIGGER tg_organization_u BEFORE UPDATE ON organization  \n" + 
-		    		"FOR EACH ROW  \n" + 
+		    check.addCommand("CREATE OR REPLACE FUNCTION check_organization_u\n" + 
+		    		"  RETURNS TRIGGER\n" + 
+		    		"  LANGUAGE PLPGSQL\n" + 
+		    		"AS \n" + 
+		    		"$$ \n" + 
 		    		"BEGIN \n" + 
-		    		" \n" + 
-		    		"    declare msg varchar(128); \n" + 
-		    		" \n" + 
-		    		"    if(  \n" + 
-		    		"        (  NEW.is_corporate_customer = TRUE and ( NEW.credit_rating is null  OR NEW.credit_limit is null  )  ) OR  \n" + 
-		    		"        (  NEW.is_corporate_customer <> TRUE and ( NEW.credit_rating is not null  OR NEW.credit_limit is not null  )  )  \n" + 
-		    		"      )  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules [tg_organization_u].'; \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		" \n" + 
-		    		"END; //  \n" + 
-		    		"delimiter ;");
+		    		"    if( \n" + 
+		    		"        ( new.is_corporate_customer = TRUE and  ( new.credit_rating is null or new.credit_limit is null )  )  or \n" + 
+		    		"        ( new.is_corporate_customer <> TRUE and  ( new.credit_rating is not null or new.credit_limit is not null )  ) \n" + 
+		    		"    ) \n" + 
+		    		"    then \n" + 
+		    		"        RAISE EXCEPTION  'ERROR 3: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"END; \n" + 
+		    		"$$; \n" + 
+		    		"\n" + 
+		    		"CREATE TRIGGER tg_organization_u\n" + 
+		    		"AFTER UPDATE ON organization\n" + 
+		    		"FOR EACH ROW \n" + 
+		    		"EXECUTE PROCEDURE check_organization_u;");
 		    
-		    check.addCommand("delimiter //  \n" + 
-		    		"CREATE TRIGGER tg_supply_contract_i  BEFORE INSERT ON supply_contract  \n" + 
-		    		"FOR EACH ROW  \n" + 
+		    check.addCommand("CREATE OR REPLACE FUNCTION check_supply_contract_i\n" + 
+		    		"  RETURNS TRIGGER\n" + 
+		    		"  LANGUAGE PLPGSQL\n" + 
+		    		"AS \n" + 
+		    		"$$ \n" + 
 		    		"BEGIN \n" + 
-		    		" \n" + 
-		    		"    declare msg varchar(128); \n" + 
-		    		" \n" + 
-		    		"    if(  \n" + 
-		    		"        select  case when new.person_id is null then 0 else 1 end +  \n" + 
-		    		"                case when new.organization_customer_id is null then 0 else 1 end  \n" + 
-		    		"      ) <> 1  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_i].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg;  \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		"    if( new.organization_customer_id is not null )  \n" + 
-		    		"    then  \n" + 
-		    		"        if not exists (  \n" + 
-		    		"                    select 1 \n" + 
-		    		"                    from organization  \n" + 
-		    		"                    where is_corporate_customer = TRUE  \n" + 
-		    		"                    and   organization.organization_id = new.organization_customer_id \n" + 
-		    		"        )  \n" + 
-		    		"        then  \n" + 
-		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_i].';  \n" + 
-		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"        end if;  \n" + 
-		    		" \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		"    if( new.organization_contractor_id is not null )  \n" + 
-		    		"    then  \n" + 
-		    		"        if not exists (  \n" + 
-		    		"                    select 1 \n" + 
-		    		"                    from organization  \n" + 
-		    		"                    where is_contractor = TRUE  \n" + 
-		    		"                    and   organization.organization_id = new.organization_contractor_id \n" + 
-		    		"        )  \n" + 
-		    		"        then  \n" + 
-		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_i].';  \n" + 
-		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"        end if;  \n" + 
-		    		" \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		"    if( new.person_id is not null )  \n" + 
-		    		"    then  \n" + 
-		    		"        if not exists (  \n" + 
-		    		"                    select 1 \n" + 
-		    		"                    from person  \n" + 
-		    		"                    where is_personal_customer = TRUE  \n" + 
-		    		"                    and   life_phase_enum = 'ADULT'  \n" + 
-		    		"                    and   person.person_id = new.person_id \n" + 
-		    		"        )  \n" + 
-		    		"        then  \n" + 
-		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_i].';  \n" + 
-		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"        end if;  \n" + 
-		    		" \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		" \n" + 
-		    		"END; //  \n" + 
-		    		"delimiter ;");
+		    		"    if( \n" + 
+		    		"        select  case when new.person_id is null then 0 else 1 end + \n" + 
+		    		"                case when new.organization_customer_id is null then 0 else 1 end \n" + 
+		    		"      ) <> 1 \n" + 
+		    		"    then \n" + 
+		    		"        RAISE EXCEPTION 'ERROR 1: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"    if( new.organization_customer_id is not null ) \n" + 
+		    		"    then \n" + 
+		    		"        if not exists ( \n" + 
+		    		"                    select 1\n" + 
+		    		"                    from organization \n" + 
+		    		"                    where is_corporate_customer = TRUE \n" + 
+		    		"                    and   organization.organization_id = new.organization_customer_id\n" + 
+		    		"        ) \n" + 
+		    		"        then \n" + 
+		    		"            RAISE EXCEPTION  'ERROR 4: Violating conceptual model rules [XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"        end if; \n" + 
+		    		"\n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"    if( new.organization_contractor_id is not null ) \n" + 
+		    		"    then \n" + 
+		    		"        if not exists ( \n" + 
+		    		"                    select 1\n" + 
+		    		"                    from organization \n" + 
+		    		"                    where is_contractor = TRUE \n" + 
+		    		"                    and   organization.organization_id = new.organization_contractor_id\n" + 
+		    		"        ) \n" + 
+		    		"        then \n" + 
+		    		"            RAISE EXCEPTION  'ERROR 4: Violating conceptual model rules [XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"        end if; \n" + 
+		    		"\n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"    if( new.person_id is not null ) \n" + 
+		    		"    then \n" + 
+		    		"        if not exists ( \n" + 
+		    		"                    select 1\n" + 
+		    		"                    from person \n" + 
+		    		"                    where is_personal_customer = TRUE \n" + 
+		    		"                    and   life_phase_enum = 'ADULT' \n" + 
+		    		"                    and   person.person_id = new.person_id\n" + 
+		    		"        ) \n" + 
+		    		"        then \n" + 
+		    		"            RAISE EXCEPTION  'ERROR 4: Violating conceptual model rules [XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"        end if; \n" + 
+		    		"\n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"END; \n" + 
+		    		"$$; \n" + 
+		    		"\n" + 
+		    		"CREATE TRIGGER tg_supply_contract_i\n" + 
+		    		"AFTER INSERT ON supply_contract\n" + 
+		    		"FOR EACH ROW \n" + 
+		    		"EXECUTE PROCEDURE check_supply_contract_i;");
 		    
-		    check.addCommand("delimiter //  \n" + 
-		    		"CREATE TRIGGER tg_supply_contract_u  BEFORE UPDATE ON supply_contract  \n" + 
-		    		"FOR EACH ROW  \n" + 
+		    check.addCommand("CREATE OR REPLACE FUNCTION check_supply_contract_u\n" + 
+		    		"  RETURNS TRIGGER\n" + 
+		    		"  LANGUAGE PLPGSQL\n" + 
+		    		"AS \n" + 
+		    		"$$ \n" + 
 		    		"BEGIN \n" + 
-		    		" \n" + 
-		    		"    declare msg varchar(128); \n" + 
-		    		" \n" + 
-		    		"    if(  \n" + 
-		    		"        select  case when new.person_id is null then 0 else 1 end +  \n" + 
-		    		"                case when new.organization_customer_id is null then 0 else 1 end  \n" + 
-		    		"      ) <> 1  \n" + 
-		    		"    then  \n" + 
-		    		"        set msg = 'ERROR: Violating conceptual model rules[tg_supply_contract_u].';  \n" + 
-		    		"        signal sqlstate '45000' set message_text = msg;  \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		"    if( new.organization_customer_id is not null )  \n" + 
-		    		"    then  \n" + 
-		    		"        if not exists (  \n" + 
-		    		"                    select 1 \n" + 
-		    		"                    from organization  \n" + 
-		    		"                    where is_corporate_customer = TRUE  \n" + 
-		    		"                    and   organization.organization_id = new.organization_customer_id \n" + 
-		    		"        )  \n" + 
-		    		"        then  \n" + 
-		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_u].';  \n" + 
-		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"        end if;  \n" + 
-		    		" \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		"    if( new.organization_contractor_id is not null )  \n" + 
-		    		"    then  \n" + 
-		    		"        if not exists (  \n" + 
-		    		"                    select 1 \n" + 
-		    		"                    from organization  \n" + 
-		    		"                    where is_contractor = TRUE  \n" + 
-		    		"                    and   organization.organization_id = new.organization_contractor_id \n" + 
-		    		"        )  \n" + 
-		    		"        then  \n" + 
-		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_u].';  \n" + 
-		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"        end if;  \n" + 
-		    		" \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		"    if( new.person_id is not null )  \n" + 
-		    		"    then  \n" + 
-		    		"        if not exists (  \n" + 
-		    		"                    select 1 \n" + 
-		    		"                    from person  \n" + 
-		    		"                    where is_personal_customer = TRUE  \n" + 
-		    		"                    and   life_phase_enum = 'ADULT'  \n" + 
-		    		"                    and   person.person_id = new.person_id \n" + 
-		    		"        )  \n" + 
-		    		"        then  \n" + 
-		    		"            set msg = 'ERROR: Violating conceptual model rules [tg_supply_contract_u].';  \n" + 
-		    		"            signal sqlstate '45000' set message_text = msg; \n" + 
-		    		"        end if;  \n" + 
-		    		" \n" + 
-		    		"    end if;  \n" + 
-		    		" \n" + 
-		    		" \n" + 
-		    		"END; //  \n" + 
-		    		"delimiter ;");
-
+		    		"    if( \n" + 
+		    		"        select  case when new.person_id is null then 0 else 1 end + \n" + 
+		    		"                case when new.organization_customer_id is null then 0 else 1 end \n" + 
+		    		"      ) <> 1 \n" + 
+		    		"    then \n" + 
+		    		"        RAISE EXCEPTION 'ERROR 1: Violating conceptual model rules[XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"    if( new.organization_customer_id is not null ) \n" + 
+		    		"    then \n" + 
+		    		"        if not exists ( \n" + 
+		    		"                    select 1\n" + 
+		    		"                    from organization \n" + 
+		    		"                    where is_corporate_customer = TRUE \n" + 
+		    		"                    and   organization.organization_id = new.organization_customer_id\n" + 
+		    		"        ) \n" + 
+		    		"        then \n" + 
+		    		"            RAISE EXCEPTION  'ERROR 4: Violating conceptual model rules [XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"        end if; \n" + 
+		    		"\n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"    if( new.organization_contractor_id is not null ) \n" + 
+		    		"    then \n" + 
+		    		"        if not exists ( \n" + 
+		    		"                    select 1\n" + 
+		    		"                    from organization \n" + 
+		    		"                    where is_contractor = TRUE \n" + 
+		    		"                    and   organization.organization_id = new.organization_contractor_id\n" + 
+		    		"        ) \n" + 
+		    		"        then \n" + 
+		    		"            RAISE EXCEPTION  'ERROR 4: Violating conceptual model rules [XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"        end if; \n" + 
+		    		"\n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"    if( new.person_id is not null ) \n" + 
+		    		"    then \n" + 
+		    		"        if not exists ( \n" + 
+		    		"                    select 1\n" + 
+		    		"                    from person \n" + 
+		    		"                    where is_personal_customer = TRUE \n" + 
+		    		"                    and   life_phase_enum = 'ADULT' \n" + 
+		    		"                    and   person.person_id = new.person_id\n" + 
+		    		"        ) \n" + 
+		    		"        then \n" + 
+		    		"            RAISE EXCEPTION  'ERROR 4: Violating conceptual model rules [XX_TRIGGER_NAME_XX].'; \n" + 
+		    		"        end if; \n" + 
+		    		"\n" + 
+		    		"    end if; \n" + 
+		    		"\n" + 
+		    		"END; \n" + 
+		    		"$$; \n" + 
+		    		"\n" + 
+		    		"CREATE TRIGGER tg_supply_contract_u\n" + 
+		    		"AFTER UPDATE ON supply_contract\n" + 
+		    		"FOR EACH ROW \n" + 
+		    		"EXECUTE PROCEDURE check_supply_contract_u; \n" + 
+		    		"");
+		    
 		    result = check.run();
 		    
 		    if(result != null) {

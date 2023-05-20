@@ -6,6 +6,7 @@ import br.ufes.inf.nemo.ontoumltodb.transformation.approaches.IStrategy;
 import br.ufes.inf.nemo.ontoumltodb.transformation.approaches.OneTablePerClass;
 import br.ufes.inf.nemo.ontoumltodb.transformation.approaches.OneTablePerConcreteClass;
 import br.ufes.inf.nemo.ontoumltodb.transformation.approaches.OneTablePerKind;
+import br.ufes.inf.nemo.ontoumltodb.transformation.approaches.OneTablePerLeafClass;
 import br.ufes.inf.nemo.ontoumltodb.transformation.convert2er.ToEntityRelationship;
 import br.ufes.inf.nemo.ontoumltodb.transformation.database.BuildDatabase;
 import br.ufes.inf.nemo.ontoumltodb.transformation.database.trigger.TriggerResult;
@@ -28,6 +29,7 @@ public class OntoUmlToDb {
 	private boolean isStandardizeNames;
 	private boolean isEnumFieldToLookupTable;
 	private boolean isPutInheritedAttributes;
+	private boolean isTransformaNtoNFirst;
 	private String hostName;
 	private String databaseName;
 	private String userName;
@@ -44,6 +46,7 @@ public class OntoUmlToDb {
 		this.isStandardizeNames = false;
 		this.isEnumFieldToLookupTable = false;
 		this.isPutInheritedAttributes = false;
+		this.isTransformaNtoNFirst = true;
 		this.hostName = "host name not informed";
 		this.databaseName = "database name not informed";
 		this.userName = "user name not informed";
@@ -86,18 +89,20 @@ public class OntoUmlToDb {
 		case ONE_TABLE_PER_CONCRETE_CLASS:
 			strategy = new OneTablePerConcreteClass();
 			break;
+		case ONE_TABLE_PER_LEAF_CLASS:
+			strategy = new OneTablePerLeafClass();
+			break;
 		default:
 			strategy = new OneTablePerClass();
 			break;
 		}
+		strategy.setTransformaNtoNFirst(isTransformaNtoNFirst);
 		strategy.run(graph, traceTable);
 		
 		// Save the graph (class diagram) before being transformed to entity-relationship
 		intermediateGraph = graph.clone();
 		
 		ToEntityRelationship.run(graph, traceTable, isStandardizeNames, isEnumFieldToLookupTable);
-		
-		
 	}
 
 	public Graph getGraph() {
@@ -154,6 +159,10 @@ public class OntoUmlToDb {
 	
 	public void setPutInheritedAttributes(boolean flag) {
 		this.isPutInheritedAttributes = flag;
+	}
+	
+	public void setTransformaNtoNFirst(boolean flag) {
+		this.isTransformaNtoNFirst = flag;
 	}
 	
 	public void setHostNameConnection(String hostName) {

@@ -15,7 +15,7 @@ public class SolvesName {
 		if (isStandardizeNames)
 			standardizeName(graph);
 		
-		checkNamesSize(graph);
+		checkNames(graph);
 	}
 	
 	private static void standardizeName(Graph graph) {
@@ -58,7 +58,7 @@ public class SolvesName {
 		return newName.toLowerCase();
 	}
 	
-	private static void checkNamesSize(Graph graph) {
+	private static void checkNames(Graph graph) {
 		NodeProperty property1, property2;
 		String newName;
 		
@@ -81,7 +81,7 @@ public class SolvesName {
 					if(property1.getName().equals(property2.getName())) {
 						newName = property2.getName();
 						
-						newName = newName.substring(0, Util.getMaxSizeNames() - 10);
+						newName = newName.substring(0, newName.length() - 3);
 						newName += Increment.getNextS() + "_id";
 						property2.setName(newName);
 					}

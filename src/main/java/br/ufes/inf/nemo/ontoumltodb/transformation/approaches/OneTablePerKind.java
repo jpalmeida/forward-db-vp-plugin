@@ -9,13 +9,19 @@ import br.ufes.inf.nemo.ontoumltodb.transformation.graph.Node;
 import br.ufes.inf.nemo.ontoumltodb.transformation.tracer.TraceTable;
 import br.ufes.inf.nemo.ontoumltodb.util.Stereotype;
 
-public class OneTablePerKind implements IStrategy{
+public class OneTablePerKind extends CommonTransformation implements IStrategy{
 
 	public void run(Graph graph, TraceTable traceTable) {
+		if(this.isTransformaNtoNFirst)
+			resolveNtoN(graph, traceTable);
 		
 	    runFlattening(graph, traceTable);
 	    
 	    runLifting(graph, traceTable);
+	}
+	
+	public void setTransformaNtoNFirst(boolean flag) {
+		this.isTransformaNtoNFirst = flag;
 	}
 	
 	//*************************************

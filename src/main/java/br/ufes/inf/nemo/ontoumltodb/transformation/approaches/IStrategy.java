@@ -11,4 +11,7 @@ public interface IStrategy {
 	 * @param graph Graph to be modified.
 	 */
 	public void run(Graph graph, TraceTable traceTable);
+	
+	
+	public void setTransformaNtoNFirst(boolean flag);
 }

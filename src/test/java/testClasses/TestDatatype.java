@@ -24,8 +24,6 @@ public class TestDatatype {
 		    toDb.runTransformation();
 		    String script = toDb.getRelationalSchemaScript();
 		    
-		    System.out.println(script);
-		    
 		    CheckTransformation check = new CheckTransformation( script );
 		    
 		    check.addCommand("CREATE TABLE person (  \n" + 
